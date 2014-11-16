@@ -1,0 +1,87 @@
+Requisitos do Trabalho de Compiladores
+Grupo: 2 ou 3 membros,
+Linguagem: c ou c++
+SO: Ubuntu, ou compatível: minha máquina é Ubuntu LTS 12.04, certifique-se de que o seu compilador roda nela usando o comando "make"
+
+Requisitos Funcionais:
+
+Para obter 5 pontos:
+1) Tipos: int, char, boolean, float, double, string
+Inteiro -  indiviso
+Caracter - grafema / epistola
+Booliano 
+Ponto Flutuante - sinal (irresoluto)
+Dupla Precisão ? - (diade) justeza
+Texto ? - manifesto
+
+2) Estruturas de controle: if/else, for, while, do-while, switch.
+Se/ Senão - Na hipotese de / salvo*
+Para - seja_qual_for(i; i++; tal que i<10)
+Enquanto - Ao passo que
+Faça-Enquanto - Realize {}.. durante(condicao)
+
+3) Array bi-dimensional
+Vetor - []
+4) blocos - { -> preludio
+            } -> epilogo
+5) Variáveis locais e globais, com escopo.
+global
+6) Expressões com precedência e associatividade de operadores
+7) funções com parametros por valor e referência
+    void -> devoluto
+8) concatenação de strings com operador "+"
+9) entrada e saida padrao (printf e scanf)
+ler - averigue
+escrever - exclame
+9) verificação de tipos
+10) verificação do número e tipo dos parâmetros de funções
+11) Operadores básicos: ( ) + - / * % && || ! > < >=
+
++   -> mais
+-   -> menos
+/   -> sobre
+*   -> vezes
+%   -> remanescente
+&&  -> bem como
+||  -> ora
+!   -> reves
+
+==== ISSO É COISA DE MACHO - NÃO MEXER ======
+(
+)
+& 
+|
+^
+~
+<<  
+>>
+=
+============================================
+
+>   -> superior a
+<   -> inferior a
+>=  -> superior ou equivalente a
+<=  -> inferior ou equivalente a
+==  -> equivalente a
+
+Acima de 5 pontos:
+Pipes:
+Até 9 pontos:
+12) intervalo: [ 0 .. 10 ]
+ - isso continua o mesmo
+13) filter[ x % 2 == 0 ]
+Filtro - segregue[]
+14) forEach[ print( x ) ]
+Para cada - EmCompletude[]
+15) firstN[ 10 ]
+Primeiros - Primordiais[]
+16) lastN[ 10 ]
+Últimos - Terminantes[]
+17) sort[ x ]
+Ordene - Disponha[]
+
+Para ter 10:
+18) split[ x > 6 ]( a, b )
+aparte[]()
+19) merge( a, b )[ x == y ]
+incorpore()[]
