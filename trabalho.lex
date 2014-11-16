@@ -12,8 +12,11 @@ STRING  \"[^"\n]*\"
 IF      (Na hipotese de)
 ELSE    (Salvo)
 FOR     (Seja qual for)
+TQ		(Tal que)
 DO      (Realize)
 WHILE   (Ao passo que)
+IBLOCO  (Preludio)
+FBLOCO	(Epilogo)
 
 
 %%
@@ -24,8 +27,12 @@ WHILE   (Ao passo que)
 {IF}        { return _TK_IF; }
 {ELSE}      { return _TK_ELSE; }
 {FOR}       { return _TK_FOR; }
+{TQ}		{ return _TK_TQ; }
 {DO}        { return _TK_DO; }
 {WHILE}     { return _TK_WHILE; }
+
+{IBLOCO}	{ return _TK_IB}
+{FBLOCO}	{ return _TK_FB}
 
 "Indiviso"		{  yylval = Atributo( "", yytext ); return _TK_INT; }
 "Diade"		    {  yylval = Atributo( "", yytext ); return _TK_DOUBLE; }
@@ -42,13 +49,14 @@ WHILE   (Ao passo que)
 "Remanescente"  { return _TK_%; }
 "Bem como"      { return _TK_AND; }
 "Ora"           { return _TK_OR; }
-"Reves"		    { return _TK_!; }
+"Reves"		    { return _TK_NOT; }
 
 "Superior a"                { return _TK_<; }
 "Inferior a"                { return _TK_>; }
 "Superior ou equivalente a" { return _TK_<=; }
 "Inferior ou equivalente a" { return _TK_>=; }
 "Equivalente a"             { return _TK_==; }
+"Divergente a"				{ return _TK_!=; }
 
 "<<" 		{  yylval = Atributo( yytext ); return _SHIFTL; }
 ">>" 		{  yylval = Atributo( yytext ); return _SHIFTR; }
