@@ -49,21 +49,21 @@ DEFAULT	Padrao
 "Manifesto"		{  yylval = Atributo( "", yytext ); return _TK_STRING; }
 "Devoluto"      {  yylval = Atributo( "", yytext ); return _TK_VOID; }
 
-"Mais"          { return _TK_+; }
-"Menos"         { return _TK_-; }
-"Sobre"         { return _TK_/; }
-"Vezes"         { return _TK_*; }
-"Remanescente"  { return _TK_%; }
+"Mais"          { return _TK_MAIS; }
+"Menos"         { return _TK_MENOS; }
+"Sobre"         { return _TK_DIVIDIDO; }
+"Vezes"         { return _TK_VEZES; }
+"Remanescente"  { return _TK_RESTO; }
 "Bem como"      { return _TK_AND; }
 "Ora"           { return _TK_OR; }
 "Reves"		    { return _TK_NOT; }
 
-"Superior a"                { return _TK_<; }
-"Inferior a"                { return _TK_>; }
-"Superior ou equivalente a" { return _TK_<=; }
-"Inferior ou equivalente a" { return _TK_>=; }
-"Equivalente a"             { return _TK_==; }
-"Divergente a"				{ return _TK_!=; }
+"Superior a"                { return _TK_MAIOR; }
+"Inferior a"                { return _TK_MENOR; }
+"Superior ou equivalente a" { return _TK_MENORIGUAL; }
+"Inferior ou equivalente a" { return _TK_MAIORIGUAL; }
+"Equivalente a"             { return _TK_IGUAL; }
+"Divergente a"				{ return _TK_DIFERENTE; }
 
 "<<" 		{  yylval = Atributo( yytext ); return _SHIFTL; }
 ">>" 		{  yylval = Atributo( yytext ); return _SHIFTR; }
