@@ -1,7 +1,7 @@
-Indiviso a, b;
+Indiviso ff, gg;
 Booliano c;
 
-a = (a + b) * (1 + 10 * a);
-c = a < b;
+ff = (ff Mais gg) Vezes (1 Mais 10 Vezes ff);	
+c = ff Inferior a gg;
 
 Exclame <<"hello, world";

@@ -50,8 +50,9 @@ int yyparse();
 void yyerror(const char *);
 %}
 
-%token _INT _CHAR _DOUBLE _BOOL _FLOAT _STRING _ID 
-%token _TK_INT _TK_CHAR _TK_BOOL _TK_DOUBLE _TK_FLOAT _TK_STRING  _TK_VOID _COUT _SHIFTL _SHIFTR
+%token _TK_IB _TK_FB
+%token _INT _CHAR _DOUBLE _BOOLEAN _FLOAT _STRING _ID 
+%token _TK_INT _TK_CHAR _TK_BOOLEAN _TK_DOUBLE _TK_FLOAT _TK_STRING  _TK_VOID _COUT _SHIFTL _SHIFTR
 %token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
 %token _PRINTF _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
@@ -124,7 +125,7 @@ FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCO
     
 TIPO : _TK_INT
      | _TK_CHAR
-     | _TK_BOOL
+     | _TK_BOOLEAN
      | _TK_DOUBLE
      | _TK_FLOAT
      | _TK_STRING
@@ -148,7 +149,7 @@ ATR : _ID '=' E
     ;
 
 E : E _TK_MAIS E   
-    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+    { cout << "Expressao: " << $1.v << " - " << $2.v << " - " << $3.v << endl; geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _TK_MENOS E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _TK_VEZES E
@@ -174,7 +175,6 @@ E : E _TK_MAIS E
   | E _TK_DIFERENTE E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | _TK_NOT E
-    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E '&' E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E '|' E
@@ -182,7 +182,6 @@ E : E _TK_MAIS E
   | E '^' E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | '~' E
-    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _SHIFTL E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _SHIFTR E
@@ -247,13 +246,13 @@ void geraCodigoOperadorBinario( Atributo* SS, Atributo S1, Atributo S2, Atributo
 }
 
 void inicializaResultadoOperador() {
-  resultadoOperador["int+int"] = Tipo( "int" );
-  resultadoOperador["int-int"] = Tipo( "int" );
-  resultadoOperador["int*int"] = Tipo( "int" );
-  resultadoOperador["int/int"] = Tipo( "int" );
-  resultadoOperador["int<int"] = Tipo( "bool" );
-  resultadoOperador["double+int"] = Tipo( "double" );
-  resultadoOperador["int*double"] = Tipo( "double" );
+  resultadoOperador["Indiviso+Indiviso"] = Tipo( "Indiviso" );
+  resultadoOperador["Indiviso-Indiviso"] = Tipo( "Indiviso" );
+  resultadoOperador["Indiviso*Indiviso"] = Tipo( "Indiviso" );
+  resultadoOperador["Indiviso/Indiviso"] = Tipo( "Indiviso" );
+  resultadoOperador["Indiviso<Indiviso"] = Tipo( "Booliano" );
+  resultadoOperador["Diade+Indiviso"] = Tipo( "Diade" );
+  resultadoOperador["Indiviso*Diade"] = Tipo( "Diade" );
   // TODO: completar essa lista... :(
 }
 
