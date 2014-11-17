@@ -57,7 +57,7 @@ void yyerror(const char *);
 %left '+' '-'
 %left '*' '/'
 
-%%
+%% 
 
 S1 : S { cout << geraDeclaracaoTemporarias() << $1.c << endl; }
 
@@ -65,20 +65,24 @@ S : VAR ';' S
     { $$.c = $1.c + $3.c; }
   | ATR ';' S 
     { $$.c = $1.c + $3.c; }
-  | CMD_OUT ';' S  
+  | CMD ';' S  
     { $$.c = $1.c + $3.c; }
   |
     { $$.c = ""; }
   ;
+
+BLOCO : _TK_IB S _TK_FB
+      | VAR ';'
+      | ATR ';'
+      | CMD ';'
+    ;
   
-CMD_OUT : _COUT _SHIFTL E 
-          { if( $3.t.nome == "int" )
-              $$.c = $3.c + 
-                     "  printf( \"%d\" , " + $3.v + " );\n";
-            else if( $3.t.nome == "string" )
-              $$.c = $3.c + 
-                     "  printf( \"%s\" , " + $3.v + " );\n";}
-        ;
+CMD : _TK_IF '('E')' BLOCO
+    | _TK_IF '('E')' S _TK_ELSE BLOCO
+    | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E')' BLOCO
+    | _TK_WHILE '(' E ')' BLOCO
+    | _TK_DO BLOCO _TK_WHILE '(' E ')' ';'
+  ;
 
 VAR : VAR ',' _ID
       { insereVariavelTS( ts, $3.v, $1.t ); 
@@ -93,12 +97,23 @@ VAR : VAR ',' _ID
         $$.c = "  " + $1.t.nome + " " + $2.v + ";\n"; }
     ;
     
-TIPO : _INT
-     | _CHAR
-     | _BOOL
-     | _DOUBLE
-     | _FLOAT
-     | _STRING
+PARAM : ',' TIPO _ID PARAM
+      |
+        { $$.c = ""; }
+      ;
+      
+FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCO
+         | _TK_VOID _ID '(' TIPO _ID PARAM ')' BLOCO
+         | TIPO _ID '(' ')' BLOCO
+         | _TK_VOID _ID '(' ')' BLOCO
+         ;
+    
+TIPO : _TK_INT
+     | _TK_CHAR
+     | _TK_BOOL
+     | _TK_DOUBLE
+     | _TK_FLOAT
+     | _TK_STRING
      ;
   
 ATR : _ID '=' E 
@@ -118,38 +133,79 @@ ATR : _ID '=' E
        }
     ;
 
-E : E '+' E   
+E : E _TK_+ E   
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
-  | E '-' E
+  | E _TK_- E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
-  | E '*' E
+  | E _TK_* E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
-  | E '/' E
+  | E _TK_/ E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
-  | E '<' E
+  | E _TK_% E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _TK_AND E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _TK_OR E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _TK_< E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _TK_> E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _TK_<= E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _TK_>= E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _TK_== E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _TK_!= E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | _TK_NOT E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E '&' E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E '|' E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E '^' E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | '~' E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _SHIFTL E
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | E _SHIFTR E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | F
   ;
 
-F : _ID		
+F : _ID   
   { if( buscaVariavelTS( ts, $1.v, &$$.t ) ) 
       $$.v = $1.v; 
     else
       erro( "Variavel nao declarada: " + $1.v );
-  }	
-  | _CTE_INT 
+  } 
+  | _INT 
     {  $$.v = $1.v; 
        $$.t = Tipo( "int" ); }
-  | _CTE_DOUBLE 
+  | _DOUBLE 
     {  $$.v = $1.v; 
        $$.t = Tipo( "double" ); }
-  | _CTE_STRING 
+  | _FLOAT 
+    {  $$.v = $1.v; 
+       $$.t = Tipo( "float" ); }
+  | _CHAR 
+    {  $$.v = $1.v; 
+       $$.t = Tipo( "char" ); }
+  | _BOOLEAN 
+    {  $$.v = $1.v; 
+       $$.t = Tipo( "bool" ); }
+  | _STRING 
     {  $$.v = $1.v; 
        $$.t = Tipo( "string" ); }
   | '(' E ')'  { $$ = $2; }
   ;
+  
 
 %%
+
 int nlinha = 1;
 map<string,int> n_var_temp;
 map<string,Tipo> resultadoOperador;

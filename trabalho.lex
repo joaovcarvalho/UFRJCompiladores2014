@@ -61,8 +61,8 @@ FBLOCO	(Epilogo)
 "<<" 		{  yylval = Atributo( yytext ); return _SHIFTL; }
 ">>" 		{  yylval = Atributo( yytext ); return _SHIFTR; }
 
-"Exclame"	{  yylval = Atributo( yytext ); return _COUT; }
-"Averigue"  {  yylval = Atributo( yytext ): return _CIN; }
+"Exclame"	{  yylval = Atributo( yytext ); return _PRINTF; }
+"Averigue"  {  yylval = Atributo( yytext ): return _SCANF; }
 
 {ID}       { yylval = Atributo( yytext ); return _ID; }
 {INT}      { yylval = Atributo( yytext ); return _INT; }
