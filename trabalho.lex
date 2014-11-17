@@ -9,18 +9,18 @@ CHAR    {['][^\n'][']}
 BOOLEAN (Veridico|Equivoco)
 ID      {LETRA}({LETRA}|{NUMERO})*
 STRING  \"[^"\n]*\"
-IF      (Na hipotese de)
-ELSE    (Salvo)
-FOR     (Seja qual for)
-TQ		(Tal que)
-DO      (Realize)
-WHILE   (Ao passo que)
-SWITCH  (Assemelhe)
-CASE    (Sendo)
-BREAK   (Aborta)
-IBLOCO  (Preludio)
-FBLOCO	(Epilogo)
-DEFAULT	(Padrao)
+IF      Na_hipotese_de
+ELSE    Salvo
+FOR     Seja_qual_for
+TQ		Tal_que
+DO      Realize
+WHILE   Ao_passo_que
+SWITCH  Assemelhe
+CASE    Sendo
+BREAK   Aborta
+IBLOCO  Preludio
+FBLOCO	Epilogo
+DEFAULT	Padrao
 
 %%
 
@@ -36,7 +36,7 @@ DEFAULT	(Padrao)
 {SWITCH}    { return _TK_SWITCH; }
 {CASE}      { return _TK_CASE; }
 {BREAK}     { return _TK_BREAK; }
-{PADRAO}	{ return _TK_DEFAULT;}
+{DEFAULT}	{ return _TK_DEFAULT;}
 
 {IBLOCO}	{ return _TK_IB;}
 {FBLOCO}	{ return _TK_FB;}
