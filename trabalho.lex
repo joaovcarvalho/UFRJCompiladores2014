@@ -69,7 +69,7 @@ DEFAULT	Padrao
 ">>" 		{  yylval = Atributo( yytext ); return _SHIFTR; }
 
 "Exclame"	{  yylval = Atributo( yytext ); return _PRINTF; }
-"Averigue"  {  yylval = Atributo( yytext ): return _SCANF; }
+"Averigue"  {  yylval = Atributo( yytext ); return _SCANF; }
 
 {ID}       { yylval = Atributo( yytext ); return _ID; }
 {INT}      { yylval = Atributo( yytext ); return _INT; }
