@@ -76,12 +76,23 @@ BLOCO : _TK_IB S _TK_FB
       | ATR ';'
       | CMD ';'
     ;
+    
+CASO : _TK_CASE F ':' S _TK_BREAK ';' CASO
+     | _TK_DEFAULT ':' S
+     |
+        { $$.c = ""; }
+    ;
   
 CMD : _TK_IF '('E')' BLOCO
     | _TK_IF '('E')' S _TK_ELSE BLOCO
     | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E')' BLOCO
     | _TK_WHILE '(' E ')' BLOCO
     | _TK_DO BLOCO _TK_WHILE '(' E ')' ';'
+    | _TK_SWITCH '(' _ID ')' _TK_IB CASO _TK_FB
+        { if( !buscaVariavelTS( ts, $3.v, &$3.t ) ) {
+            erro( "Variavel nao declarada: " + $3.v );
+          }
+        }
   ;
 
 VAR : VAR ',' _ID

@@ -15,9 +15,12 @@ FOR     (Seja qual for)
 TQ		(Tal que)
 DO      (Realize)
 WHILE   (Ao passo que)
+SWITCH  (Assemelhe)
+CASE    (Sendo)
+BREAK   (Aborta)
 IBLOCO  (Preludio)
 FBLOCO	(Epilogo)
-
+DEFAULT	(Padrao)
 
 %%
 
@@ -30,9 +33,13 @@ FBLOCO	(Epilogo)
 {TQ}		{ return _TK_TQ; }
 {DO}        { return _TK_DO; }
 {WHILE}     { return _TK_WHILE; }
+{SWITCH}    { return _TK_SWITCH; }
+{CASE}      { return _TK_CASE; }
+{BREAK}     { return _TK_BREAK; }
+{PADRAO}	{ return _TK_DEFAULT;}
 
-{IBLOCO}	{ return _TK_IB}
-{FBLOCO}	{ return _TK_FB}
+{IBLOCO}	{ return _TK_IB;}
+{FBLOCO}	{ return _TK_FB;}
 
 "Indiviso"		{  yylval = Atributo( "", yytext ); return _TK_INT; }
 "Diade"		    {  yylval = Atributo( "", yytext ); return _TK_DOUBLE; }
