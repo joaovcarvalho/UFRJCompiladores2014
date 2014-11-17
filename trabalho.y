@@ -120,6 +120,10 @@ VAR : VAR ',' _ID
         $$.v = "";
         $$.t = $1.t;
         $$.c = "  " + $1.t.nome + " " + $2.v + ";\n"; }
+    | TIPO '[' E ']'
+      {
+      
+      }
     ;
     
 PARAM : ',' TIPO _ID PARAM
