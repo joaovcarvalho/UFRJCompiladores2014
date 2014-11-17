@@ -50,8 +50,8 @@ int yyparse();
 void yyerror(const char *);
 %}
 
-%token _CTE_INT _CTE_CHAR _CTE_DOUBLE _CTE_STRING _ID 
-%token _INT _CHAR _BOOL _DOUBLE _FLOAT _STRING  _COUT _SHIFTL
+%token _INT _CHAR _DOUBLE _BOOL _FLOAT _STRING _ID 
+%token _TK_INT _TK_CHAR _TK_BOOL _TK_DOUBLE _TK_FLOAT _TK_STRING  _TK_VOID _COUT _SHIFTL
 
 %nonassoc '<' '>'
 %left '+' '-'

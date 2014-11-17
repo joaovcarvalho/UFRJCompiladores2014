@@ -5,7 +5,7 @@ LETRA   [A-Za-z_]
 INT     {NUMERO}+
 DOUBLE  {NUMERO}+("."{NUMERO}+)
 FLOAT   {DOUBLE}
-CHAR    {['][^\n'][']}
+CHAR    \'[^\n]\'
 BOOLEAN (Veridico|Equivoco)
 ID      {LETRA}({LETRA}|{NUMERO})*
 STRING  \"[^"\n]*\"
