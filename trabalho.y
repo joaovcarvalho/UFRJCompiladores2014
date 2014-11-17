@@ -151,6 +151,8 @@ ATR : _ID '=' E
        }
     ;
 
+ARRAY : _ID '[' E ']'
+
 E : E _TK_MAIS E   
     { cout << "Expressao: " << $1.v << " - " << $2.v << " - " << $3.v << endl; geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _TK_MENOS E
