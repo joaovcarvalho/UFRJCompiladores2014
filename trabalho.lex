@@ -36,7 +36,7 @@ DEFAULT	(Padrao)
 {SWITCH}    { return _TK_SWITCH; }
 {CASE}      { return _TK_CASE; }
 {BREAK}     { return _TK_BREAK; }
-{PADRAO}	{ return _TK_DEFAULT;}
+{DEFAULT}	{ return _TK_DEFAULT;}
 
 {IBLOCO}	{ return _TK_IB;}
 {FBLOCO}	{ return _TK_FB;}
