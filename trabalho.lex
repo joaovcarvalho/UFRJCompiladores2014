@@ -12,7 +12,7 @@ STRING  \"[^"\n]*\"
 IF      Na_hipotese_de
 ELSE    Salvo
 FOR     Seja_qual_for
-TQ	Tal_que
+TQ	    Tal_que
 DO      Realize
 WHILE   Ao_passo_que
 SWITCH  Assemelhe
@@ -21,6 +21,8 @@ BREAK   Aborta
 IBLOCO  Preludio
 FBLOCO	Epilogo
 DEFAULT	Padrao
+RETURN  Restitua
+NULL    Inexistente
 
 %%
 
@@ -40,6 +42,8 @@ DEFAULT	Padrao
 
 {IBLOCO}	{ return _TK_IB;}
 {FBLOCO}	{ return _TK_FB;}
+{RETURN}  { return _TK_RETURN;}
+{NULL}    { return _TK_NULL;}
 
 "Indiviso"	{  yylval = Atributo( "", yytext ); return _TK_INT; }
 "Diade"		{  yylval = Atributo( "", yytext ); return _TK_DOUBLE; }

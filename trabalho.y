@@ -96,6 +96,9 @@ CASO : _TK_CASE F ':' S _TK_BREAK ';' CASO
   
 CMD : _TK_IF '('E')' BLOCO
     | _TK_IF '('E')' S _TK_ELSE BLOCO
+    | _TK_IF '('E')' BLOCO _TK_ELSE BLOCO
+    | _TK_IF '('E')' BLOCO _TK_ELSE S
+    | _TK_IF '('E')' S _TK_ELSE S
     | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E')' BLOCO
     | _TK_WHILE '(' E ')' BLOCO
     | _TK_DO BLOCO _TK_WHILE '(' E ')' ';'
@@ -223,6 +226,10 @@ F : _ID
     {  $$.v = $1.v; 
        $$.t = Tipo( "string" ); }
   | '(' E ')'  { $$ = $2; }
+  | _TK_NULL
+  {
+
+  }
   ;
   
 
