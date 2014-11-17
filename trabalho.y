@@ -75,11 +75,18 @@ S : VAR ';' S
     { $$.c = ""; }
   ;
 
-BLOCO : _TK_IB S _TK_FB
-      | VAR ';'
-      | ATR ';'
-      | CMD ';'
+BLOCO : _TK_IB BLOCO _TK_FB
+      | VAR ';' BLOCO
+      | ATR ';' BLOCO
+      | CMD ';' BLOCO
+      |
     ;
+
+BLOCOFUNC : TK_IB BLOCOFUNC _TK_FB
+          | VAR ';' BLOCOFUNC
+          | ATR ';' BLOCOFUNC
+          | CMD ';' BLOCOFUNC
+          | _TK_RETURN;
     
 CASO : _TK_CASE F ':' S _TK_BREAK ';' CASO
      | _TK_DEFAULT ':' S
@@ -117,9 +124,9 @@ PARAM : ',' TIPO _ID PARAM
         { $$.c = ""; }
       ;
       
-FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCO
+FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCOFUNC
          | _TK_VOID _ID '(' TIPO _ID PARAM ')' BLOCO
-         | TIPO _ID '(' ')' BLOCO
+         | TIPO _ID '(' ')' BLOCOFUNC
          | _TK_VOID _ID '(' ')' BLOCO
          ;
     
