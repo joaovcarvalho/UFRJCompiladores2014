@@ -133,11 +133,18 @@ CMD_IF : _IF E _THEN CMDS _END _IF
          { geraCodigoIfComElse( &$$, $2, $4, $6 ); }
        ;
 
-BLOCO : _TK_IB S _TK_FB
-      | VAR ';'
-      | ATR ';'
-      | CMD ';'
+BLOCO : _TK_IB BLOCO _TK_FB
+      | VAR ';' BLOCO
+      | ATR ';' BLOCO
+      | CMD ';' BLOCO
+      |
     ;
+
+BLOCOFUNC : TK_IB BLOCOFUNC _TK_FB
+          | VAR ';' BLOCOFUNC
+          | ATR ';' BLOCOFUNC
+          | CMD ';' BLOCOFUNC
+          | _TK_RETURN;
     
 CASO : _TK_CASE F ':' S _TK_BREAK ';' CASO
      | _TK_DEFAULT ':' S
@@ -166,6 +173,10 @@ DECLVAR : DECLVAR ',' _ID
         | TIPO _ID
           { insereVariavelTS( ts, $2.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $2 ); }
+    | TIPO '[' E ']' _ID
+      {
+
+      }
         ;
     
 PARAM : ',' TIPO _ID PARAM
@@ -173,9 +184,9 @@ PARAM : ',' TIPO _ID PARAM
         { $$.c = ""; }
       ;
       
-FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCO
+FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCOFUNC
          | _TK_VOID _ID '(' TIPO _ID PARAM ')' BLOCO
-         | TIPO _ID '(' ')' BLOCO
+         | TIPO _ID '(' ')' BLOCOFUNC
          | _TK_VOID _ID '(' ')' BLOCO
          ;
     
