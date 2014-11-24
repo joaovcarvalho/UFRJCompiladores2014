@@ -23,6 +23,8 @@ FBLOCO	Epilogo
 DEFAULT	Padrao
 RETURN  Restitua
 NULL    Inexistente
+MAIN 	Primacial
+COMMENT "//".*
 
 %%
 
@@ -30,6 +32,7 @@ NULL    Inexistente
 {DELIM}    	{}
 {COMMENT}	{}
 
+{MAIN}		{  yylval = Atributo( "", yytext ); return _TK_MAIN; }
 {IF}        {  yylval = Atributo( "", yytext ); return _TK_IF; }
 {ELSE}      {  yylval = Atributo( "", yytext ); return _TK_ELSE; }
 {FOR}       {  yylval = Atributo( "", yytext ); return _TK_FOR; }
@@ -74,7 +77,7 @@ NULL    Inexistente
 "<<" 		{  yylval = Atributo( yytext ); return _SHIFTL; }
 ">>" 		{  yylval = Atributo( yytext ); return _SHIFTR; }
 
-"Exclame"	{  yylval = Atributo( yytext ); return _PRINTF; }
+"Exclame"	{  yylval = Atributo( yytext ); return _COUT; }
 "Averigue"	{  yylval = Atributo( yytext ); return _SCANF; }
 
 {INT}      { yylval = Atributo( yytext ); return _INT; }
