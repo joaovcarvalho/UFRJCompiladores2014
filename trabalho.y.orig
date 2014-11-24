@@ -76,12 +76,18 @@ int yyparse();
 void yyerror(const char *);
 %}
 
+<<<<<<< HEAD
 %token _TK_IB _TK_FB
 %token _INT _CHAR _DOUBLE _BOOLEAN _FLOAT _STRING _ID 
 %token _TK_INT _TK_CHAR _TK_BOOLEAN _TK_DOUBLE _TK_FLOAT _TK_STRING  _TK_VOID _COUT _SHIFTL _SHIFTR
 %token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
 %token _PRINTF _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
+=======
+%token _CTE_INT _CTE_CHAR _CTE_DOUBLE _CTE_STRING _ID 
+%token _INT _CHAR _BOOL _DOUBLE _FLOAT _STRING  _COUT _SHIFTL
+%token _PROGRAM _VAR _BEGIN _END _FUNCTION _IF _THEN _ELSE
+>>>>>>> zimbrao/master
 
 %nonassoc '<' '>'
 %left '+' '-'
@@ -89,6 +95,31 @@ void yyerror(const char *);
 
 %% 
 
+<<<<<<< HEAD
+S1 : S { cout << geraDeclaracaoTemporarias() << $1.c << endl; }
+
+S : VAR ';' S
+    { $$.c = $1.c + $3.c; }
+  | ATR ';' S 
+    { $$.c = $1.c + $3.c; }
+  | CMD ';' S  
+    { $$.c = $1.c + $3.c; }
+  |
+    { $$.c = ""; }
+  ;
+
+BLOCO : _TK_IB S _TK_FB
+      | VAR ';'
+      | ATR ';'
+      | CMD ';'
+    ;
+    
+CASO : _TK_CASE F ':' S _TK_BREAK ';' CASO
+     | _TK_DEFAULT ':' S
+     |
+        { $$.c = ""; }
+    ;
+=======
 S1 : _PROGRAM _ID ';' DECLS MAIN '.' 
      { cout << "#include <stdio.h>\n"
                "#include <stdlib.h>\n"
@@ -132,18 +163,7 @@ CMD_IF : _IF E _THEN CMDS _END _IF
        | _IF E _THEN CMDS _ELSE CMDS _END _IF
          { geraCodigoIfComElse( &$$, $2, $4, $6 ); }
        ;
-
-BLOCO : _TK_IB S _TK_FB
-      | VAR ';'
-      | ATR ';'
-      | CMD ';'
-    ;
-    
-CASO : _TK_CASE F ':' S _TK_BREAK ';' CASO
-     | _TK_DEFAULT ':' S
-     |
-        { $$.c = ""; }
-    ;
+>>>>>>> zimbrao/master
   
 CMD : _TK_IF '('E')' BLOCO
     | _TK_IF '('E')' S _TK_ELSE BLOCO
@@ -381,6 +401,7 @@ void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo
 }
 
 void inicializaResultadoOperador() {
+<<<<<<< HEAD
   resultadoOperador["Indiviso+Indiviso"] = Tipo( "Indiviso" );
   resultadoOperador["Indiviso-Indiviso"] = Tipo( "Indiviso" );
   resultadoOperador["Indiviso*Indiviso"] = Tipo( "Indiviso" );
@@ -388,8 +409,17 @@ void inicializaResultadoOperador() {
   resultadoOperador["Indiviso<Indiviso"] = Tipo( "Booliano" );
   resultadoOperador["Diade+Indiviso"] = Tipo( "Diade" );
   resultadoOperador["Indiviso*Diade"] = Tipo( "Diade" );
+=======
+  resultadoOperador["string+string"] = Tipo( "string" );
+  resultadoOperador["int+int"] = Tipo( "int" );
+  resultadoOperador["int-int"] = Tipo( "int" );
+  resultadoOperador["int*int"] = Tipo( "int" );
+  resultadoOperador["int/int"] = Tipo( "int" );
+  resultadoOperador["int<int"] = Tipo( "bool" );
+  resultadoOperador["int>int"] = Tipo( "bool" );
   resultadoOperador["double+int"] = Tipo( "double" );
   resultadoOperador["int*double"] = Tipo( "double" );
+>>>>>>> zimbrao/master
   // TODO: completar essa lista... :(
 }
 

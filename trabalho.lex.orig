@@ -9,6 +9,7 @@ CHAR    \'[^\n]\'
 BOOLEAN (Veridico|Equivoco)
 ID      {LETRA}({LETRA}|{NUMERO})*
 STRING  \"[^"\n]*\"
+<<<<<<< HEAD
 IF      Na_hipotese_de
 ELSE    Salvo
 FOR     Seja_qual_for
@@ -23,6 +24,9 @@ FBLOCO	Epilogo
 DEFAULT	Padrao
 RETURN  Restitua
 NULL    Inexistente
+=======
+COMMENT "//".*
+>>>>>>> zimbrao/master
 
 %%
 
@@ -30,6 +34,7 @@ NULL    Inexistente
 {DELIM}    	{}
 {COMMENT}	{}
 
+<<<<<<< HEAD
 {IF}        { return _TK_IF; }
 {ELSE}      { return _TK_ELSE; }
 {FOR}       { return _TK_FOR; }
@@ -53,12 +58,6 @@ NULL    Inexistente
 "Booliano"	{  yylval = Atributo( "", yytext ); return _TK_BOOLEAN; }
 "Manifesto"	{  yylval = Atributo( "", yytext ); return _TK_STRING; }
 "Devoluto"      {  yylval = Atributo( "", yytext ); return _TK_VOID; }
-"END"		{ yylval = Atributo( yytext ); return _END; }
-"FUNCTION"	{ yylval = Atributo( yytext ); return _FUNCTION; }
-"IF"		{ yylval = Atributo( yytext ); return _IF; }
-"THEN"		{ yylval = Atributo( yytext ); return _THEN; }
-"ELSE"		{ yylval = Atributo( yytext ); return _ELSE; }
-
 
 "Mais"          { return _TK_MAIS; }
 "Menos"         { return _TK_MENOS; }
@@ -75,10 +74,19 @@ NULL    Inexistente
 "Inferior ou equivalente a" { return _TK_MAIORIGUAL; }
 "Equivalente a"             { return _TK_IGUAL; }
 "Divergente a"		    { return _TK_DIFERENTE; }
+=======
+"int"		{  yylval = Atributo( "", yytext ); return _INT; }
+"char"		{  yylval = Atributo( "", yytext ); return _CHAR; }
+"bool"		{  yylval = Atributo( "", yytext ); return _BOOL; }
+"double"	{  yylval = Atributo( "", yytext ); return _DOUBLE; }
+"float"		{  yylval = Atributo( "", yytext ); return _FLOAT; }
+"string"	{  yylval = Atributo( "", yytext ); return _STRING; }
+>>>>>>> zimbrao/master
 
 "<<" 		{  yylval = Atributo( yytext ); return _SHIFTL; }
 ">>" 		{  yylval = Atributo( yytext ); return _SHIFTR; }
 
+<<<<<<< HEAD
 "Exclame"	{  yylval = Atributo( yytext ); return _PRINTF; }
 "Averigue"	{  yylval = Atributo( yytext ); return _SCANF; }
 
@@ -89,7 +97,22 @@ NULL    Inexistente
 {BOOLEAN}  { yylval = Atributo( yytext ); return _BOOLEAN; }
 {STRING}   { yylval = Atributo( yytext ); return _STRING; }
 {ID}       { yylval = Atributo( yytext ); return _ID; }
+=======
+{INT}      	{ yylval = Atributo( yytext ); return _CTE_INT; }
+{DOUBLE}   	{ yylval = Atributo( yytext ); return _CTE_DOUBLE; }
+{STRING}   	{ yylval = Atributo( yytext ); return _CTE_STRING; }
+"PROGRAM"	{ yylval = Atributo( yytext ); return _PROGRAM; }
+"VAR"		{ yylval = Atributo( yytext ); return _VAR; }
+"BEGIN"		{ yylval = Atributo( yytext ); return _BEGIN; }
+"END"		{ yylval = Atributo( yytext ); return _END; }
+"FUNCTION"	{ yylval = Atributo( yytext ); return _FUNCTION; }
+"IF"		{ yylval = Atributo( yytext ); return _IF; }
+"THEN"		{ yylval = Atributo( yytext ); return _THEN; }
+"ELSE"		{ yylval = Atributo( yytext ); return _ELSE; }
 
+>>>>>>> zimbrao/master
+
+{ID}       { yylval = Atributo( yytext ); return _ID; }
 .          { yylval = Atributo( yytext ); return *yytext; }
 
 %%
