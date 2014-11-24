@@ -53,11 +53,6 @@ NULL    Inexistente
 "Booliano"	{  yylval = Atributo( "", yytext ); return _TK_BOOLEAN; }
 "Manifesto"	{  yylval = Atributo( "", yytext ); return _TK_STRING; }
 "Devoluto"      {  yylval = Atributo( "", yytext ); return _TK_VOID; }
-"END"		{ yylval = Atributo( yytext ); return _END; }
-"FUNCTION"	{ yylval = Atributo( yytext ); return _FUNCTION; }
-"IF"		{ yylval = Atributo( yytext ); return _IF; }
-"THEN"		{ yylval = Atributo( yytext ); return _THEN; }
-"ELSE"		{ yylval = Atributo( yytext ); return _ELSE; }
 
 
 "Mais"          {  yylval = Atributo( "", yytext ); return _TK_MAIS; }

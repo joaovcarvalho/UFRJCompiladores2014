@@ -89,7 +89,7 @@ void yyerror(const char *);
 
 %% 
 
-S1 : _PROGRAM _ID ';' DECLS MAIN '.' 
+S1 : DECLS MAIN
      { cout << "#include <stdio.h>\n"
                "#include <stdlib.h>\n"
                "#include <string.h>\n\n"
@@ -99,7 +99,7 @@ S1 : _PROGRAM _ID ';' DECLS MAIN '.'
 DECLS : VARGLOBAL DECLS 
         { $$ = Atributo();
           $$.c = $1.c + $2.c; }        
-      | FUNC DECLS
+      | FUNCTION DECLS
         { $$ = Atributo();
           $$.c = $1.c + $2.c; }    
       |
@@ -110,22 +110,22 @@ VARGLOBAL : _VAR DECLVAR ';'
             { $$ = $2; }
           ;
 
-FUNC : _FUNCTION
-     ; 
-
-MAIN : _BEGIN CMDS _END
+MAIN : _TK_IB CMDS _TK_FB
        { geraCodigoFuncaoPrincipal( &$$, $2 ); }
      ; 
 
-CMDS : ATR ';' CMDS 
-       { $$.c = $1.c + $3.c; }
-     | CMD_OUT ';' CMDS  
-       { $$.c = $1.c + $3.c; }
-     | CMD_IF ';' CMDS  
-       { $$.c = $1.c + $3.c; }
+CMDS  : CMD ";" CMDS
      |
        { $$ = Atributo(); }
      ;
+
+CMD : ATR ';' 
+       { $$.c = $1.c + $3.c; }
+     | CMD_OUT ';'
+       { $$.c = $1.c + $3.c; }
+     | CMD_IF ';'  
+       { $$.c = $1.c + $3.c; }
+
   
 CMD_IF : _IF E _THEN CMDS _END _IF
          { geraCodigoIfSemElse( &$$, $2, $4 ); }
