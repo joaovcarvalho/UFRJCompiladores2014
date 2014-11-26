@@ -76,12 +76,12 @@ int yyparse();
 void yyerror(const char *);
 %}
 
-%token _TK_IB _TK_FB
+%token _TK_IB _TK_FB _TK_MAIN CMD_OUT 
 %token _INT _CHAR _DOUBLE _BOOLEAN _FLOAT _STRING _ID 
 %token _TK_INT _TK_CHAR _TK_BOOLEAN _TK_DOUBLE _TK_FLOAT _TK_STRING  _TK_VOID _COUT _SHIFTL _SHIFTR
 %token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
-%token _PRINTF _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
+%token _COUT _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
 
 %nonassoc '<' '>'
 %left '+' '-'
@@ -93,7 +93,7 @@ S1 : DECLS MAIN
      { cout << "#include <stdio.h>\n"
                "#include <stdlib.h>\n"
                "#include <string.h>\n\n"
-            << $4.c << $5.c << endl; }
+            << $1.c << $2.c << endl; }
    ;
      
 DECLS : VARGLOBAL DECLS 
@@ -106,25 +106,26 @@ DECLS : VARGLOBAL DECLS
         { $$ = Atributo(); }
       ;
       
-VARGLOBAL : _VAR DECLVAR ';'
+VARGLOBAL : DECLVAR ';'
             { $$ = $2; }
           ;
 
-MAIN : _TK_IB CMDS _TK_FB
+MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
        { geraCodigoFuncaoPrincipal( &$$, $2 ); }
      ; 
 
 CMDS  : CMD ";" CMDS
+       { $$.c = $1.c + $3.c; }
      |
        { $$ = Atributo(); }
      ;
 
-CMD : ATR ';' 
-       { $$.c = $1.c + $3.c; }
+CMD : ATR ';'
+       { $$.c = $1.c; }
      | CMD_OUT ';'
-       { $$.c = $1.c + $3.c; }
+       { $$.c = $1.c; }
      | CMD_IF ';'  
-       { $$.c = $1.c + $3.c; }
+       { $$.c = $1.c; }
 
   
 CMD_IF : _IF E _THEN CMDS _END _IF
@@ -132,6 +133,20 @@ CMD_IF : _IF E _THEN CMDS _END _IF
        | _IF E _THEN CMDS _ELSE CMDS _END _IF
          { geraCodigoIfComElse( &$$, $2, $4, $6 ); }
        ;
+
+CMD_OUT : _COUT COUT_EXPR
+          { $$ = $2; }
+        ;
+
+COUT_EXPR : COUT_EXPR _SHIFTL E 
+            { if( $3.t.nome == "int" )
+                $$.c = $1.c + $3.c + 
+                       "  printf( \"%d\" , " + $3.v + " );\n";
+              else if( $3.t.nome == "string" )
+                $$.c = $1.c + $3.c + 
+                       "  printf( \"%s\" , " + $3.v + " );\n";}
+          | { $$ = Atributo(); }
+          ;
 
 BLOCO : _TK_IB BLOCO _TK_FB
       | VAR ';' BLOCO
@@ -153,19 +168,21 @@ CASO : _TK_CASE F ':' S _TK_BREAK ';' CASO
     ;
   
 CMD : _TK_IF '('E')' BLOCO
+          { geraCodigoIfSemElse( &$$, $2, $4 ); }
     | _TK_IF '('E')' S _TK_ELSE BLOCO
-    | _TK_IF '('E')' BLOCO _TK_ELSE BLOCO
-    | _TK_IF '('E')' BLOCO _TK_ELSE S
-    | _TK_IF '('E')' S _TK_ELSE S
-    | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E')' BLOCO
-    | _TK_WHILE '(' E ')' BLOCO
-    | _TK_DO BLOCO _TK_WHILE '(' E ')' ';'
-    | _TK_SWITCH '(' _ID ')' _TK_IB CASO _TK_FB
-        { if( !buscaVariavelTS( ts, $3.v, &$3.t ) ) {
-            erro( "Variavel nao declarada: " + $3.v );
-          }
-        }
-  ;
+          { geraCodigoIfSemElse( &$$, $2, $4 ); }
+//     | _TK_IF '('E')' BLOCO _TK_ELSE BLOCO
+//     | _TK_IF '('E')' BLOCO _TK_ELSE S
+//     | _TK_IF '('E')' S _TK_ELSE S
+//     | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E')' BLOCO
+//     | _TK_WHILE '(' E ')' BLOCO
+//     | _TK_DO BLOCO _TK_WHILE '(' E ')' ';'
+//     | _TK_SWITCH '(' _ID ')' _TK_IB CASO _TK_FB
+//         { if( !buscaVariavelTS( ts, $3.v, &$3.t ) ) {
+//             erro( "Variavel nao declarada: " + $3.v );
+//           }
+//         }
+//   ;
 
 DECLVAR : DECLVAR ',' _ID
           { insereVariavelTS( ts, $3.v, $1.t ); 
