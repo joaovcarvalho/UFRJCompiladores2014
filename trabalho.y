@@ -321,6 +321,20 @@ void geraCodigoIfComElse( Atributo* SS, const Atributo& expr,
           "  if_fim:\n";
 }
 
+void geraCodigoFor( Atributo* SS, const Atributo& init,
+                                  const Atributo& expr,
+                                  const Atributo& inc,
+                                  const Atributo& cmds){
+  *SS = Atributo();
+  SS->c = init.c +
+          " inicio_for: \n;" +
+          " if( " + expr.v + ") goto bloco;\n"+
+          " goto fim_for;\n"+
+          " bloco:\n" + cmds.c + "\n" + inc.c
+          " goto inicio_for;" +
+          " fim_for:\n"
+}
+
 void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr, 
                                         const Atributo& cmdsThen ) {
 }
