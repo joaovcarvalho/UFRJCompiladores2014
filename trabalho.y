@@ -288,8 +288,6 @@ E : E _TK_MAIS E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _SHIFTR E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
-  | E '>' E
-    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | F
   ;
 
@@ -458,7 +456,11 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
            "char " + id.v + "["+ toStr( MAX_STR ) +"];\n";   
   }
   else {
-    SS->c = tipo.c + 
+    if(tipo.t.nome == "boolean"){
+      SS->c = "int " + id.v + ";\n"; 
+    }
+    else
+      SS->c = tipo.c + 
             tipo.t.nome + " " + id.v + ";\n";
   }
 }
@@ -476,7 +478,7 @@ void geraCodigoFuncaoPrincipal( Atributo* SS, const Atributo& cmds ) {
 string geraDeclaracaoTemporarias() {
   string c;
   
-  for( int i = 0; i < n_var_temp["bool"]; i++ )
+  for( int i = 0; i < n_var_temp["boolean"]; i++ )
     c += "  int temp_bool_" + toStr( i + 1 ) + ";\n";
     
   for( int i = 0; i < n_var_temp["int"]; i++ )

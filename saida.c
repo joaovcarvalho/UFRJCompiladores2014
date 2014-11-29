@@ -4,9 +4,10 @@
 
 int ff;
 int gg;
-boolean c;
+int c;
 
 int main() {
+  int temp_bool_1;
   int temp_int_1;
   int temp_int_2;
   int temp_int_3;
