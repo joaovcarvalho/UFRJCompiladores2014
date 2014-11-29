@@ -134,7 +134,7 @@ CMDS  : CMD CMDS
      ;
 
 CMD : ATR ';'
-       { $$.c = $1.c; }
+       { $$.c = $1.c;  }
      | CMD_OUT ';'
        { $$.c = $1.c; }
      | CMD_IF ';'  
@@ -161,20 +161,20 @@ CMD_OUT : _COUT COUT_EXPR
           { $$ = $2; }
         ;
 
-COUT_EXPR : COUT_EXPR _SHIFTL E 
-            { if( $3.t.nome == "int" )
-                $$.c = $1.c + $3.c + 
-                       "  printf( \"%d\" , " + $3.v + " );\n";
-              else if( $3.t.nome == "string" )
-                $$.c = $1.c + $3.c + 
-                       "  printf( \"%s\" , " + $3.v + " );\n";}
+COUT_EXPR : COUT_EXPR E 
+            { if( $2.t.nome == "int" )
+                $$.c = $1.c + $2.c + 
+                       "  printf( \"%d\" , " + $2.v + " );\n";
+              else if( $2.t.nome == "string" )
+                $$.c = $1.c + $2.c + 
+                       "  printf( \"%s\" , " + $2.v + " );\n";}
           | { $$ = Atributo(); }
           ;
 
 COD :  BLOCO
        { $$.c = $1.c; }
        | CMD
-       { $$.c = $1.c; }
+       { $$.c = $1.c;}
        ;
 
 BLOCO : _TK_IB CMDS _TK_FB
@@ -377,13 +377,11 @@ void geraCodigoIfComElse( Atributo* SS, const Atributo& expr,
 void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr, 
                                         const Atributo& cmdsThen ) {
   *SS = Atributo();
-  string l_if_true = geraLabel( "if_true");
   string l_if_fim = geraLabel( "if_fim");
 
   SS->c = expr.c + 
-          "  if( " + expr.v + " ) goto " + l_if_true + ";\n" +
-          "  goto " + l_if_fim + ";\n" +
-          "  " + l_if_true + ":\n" + cmdsThen.c +
+          "  if( !" + expr.v + " ) goto " + l_if_fim + ";\n" +
+          cmdsThen.c +
           "  " + l_if_fim + ":\n";
 }
 
@@ -479,7 +477,7 @@ string geraDeclaracaoTemporarias() {
   string c;
   
   for( int i = 0; i < n_var_temp["boolean"]; i++ )
-    c += "  int temp_bool_" + toStr( i + 1 ) + ";\n";
+    c += "  int temp_boolean_" + toStr( i + 1 ) + ";\n";
     
   for( int i = 0; i < n_var_temp["int"]; i++ )
     c += "  int temp_int_" + toStr( i + 1 ) + ";\n";
@@ -495,7 +493,7 @@ string geraDeclaracaoTemporarias() {
     
   for( int i = 0; i < n_var_temp["string"]; i++ )
     c += "  char temp_string_" + toStr( i + 1 ) + "[" + toStr( MAX_STR )+ "];\n";
-    
+  
   return c;  
 }
 
