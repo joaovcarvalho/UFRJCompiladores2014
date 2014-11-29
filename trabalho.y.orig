@@ -652,16 +652,25 @@ void inicializaResultadoOperador() {
   
   //operadores lógicos : bool e bool
 <<<<<<< HEAD
+<<<<<<< HEAD
   resultadoOperador["Buliano&&Buliano"] = Tipo("Buliano");
   resultadoOperador["Buliano||Buliano"] = Tipo("Buliano");
 =======
   resultadoOperador["Buliano&Buliano"] = Tipo("Buliano");
   resultadoOperador["Buliano|Buliano"] = Tipo("Buliano");
 >>>>>>> cdf4e59a0bc146b81ead4ab99b61d7b17a812f15
+=======
+  resultadoOperador["Buliano&&Buliano"] = Tipo("Buliano");
+  resultadoOperador["Buliano||Buliano"] = Tipo("Buliano");
+>>>>>>> 0ea25e44117adbe3d43a7d8efbddaa00e2abca9c
   resultadoOperador["!Buliano"] = Tipo("Buliano");
   
   //operadores bit a bit
-  
+  resultadoOperador["Indiviso<<Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["Indiviso>>Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["Indiviso&&Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["Indiviso||Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["~Indiviso"] = Tipo("Indiviso");
 }
 
 #include "lex.yy.c"
