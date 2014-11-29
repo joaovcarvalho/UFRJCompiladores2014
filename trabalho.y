@@ -263,6 +263,7 @@ E : E _TK_MAIS E
   | E _TK_DIFERENTE E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | _TK_NOT E
+  	{ geraCodigoOperadorUnario( &$$, $1, $2); }
   | E '&' E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E '|' E
@@ -270,6 +271,7 @@ E : E _TK_MAIS E
   | E '^' E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | '~' E
+    { geraCodigoOperadorUnario( &$$, $1, $2); }
   | E _SHIFTL E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _SHIFTR E
@@ -484,20 +486,11 @@ string geraDeclaracaoTemporarias() {
 }
 
 void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 ) {
-  SS->t = tipoResultado( S1.t, S2.v, S3.t );
+  SS->t = tipoResultado( S1.v, S2.t );
   SS->v = geraTemp( SS->t );
 
-  if( SS->t.nome == "string" ) {
-    SS->c = S1.c + S3.c + 
-            "\n  strncpy( " + SS->v + ", " + S1.v + ", " + 
-                        toStr( MAX_STR - 1 ) + " );\n" +
-            "  strncat( " + SS->v + ", " + S3.v + ", " + 
-                        toStr( MAX_STR - 1 ) + " );\n" +
-            "  " + SS->v + "[" + toStr( MAX_STR - 1 ) + "] = 0;\n\n";    
-  }
-  else
-    SS->c = S1.c + S3.c + 
-            "  " + SS->v + " = " + S1.v + " " + S2.v + " " + S3.v + ";\n";
+  SS->c = S1.c + S2.c + 
+          "  " + SS->v + " = " + S1.v + " " + S2.v + ";\n";
 }
 
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 ) {
@@ -604,6 +597,10 @@ void inicializaResultadoOperador() {
   
   //concatenação
   resultadoOperador["Manifesto+Manifesto"] = Tipo( "Manifesto" );
+  resultadoOperador["Manifesto+Indiviso"] = Tipo("Manifesto");
+
+  //resto : inteiro e inteiro
+  resultadoOperador["Indiviso%Indiviso"] = Tipo("Indiviso");
   
   //operadores lógicos : bool e bool
   resultadoOperador["Buliano&&Buliano"] = Tipo("Buliano");
@@ -615,6 +612,7 @@ void inicializaResultadoOperador() {
   resultadoOperador["Indiviso>>Indiviso"] = Tipo("Indiviso");
   resultadoOperador["Indiviso&&Indiviso"] = Tipo("Indiviso");
   resultadoOperador["Indiviso||Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["Indiviso^Indiviso"] = Tipo("Indiviso");
   resultadoOperador["~Indiviso"] = Tipo("Indiviso");
 }
 
@@ -661,15 +659,21 @@ bool buscaVariavelTS( TS& ts, string nomeVar, Tipo* tipo ) {
     return false;
 }
 
-Tipo tipoResultado() {
+Tipo tipoResultado( string operador, Tipo a ) {
+  if( resultadoOperador.find( operador + a.nome ) == resultadoOperador.end() )
+    erro( "Operacao nao permitida: " + operador + a.nome );
 
+  return resultadoOperador[operador + a.nome];
 }
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b ) {
-  if( resultadoOperador.find( a.nome + operador + b.nome ) == resultadoOperador.end() )
-    erro( "Operacao nao permitida: " + a.nome + operador + b.nome );
+  if( resultadoOperador.find( a.nome + operador + b.nome ) != resultadoOperador.end() )
+    return resultadoOperador[a.nome + operador + b.nome];
 
-  return resultadoOperador[a.nome + operador + b.nome];
+  if( resultadoOperador.find( b.nome + operador + a.nome ) != resultadoOperador.end() )
+    return resultadoOperador[b.nome + operador + a.nome];
+    
+  erro( "Operacao nao permitida: " + a.nome + operador + b.nome );
 }
 
 int main( int argc, char* argv[] )
