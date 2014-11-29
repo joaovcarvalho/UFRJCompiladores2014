@@ -100,8 +100,8 @@ void yyerror(const char *);
 %token _TK_RETURN _TK_NULL
 
 %nonassoc '<' '>'
-%left '+' '-'
-%left '*' '/'
+%left _TK_MAIS _TK_MENOS
+%left _TK_VEZES _TK_DIVIDIDO
 
 %% 
 
