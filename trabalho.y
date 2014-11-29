@@ -165,10 +165,17 @@ COD :  BLOCO
        | CMD
        { $$.c = $1.c; }
        ;
+<<<<<<< HEAD
 
 BLOCO : _TK_IB CMDS _TK_FB
         ;
 
+=======
+
+BLOCO : _TK_IB CMDS _TK_FB
+        ;
+
+>>>>>>> cdf4e59a0bc146b81ead4ab99b61d7b17a812f15
 BLOCOFUNC : _TK_IB CMDS _TK_RETURN _ID _TK_FB 
           | _TK_RETURN;
     
@@ -397,12 +404,18 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
           " "+forFim+":\n";
 }
 
+<<<<<<< HEAD
 void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
                                    const Atributo& cmds){
+=======
+void geraCodigoWhile(Atributo* SS, const Atributo& condicao
+                                    const Atributo& cmds){
+>>>>>>> cdf4e59a0bc146b81ead4ab99b61d7b17a812f15
 
   if(condicao.t.nome != "bool")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
     
+<<<<<<< HEAD
  // *SS = Atributo();
  // string inicioWhile = geraLabel("while_inicio"), fimWhile = geraLabel("while_fim");
  // string valorCond = geraTemp("bool");
@@ -413,12 +426,36 @@ void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
  //        cmds.c +
  //        " goto "+inicioWhile+";"+
  //        " "+fimWhile+": \n";
+=======
+ *SS = Atributo();
+ string inicioWhile = geraLabel("while_inicio"),
+       fimWhile = geraLabel("while_fim");
+ string valorCond = geraTemp("bool");
+
+ SS->c = inicioWhile+": \n" +
+        valorCond + " = !" + condicao.v + ";\n"+
+        "if( "+ valorCond+" ) goto "+fimWhile+";\n"+
+        cmds.c +
+        " goto "+inicioWhile+";"+
+        " "+fimWhile+": \n";
+>>>>>>> cdf4e59a0bc146b81ead4ab99b61d7b17a812f15
 }
 
 void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds, 
                                      const Atributo& condicao){
   if(condicao.t.nome != "bool")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
+<<<<<<< HEAD
+=======
+    
+  *SS = Atributo();
+  string inicioDoWhile = geraLabel("dowhile_inicio")
+  string valorCond = geraTemp("bool");
+  
+  SS->c = inicioDoWhile + ": \n"+
+  cmds.c +
+  "if( "+valorCond+" ) goto" inicioDoWhile+";\n";
+>>>>>>> cdf4e59a0bc146b81ead4ab99b61d7b17a812f15
 }
 
 void geraCodigoSwitch( ){
@@ -475,6 +512,7 @@ string geraDeclaracaoTemporarias() {
 }
 
 void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 ) {
+<<<<<<< HEAD
   // SS->t = tipoResultado( S1.t, S2.v, S3.t );
   // SS->v = geraTemp( SS->t );
 
@@ -489,6 +527,22 @@ void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo&
   // else
   //   SS->c = S1.c + S3.c + 
   //           "  " + SS->v + " = " + S1.v + " " + S2.v + " " + S3.v + ";\n";
+=======
+  SS->t = tipoResultado( S1.t, S2.v, S3.t );
+  SS->v = geraTemp( SS->t );
+
+  if( SS->t.nome == "string" ) {
+    SS->c = S1.c + S3.c + 
+            "\n  strncpy( " + SS->v + ", " + S1.v + ", " + 
+                        toStr( MAX_STR - 1 ) + " );\n" +
+            "  strncat( " + SS->v + ", " + S3.v + ", " + 
+                        toStr( MAX_STR - 1 ) + " );\n" +
+            "  " + SS->v + "[" + toStr( MAX_STR - 1 ) + "] = 0;\n\n";    
+  }
+  else
+    SS->c = S1.c + S3.c + 
+            "  " + SS->v + " = " + S1.v + " " + S2.v + " " + S3.v + ";\n";
+>>>>>>> cdf4e59a0bc146b81ead4ab99b61d7b17a812f15
 }
 
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 ) {
@@ -597,8 +651,13 @@ void inicializaResultadoOperador() {
   resultadoOperador["Manifesto+Manifesto"] = Tipo( "Manifesto" );
   
   //operadores lógicos : bool e bool
+<<<<<<< HEAD
   resultadoOperador["Buliano&&Buliano"] = Tipo("Buliano");
   resultadoOperador["Buliano||Buliano"] = Tipo("Buliano");
+=======
+  resultadoOperador["Buliano&Buliano"] = Tipo("Buliano");
+  resultadoOperador["Buliano|Buliano"] = Tipo("Buliano");
+>>>>>>> cdf4e59a0bc146b81ead4ab99b61d7b17a812f15
   resultadoOperador["!Buliano"] = Tipo("Buliano");
   
   //operadores bit a bit
