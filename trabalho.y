@@ -189,19 +189,19 @@ CASOS : _TK_CASE F ':' CMDS _TK_BREAK ';' CASOS
         { $$.c = ""; }
     ;
   
-CMD_FOR:  | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E ')' COD
+CMD_FOR: _TK_FOR '('ATR ';' ATR ';' _TK_TQ E ')' COD
               {geraCodigoFor(&$$, $3, $8, $5, $10);}
           
           
-CMD_WHILE:  | _TK_WHILE '(' E ')' COD
+CMD_WHILE: _TK_WHILE '(' E ')' COD
               { geraCodigoWhile( &$$, $3, $5); }
             ;
             
-CMD_DOWHILE: | _TK_DO COD _TK_WHILE '(' E ')' ';'
+CMD_DOWHILE: _TK_DO COD _TK_WHILE '(' E ')' ';'
                {geraCodigoDoWhile(&$$, $2, $5) ;}
              ;
              
-CMD_SWITCH:  | _TK_SWITCH '(' _ID ')' _TK_IB CASOS _TK_FB
+CMD_SWITCH: _TK_SWITCH '(' _ID ')' _TK_IB CASOS _TK_FB
                     { if( !buscaVariavelTS( ts, $3.v, &$3.t ) ) {
                           erro( "Variavel nao declarada: " + $3.v );
                        }
@@ -246,6 +246,7 @@ ATR : _ID '=' E
     ;
 
 ARRAY : _ID '[' E ']'
+    ;
 
 E : E _TK_MAIS E   
     { cout << "Expressao: " << $1.v << " - " << $2.v << " - " << $3.v << endl; geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
