@@ -64,9 +64,18 @@ void geraCodigoIfComElse( Atributo* SS, const Atributo& expr,
                                         const Atributo& cmdsElse );
 void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr, 
                                         const Atributo& cmdsThen );
-
+void geraCodigoFor( Atributo* SS, const Atributo& init,
+                                  const Atributo& condicao,
+                                  const Atributo& passo,
+                                  const Atributo& cmds);
+void geraCodigoWhile(Atributo* SS, const Atributo& condicao
+                                    const Atributo& cmds);
+void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds, 
+                                     const Atributo& condicao);
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id );
+void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 )
+Tipo tipoResultado( string operador, Tipo a );
                                            
 // Usando const Atributo& não cria cópia desnecessária
 
@@ -388,7 +397,7 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
   *SS = Atributo();
   string  forFim = geraLabel("for_fim"),
           forCond = geraLabel("for_cond");
-  string valorCond = geraTemp("bool");
+  string valorCond = geraTemp(Tipo("bool"));
 
   SS->c = init.c +
           forCond+": \n" +
@@ -408,7 +417,7 @@ void geraCodigoWhile(Atributo* SS, const Atributo& condicao
  *SS = Atributo();
  string inicioWhile = geraLabel("while_inicio"),
        fimWhile = geraLabel("while_fim");
- string valorCond = geraTemp("bool");
+ string valorCond = geraTemp(Tipo("bool"));
 
  SS->c = inicioWhile+": \n" +
         valorCond + " = !" + condicao.v + ";\n"+
@@ -425,17 +434,17 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
     
   *SS = Atributo();
   string inicioDoWhile = geraLabel("dowhile_inicio")
-  string valorCond = geraTemp("bool");
+  string valorCond = geraTemp(Tipo("bool"));
   
   SS->c = inicioDoWhile + ": \n"+
   cmds.c +
   "if( "+valorCond+" ) goto" inicioDoWhile+";\n";
 }
 
-void geraCodigoSwitch( ){
+/*void geraCodigoSwitch( ){
     
     
-}
+}*/
 
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id ) {
