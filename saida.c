@@ -1,3 +1,4 @@
-syntax error
-Linha: 4
-Perto de: 'Prologo'
+Expressao: ff - Mais - gg
+Operacao nao permitida: IndivisoMaisIndiviso
+Linha: 9
+Perto de: ')'

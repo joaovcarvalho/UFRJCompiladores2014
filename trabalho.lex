@@ -52,7 +52,7 @@ COMMENT "//".*
 "Indiviso"	{  yylval = Atributo( "", yytext ); return _TK_INT; }
 "Diade"		{  yylval = Atributo( "", yytext ); return _TK_DOUBLE; }
 "Irresoluto"	{  yylval = Atributo( "", yytext ); return _TK_FLOAT; }
-"Grafema"	{  yylval = Atributo( yytext ); return _TK_CHAR; }
+"Grafema"	{  yylval = Atributo( "", yytext ); return _TK_CHAR; }
 "Booliano"	{  yylval = Atributo( "", yytext ); return _TK_BOOLEAN; }
 "Manifesto"	{  yylval = Atributo( "", yytext ); return _TK_STRING; }
 

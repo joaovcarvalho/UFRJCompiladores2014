@@ -1035,7 +1035,7 @@ YY_RULE_SETUP
 case 22:
 YY_RULE_SETUP
 #line 55 "trabalho.lex"
-{  yylval = Atributo( yytext ); return _TK_CHAR; }
+{  yylval = Atributo( "", yytext ); return _TK_CHAR; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP

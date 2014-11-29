@@ -1921,42 +1921,42 @@ yyreduce:
   case 74:
 #line 303 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
-       (yyval).t = Tipo( "int" ); }
+       (yyval).t = Tipo( "Indiviso" ); }
 #line 1926 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
 #line 306 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
-       (yyval).t = Tipo( "double" ); }
+       (yyval).t = Tipo( "Diade" ); }
 #line 1933 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
 #line 309 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
-       (yyval).t = Tipo( "float" ); }
+       (yyval).t = Tipo( "Irresoluto" ); }
 #line 1940 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
 #line 312 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
-       (yyval).t = Tipo( "char" ); }
+       (yyval).t = Tipo( "Grafema" ); }
 #line 1947 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
 #line 315 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
-       (yyval).t = Tipo( "bool" ); }
+       (yyval).t = Tipo( "Booliano" ); }
 #line 1954 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
 #line 318 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
-       (yyval).t = Tipo( "string" ); }
+       (yyval).t = Tipo( "Manifesto" ); }
 #line 1961 "y.tab.c" /* yacc.c:1646  */
     break;
 

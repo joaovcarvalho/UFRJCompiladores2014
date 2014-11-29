@@ -301,22 +301,22 @@ F : _ID
   } 
   | _INT 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "int" ); }
+       $$.t = Tipo( "Indiviso" ); }
   | _DOUBLE 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "double" ); }
+       $$.t = Tipo( "Diade" ); }
   | _FLOAT 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "float" ); }
+       $$.t = Tipo( "Irresoluto" ); }
   | _CHAR 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "char" ); }
+       $$.t = Tipo( "Grafema" ); }
   | _BOOLEAN 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "bool" ); }
+       $$.t = Tipo( "Booliano" ); }
   | _STRING 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "string" ); }
+       $$.t = Tipo( "Manifesto" ); }
   | '(' E ')'  { $$ = $2; }
   | _TK_NULL
   {
