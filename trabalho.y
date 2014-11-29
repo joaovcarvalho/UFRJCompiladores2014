@@ -47,7 +47,7 @@ TS ts; // Tabela de simbolos
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
 string geraTemp( Tipo tipo );
-string geraLabel( String cmd);
+string geraLabel( string cmd);
 string geraDeclaracaoTemporarias();
 
 void insereVariavelTS( TS&, string nomeVar, Tipo tipo );
@@ -67,7 +67,7 @@ void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr,
 
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id );
-                                           
+
 // Usando const Atributo& não cria cópia desnecessária
 
 #define YYSTYPE Atributo
@@ -77,12 +77,13 @@ int yyparse();
 void yyerror(const char *);
 %}
 
-%token _TK_IB _TK_FB _TK_MAIN CMD_OUT 
+%token _TK_IB _TK_FB _TK_MAIN _TK_VOID
 %token _INT _CHAR _DOUBLE _BOOLEAN _FLOAT _STRING _ID 
-%token _TK_INT _TK_CHAR _TK_BOOLEAN _TK_DOUBLE _TK_FLOAT _TK_STRING  _TK_VOID _COUT _SHIFTL _SHIFTR
-%token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT
+%token _TK_INT _TK_CHAR _TK_BOOLEAN _TK_DOUBLE _TK_FLOAT _TK_STRING
+%token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT _SHIFTL _SHIFTR
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
 %token _COUT _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
+%token _TK_RETURN _TK_NULL
 
 %nonassoc '<' '>'
 %left '+' '-'
@@ -115,8 +116,8 @@ MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
        { geraCodigoFuncaoPrincipal( &$$, $2 ); }
      ; 
 
-CMDS  : CMD ";" CMDS
-       { $$.c = $1.c + $3.c; }
+CMDS  : CMD CMDS
+       { $$.c = $1.c + $2.c; }
      |
        { $$ = Atributo(); }
      ;
@@ -127,13 +128,23 @@ CMD : ATR ';'
        { $$.c = $1.c; }
      | CMD_IF ';'  
        { $$.c = $1.c; }
+     | CMD_FOR ';'
+       { $$.c = $1.c; }
+     | CMD_WHILE ';'
+       { $$.c = $1.c; }
+     | CMD_DOWHILE ';'
+       { $$.c = $1.c; }
+     | CMD_SWITCH ';'
+       { $$.c = $1.c; }
+     | DECLVAR ';'
+       { $$.c = $1.c; }
 
   
-CMD_IF : _IF E _THEN CMDS _END _IF
-         { geraCodigoIfSemElse( &$$, $2, $4 ); }
-       | _IF E _THEN CMDS _ELSE CMDS _END _IF
-         { geraCodigoIfComElse( &$$, $2, $4, $6 ); }
-       ;
+CMD_IF : _TK_IF '('E')' COD
+           { geraCodigoIfSemElse( &$$, $3, $5 ); }
+        | _TK_IF '('E')' COD _TK_ELSE COD
+           { geraCodigoIfComElse( &$$, $3, $5, $7 ); }
+        ;
 
 CMD_OUT : _COUT COUT_EXPR
           { $$ = $2; }
@@ -149,42 +160,45 @@ COUT_EXPR : COUT_EXPR _SHIFTL E
           | { $$ = Atributo(); }
           ;
 
-BLOCO : _TK_IB BLOCO _TK_FB
-      | VAR ';' BLOCO
-      | ATR ';' BLOCO
-      | CMD ';' BLOCO
-      |
-    ;
+COD :  BLOCO
+       { $$.c = $1.c; }
+       | CMD
+       { $$.c = $1.c; }
+       ;
 
-BLOCOFUNC : TK_IB BLOCOFUNC _TK_FB
-          | VAR ';' BLOCOFUNC
-          | ATR ';' BLOCOFUNC
-          | CMD ';' BLOCOFUNC
+BLOCO : _TK_IB CMDS _TK_FB
+        ;
+
+BLOCOFUNC : _TK_IB CMDS _TK_RETURN _ID _TK_FB 
           | _TK_RETURN;
     
-CASO : _TK_CASE F ':' S _TK_BREAK ';' CASO
-     | _TK_DEFAULT ':' S
-     |
+CASOS : _TK_CASE F ':' CMDS _TK_BREAK ';' CASOS
+      | _TK_DEFAULT ':' CMDS
+      |
         { $$.c = ""; }
     ;
   
-CMD : _TK_IF '('E')' BLOCO
-          { geraCodigoIfSemElse( &$$, $2, $4 ); }
-    | _TK_IF '('E')' S _TK_ELSE BLOCO
-          { geraCodigoIfSemElse( &$$, $2, $4 ); }
-//     | _TK_IF '('E')' BLOCO _TK_ELSE BLOCO
-//     | _TK_IF '('E')' BLOCO _TK_ELSE S
-//     | _TK_IF '('E')' S _TK_ELSE S
-//     | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E')' BLOCO
-//     | _TK_WHILE '(' E ')' BLOCO
-//     | _TK_DO BLOCO _TK_WHILE '(' E ')' ';'
-//     | _TK_SWITCH '(' _ID ')' _TK_IB CASO _TK_FB
-//         { if( !buscaVariavelTS( ts, $3.v, &$3.t ) ) {
-//             erro( "Variavel nao declarada: " + $3.v );
-//           }
-//         }
-//   ;
-
+CMD_FOR:  | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E ')' COD
+              {geraCodigoFor(&$$, $3, $8, $5, $10);}
+          
+          
+CMD_WHILE:  | _TK_WHILE '(' E ')' COD
+              { geraCodigoWhile( &$$, $3, $5); }
+            ;
+            
+CMD_DOWHILE: | _TK_DO COD _TK_WHILE '(' E ')' ';'
+               {geraCodigoDoWhile(&$$, $2, $5) ;}
+             ;
+             
+CMD_SWITCH:  | _TK_SWITCH '(' _ID ')' _TK_IB CASOS _TK_FB
+                    { if( !buscaVariavelTS( ts, $3.v, &$3.t ) ) {
+                          erro( "Variavel nao declarada: " + $3.v );
+                       }
+                      else
+                        geraCodigoSwitch(&$$, $3, $6);  
+                    }
+            ;
+            
 DECLVAR : DECLVAR ',' _ID
           { insereVariavelTS( ts, $3.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $3 ); }
@@ -348,6 +362,19 @@ void geraCodigoIfComElse( Atributo* SS, const Atributo& expr,
           "  "+l_if_fim+":\n";
 }
 
+void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr, 
+                                        const Atributo& cmdsThen ) {
+  *SS = Atributo();
+  string l_if_true = geraLabel( "if_true");
+  string l_if_fim = geraLabel( "if_fim");
+
+  SS->c = expr.c + 
+          "  if( " + expr.v + " ) goto " + l_if_true + ";\n" +
+          "  goto " + l_if_fim + ";\n" +
+          "  " + l_if_true + ":\n" + cmdsThen.c +
+          "  " + l_if_fim + ":\n";
+}
+
 void geraCodigoFor( Atributo* SS, const Atributo& init,
                                   const Atributo& condicao,
                                   const Atributo& passo,
@@ -357,23 +384,47 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
 
   *SS = Atributo();
-  string  forFim = geraLabel("for_fim"),
-          forCond = geraLabel("for_cond");
-  string valorCond = geraTemp("bool");
+  string forFim = geraLabel("for_fim");
+  string forCond = geraLabel("for_cond");
+  string valorCond = geraTemp( Tipo("bool"));
 
-  SS->c = init.c +
-          forCond+": \n" +
+  SS->c = init.c 
+          +forCond+": \n" +
           valorCond + " = !" + condicao.v + ";\n"+
           " if( " + valorCond + " ) goto "+forFim+";\n"+
-          cmds.c + "\n" + passo.c
+          cmds.c + "\n" + passo.c+
           " goto "+forCond+";" +
-          " "+forFim+":\n"
+          " "+forFim+":\n";
 }
 
-void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr, 
-                                        const Atributo& cmdsThen ) {
+void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
+                                   const Atributo& cmds){
+
+  if(condicao.t.nome != "bool")
+    erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
+    
+ // *SS = Atributo();
+ // string inicioWhile = geraLabel("while_inicio"), fimWhile = geraLabel("while_fim");
+ // string valorCond = geraTemp("bool");
+
+ // SS->c = inicioWhile+": \n" +
+ //        valorCond + " = !" + condicao.v + ";\n"+
+ //        "if( "+ valorCond+" ) goto "+fimWhile+";\n"+
+ //        cmds.c +
+ //        " goto "+inicioWhile+";"+
+ //        " "+fimWhile+": \n";
 }
 
+void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds, 
+                                     const Atributo& condicao){
+  if(condicao.t.nome != "bool")
+    erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
+}
+
+void geraCodigoSwitch( ){
+    
+    
+}
 
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id ) {
@@ -423,6 +474,23 @@ string geraDeclaracaoTemporarias() {
   return c;  
 }
 
+void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 ) {
+  // SS->t = tipoResultado( S1.t, S2.v, S3.t );
+  // SS->v = geraTemp( SS->t );
+
+  // if( SS->t.nome == "string" ) {
+  //   SS->c = S1.c + S3.c + 
+  //           "\n  strncpy( " + SS->v + ", " + S1.v + ", " + 
+  //                       toStr( MAX_STR - 1 ) + " );\n" +
+  //           "  strncat( " + SS->v + ", " + S3.v + ", " + 
+  //                       toStr( MAX_STR - 1 ) + " );\n" +
+  //           "  " + SS->v + "[" + toStr( MAX_STR - 1 ) + "] = 0;\n\n";    
+  // }
+  // else
+  //   SS->c = S1.c + S3.c + 
+  //           "  " + SS->v + " = " + S1.v + " " + S2.v + " " + S3.v + ";\n";
+}
+
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 ) {
   SS->t = tipoResultado( S1.t, S2.v, S3.t );
   SS->v = geraTemp( SS->t );
@@ -441,16 +509,100 @@ void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo
 }
 
 void inicializaResultadoOperador() {
+  //op basicas: inteiro e inteiro
   resultadoOperador["Indiviso+Indiviso"] = Tipo( "Indiviso" );
   resultadoOperador["Indiviso-Indiviso"] = Tipo( "Indiviso" );
   resultadoOperador["Indiviso*Indiviso"] = Tipo( "Indiviso" );
   resultadoOperador["Indiviso/Indiviso"] = Tipo( "Indiviso" );
-  resultadoOperador["Indiviso<Indiviso"] = Tipo( "Booliano" );
-  resultadoOperador["Diade+Indiviso"] = Tipo( "Diade" );
-  resultadoOperador["Indiviso*Diade"] = Tipo( "Diade" );
-  resultadoOperador["double+int"] = Tipo( "double" );
-  resultadoOperador["int*double"] = Tipo( "double" );
-  // TODO: completar essa lista... :(
+  
+  //op basicas: double e double
+  resultadoOperador["Diade+Diade"] = Tipo("Diade");
+  resultadoOperador["Diade-Diade"] = Tipo("Diade");
+  resultadoOperador["Diade*Diade"] = Tipo("Diade");
+  resultadoOperador["Diade/Diade"] = Tipo("Diade");
+  
+  //op basicas: float e float
+  resultadoOperador["Irresoluto+Irresoluto"] = Tipo("Irresoluto");
+  resultadoOperador["Irresoluto-Irresoluto"] = Tipo("Irresoluto");
+  resultadoOperador["Irresoluto*Irresoluto"] = Tipo("Irresoluto");
+  resultadoOperador["Irresoluto/Irresoluto"] = Tipo("Irresoluto");
+  
+  //op basicas: inteiro e double
+  resultadoOperador["Indiviso+Diade"] = Tipo("Diade");
+  resultadoOperador["Indiviso-Diade"] = Tipo("Diade");
+  resultadoOperador["Indiviso*Diade"] = Tipo("Diade");
+  resultadoOperador["Indiviso/Diade"] = Tipo("Diade");
+
+  //op basicas: inteiro e float
+  resultadoOperador["Indiviso+Irresoluto"] = Tipo("Irresoluto");
+  resultadoOperador["Indiviso-Irresoluto"] = Tipo("Irresoluto");
+  resultadoOperador["Indiviso*Irresoluto"] = Tipo("Irresoluto");
+  resultadoOperador["Indiviso/Irresoluto"] = Tipo("Irresoluto");
+  
+  //op basicas: double e float
+  resultadoOperador["Diade+Irresoluto"] = Tipo("Diade");
+  resultadoOperador["Diade-Irresoluto"] = Tipo("Diade");
+  resultadoOperador["Diade*Irresoluto"] = Tipo("Diade");
+  resultadoOperador["Diade/Irresoluto"] = Tipo("Diade");
+  
+  // comparações : inteiro e inteiro
+  resultadoOperador["Indiviso<Indiviso"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso<=Indiviso"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso>Indiviso"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso>=Indiviso"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso==Indiviso"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso!=Indiviso"] = Tipo( "Buliano" );
+  
+  //comparações: double e double
+  resultadoOperador["Diade<Diade"] = Tipo( "Buluano" );
+  resultadoOperador["Diade<=Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Diade>Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Diade>=Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Diade==Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Diade!=Diade"] = Tipo( "Buliano" );
+  
+  //comparações float e float
+  resultadoOperador["Irresoluto<Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Irresoluto<=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Irresoluto>Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Irresoluto>=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Irresoluto==Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Irresoluto!=Irresoluto"] = Tipo( "Buliano" );
+  
+  //comparações : inteiro e double
+  resultadoOperador["Indiviso<Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso<=Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso>Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso>=Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso==Diade"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso!=Diade"] = Tipo( "Buliano" );
+  
+  //comparações : inteiro e float
+  resultadoOperador["Indiviso<Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso<=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso>Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso>=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso==Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Indiviso!=Irresoluto"] = Tipo( "Buliano" );
+ 
+  //comparações : double e float
+  resultadoOperador["Diade<Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Diade<=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Diade>Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Diade>=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Diade==Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["Diade!=Irresoluto"] = Tipo( "Buliano" );
+  
+  //concatenação
+  resultadoOperador["Manifesto+Manifesto"] = Tipo( "Manifesto" );
+  
+  //operadores lógicos : bool e bool
+  resultadoOperador["Buliano&&Buliano"] = Tipo("Buliano");
+  resultadoOperador["Buliano||Buliano"] = Tipo("Buliano");
+  resultadoOperador["!Buliano"] = Tipo("Buliano");
+  
+  //operadores bit a bit
+  
 }
 
 #include "lex.yy.c"
@@ -494,6 +646,10 @@ bool buscaVariavelTS( TS& ts, string nomeVar, Tipo* tipo ) {
   }
   else
     return false;
+}
+
+Tipo tipoResultado() {
+
 }
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b ) {
