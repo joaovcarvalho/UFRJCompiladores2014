@@ -47,6 +47,7 @@ TS ts; // Tabela de simbolos
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
 string geraTemp( Tipo tipo );
+string geraLabel( String cmd);
 string geraDeclaracaoTemporarias();
 
 void insereVariavelTS( TS&, string nomeVar, Tipo tipo );
@@ -301,6 +302,11 @@ F : _ID
 int nlinha = 1;
 map<string,int> n_var_temp;
 map<string,Tipo> resultadoOperador;
+map<string, int> label;
+
+string geraLabel(string cmd){
+  return "l_"+cmd+"_"+toStr( ++label[cmd] );
+}
 
 void geraCodigoAtribuicao( Atributo* SS, Atributo& lvalue, 
                                          const Atributo& rvalue ) {
@@ -329,27 +335,39 @@ void geraCodigoIfComElse( Atributo* SS, const Atributo& expr,
                                         const Atributo& cmdsThen,
                                         const Atributo& cmdsElse ) {
   *SS = Atributo();
+  string l_if_true = geraLabel( "if_true");
+  string l_if_false = geraLabel( "if_false");
+  string l_if_fim = geraLabel( "if_fim");
+
   SS->c = expr.c + 
-          "  if( " + expr.v + " ) goto if_true;\n" +
-          "  goto if_false;\n" +
-          "  if_true:\n" + cmdsThen.c +
-          "  goto if_fim;\n" +
-          "  if_false:\n" + cmdsElse.c +
-          "  if_fim:\n";
+          "  if( " + expr.v + " ) goto "+ l_if_true + ";\n" +
+          "  goto "+ l_if_false +";\n" +
+          "  "+l_if_true+":\n" + cmdsThen.c +
+          "  goto "+l_if_fim+";\n" +
+          "  "+ l_if_false +":\n" + cmdsElse.c +
+          "  "+l_if_fim+":\n";
 }
 
 void geraCodigoFor( Atributo* SS, const Atributo& init,
-                                  const Atributo& expr,
-                                  const Atributo& inc,
+                                  const Atributo& condicao,
+                                  const Atributo& passo,
                                   const Atributo& cmds){
+
+  if(condicao.t.nome != "bool")
+    erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
+
   *SS = Atributo();
+  string  forFim = geraLabel("for_fim"),
+          forCond = geraLabel("for_cond");
+  string valorCond = geraTemp("bool");
+
   SS->c = init.c +
-          " inicio_for: \n;" +
-          " if( " + expr.v + ") goto bloco;\n"+
-          " goto fim_for;\n"+
-          " bloco:\n" + cmds.c + "\n" + inc.c
-          " goto inicio_for;" +
-          " fim_for:\n"
+          forCond+": \n" +
+          valorCond + " = !" + condicao.v + ";\n"+
+          " if( " + valorCond + " ) goto "+forFim+";\n"+
+          cmds.c + "\n" + passo.c
+          " goto "+forCond+";" +
+          " "+forFim+":\n"
 }
 
 void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr, 
