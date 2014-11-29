@@ -120,11 +120,11 @@ DECLS : VARGLOBAL DECLS
       ;
       
 VARGLOBAL : DECLVAR ';'
-            { $$ = $2; }
+            { $$ = $1; }
           ;
 
 MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
-       { geraCodigoFuncaoPrincipal( &$$, $2 ); }
+       { geraCodigoFuncaoPrincipal( &$$, $3 ); }
      ; 
 
 CMDS  : CMD CMDS
@@ -249,7 +249,7 @@ ARRAY : _ID '[' E ']'
     ;
 
 E : E _TK_MAIS E   
-    { cout << "Expressao: " << $1.v << " - " << $2.v << " - " << $3.v << endl; geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+    { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _TK_MENOS E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _TK_VEZES E
@@ -301,22 +301,22 @@ F : _ID
   } 
   | _INT 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "Indiviso" ); }
+       $$.t = Tipo( "int" ); }
   | _DOUBLE 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "Diade" ); }
+       $$.t = Tipo( "double" ); }
   | _FLOAT 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "Irresoluto" ); }
+       $$.t = Tipo( "float" ); }
   | _CHAR 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "Grafema" ); }
+       $$.t = Tipo( "char" ); }
   | _BOOLEAN 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "Booliano" ); }
+       $$.t = Tipo( "boolean" ); }
   | _STRING 
     {  $$.v = $1.v; 
-       $$.t = Tipo( "Manifesto" ); }
+       $$.t = Tipo( "string" ); }
   | '(' E ')'  { $$ = $2; }
   | _TK_NULL
   {
@@ -524,108 +524,108 @@ void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo
 
 void inicializaResultadoOperador() {
   //op basicas: inteiro e inteiro
-  resultadoOperador["Indiviso+Indiviso"] = Tipo( "Indiviso" );
-  resultadoOperador["Indiviso-Indiviso"] = Tipo( "Indiviso" );
-  resultadoOperador["Indiviso*Indiviso"] = Tipo( "Indiviso" );
-  resultadoOperador["Indiviso/Indiviso"] = Tipo( "Indiviso" );
+  resultadoOperador["int+int"] = Tipo( "int" );
+  resultadoOperador["int-int"] = Tipo( "int" );
+  resultadoOperador["int*int"] = Tipo( "int" );
+  resultadoOperador["int/int"] = Tipo( "int" );
   
   //op basicas: double e double
-  resultadoOperador["Diade+Diade"] = Tipo("Diade");
-  resultadoOperador["Diade-Diade"] = Tipo("Diade");
-  resultadoOperador["Diade*Diade"] = Tipo("Diade");
-  resultadoOperador["Diade/Diade"] = Tipo("Diade");
+  resultadoOperador["double+double"] = Tipo("double");
+  resultadoOperador["double-double"] = Tipo("double");
+  resultadoOperador["double*double"] = Tipo("double");
+  resultadoOperador["double/double"] = Tipo("double");
   
   //op basicas: float e float
-  resultadoOperador["Irresoluto+Irresoluto"] = Tipo("Irresoluto");
-  resultadoOperador["Irresoluto-Irresoluto"] = Tipo("Irresoluto");
-  resultadoOperador["Irresoluto*Irresoluto"] = Tipo("Irresoluto");
-  resultadoOperador["Irresoluto/Irresoluto"] = Tipo("Irresoluto");
+  resultadoOperador["float+float"] = Tipo("float");
+  resultadoOperador["float-float"] = Tipo("float");
+  resultadoOperador["float*float"] = Tipo("float");
+  resultadoOperador["float/float"] = Tipo("float");
   
   //op basicas: inteiro e double
-  resultadoOperador["Indiviso+Diade"] = Tipo("Diade");
-  resultadoOperador["Indiviso-Diade"] = Tipo("Diade");
-  resultadoOperador["Indiviso*Diade"] = Tipo("Diade");
-  resultadoOperador["Indiviso/Diade"] = Tipo("Diade");
+  resultadoOperador["int+double"] = Tipo("double");
+  resultadoOperador["int-double"] = Tipo("double");
+  resultadoOperador["int*double"] = Tipo("double");
+  resultadoOperador["int/double"] = Tipo("double");
 
   //op basicas: inteiro e float
-  resultadoOperador["Indiviso+Irresoluto"] = Tipo("Irresoluto");
-  resultadoOperador["Indiviso-Irresoluto"] = Tipo("Irresoluto");
-  resultadoOperador["Indiviso*Irresoluto"] = Tipo("Irresoluto");
-  resultadoOperador["Indiviso/Irresoluto"] = Tipo("Irresoluto");
+  resultadoOperador["int+float"] = Tipo("float");
+  resultadoOperador["int-float"] = Tipo("float");
+  resultadoOperador["int*float"] = Tipo("float");
+  resultadoOperador["int/float"] = Tipo("float");
   
   //op basicas: double e float
-  resultadoOperador["Diade+Irresoluto"] = Tipo("Diade");
-  resultadoOperador["Diade-Irresoluto"] = Tipo("Diade");
-  resultadoOperador["Diade*Irresoluto"] = Tipo("Diade");
-  resultadoOperador["Diade/Irresoluto"] = Tipo("Diade");
+  resultadoOperador["double+float"] = Tipo("double");
+  resultadoOperador["double-float"] = Tipo("double");
+  resultadoOperador["double*float"] = Tipo("double");
+  resultadoOperador["double/float"] = Tipo("double");
   
   // comparações : inteiro e inteiro
-  resultadoOperador["Indiviso<Indiviso"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso<=Indiviso"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso>Indiviso"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso>=Indiviso"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso==Indiviso"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso!=Indiviso"] = Tipo( "Buliano" );
+  resultadoOperador["int<int"] = Tipo( "boolean" );
+  resultadoOperador["int<=int"] = Tipo( "boolean" );
+  resultadoOperador["int>int"] = Tipo( "boolean" );
+  resultadoOperador["int>=int"] = Tipo( "boolean" );
+  resultadoOperador["int==int"] = Tipo( "boolean" );
+  resultadoOperador["int!=int"] = Tipo( "boolean" );
   
   //comparações: double e double
-  resultadoOperador["Diade<Diade"] = Tipo( "Buluano" );
-  resultadoOperador["Diade<=Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Diade>Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Diade>=Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Diade==Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Diade!=Diade"] = Tipo( "Buliano" );
+  resultadoOperador["double<double"] = Tipo( "Buluano" );
+  resultadoOperador["double<=double"] = Tipo( "boolean" );
+  resultadoOperador["double>double"] = Tipo( "boolean" );
+  resultadoOperador["double>=double"] = Tipo( "boolean" );
+  resultadoOperador["double==double"] = Tipo( "boolean" );
+  resultadoOperador["double!=double"] = Tipo( "boolean" );
   
   //comparações float e float
-  resultadoOperador["Irresoluto<Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Irresoluto<=Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Irresoluto>Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Irresoluto>=Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Irresoluto==Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Irresoluto!=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["float<float"] = Tipo( "boolean" );
+  resultadoOperador["float<=float"] = Tipo( "boolean" );
+  resultadoOperador["float>float"] = Tipo( "boolean" );
+  resultadoOperador["float>=float"] = Tipo( "boolean" );
+  resultadoOperador["float==float"] = Tipo( "boolean" );
+  resultadoOperador["float!=float"] = Tipo( "boolean" );
   
   //comparações : inteiro e double
-  resultadoOperador["Indiviso<Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso<=Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso>Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso>=Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso==Diade"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso!=Diade"] = Tipo( "Buliano" );
+  resultadoOperador["int<double"] = Tipo( "boolean" );
+  resultadoOperador["int<=double"] = Tipo( "boolean" );
+  resultadoOperador["int>double"] = Tipo( "boolean" );
+  resultadoOperador["int>=double"] = Tipo( "boolean" );
+  resultadoOperador["int==double"] = Tipo( "boolean" );
+  resultadoOperador["int!=double"] = Tipo( "boolean" );
   
   //comparações : inteiro e float
-  resultadoOperador["Indiviso<Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso<=Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso>Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso>=Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso==Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Indiviso!=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["int<float"] = Tipo( "boolean" );
+  resultadoOperador["int<=float"] = Tipo( "boolean" );
+  resultadoOperador["int>float"] = Tipo( "boolean" );
+  resultadoOperador["int>=float"] = Tipo( "boolean" );
+  resultadoOperador["int==float"] = Tipo( "boolean" );
+  resultadoOperador["int!=float"] = Tipo( "boolean" );
  
   //comparações : double e float
-  resultadoOperador["Diade<Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Diade<=Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Diade>Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Diade>=Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Diade==Irresoluto"] = Tipo( "Buliano" );
-  resultadoOperador["Diade!=Irresoluto"] = Tipo( "Buliano" );
+  resultadoOperador["double<float"] = Tipo( "boolean" );
+  resultadoOperador["double<=float"] = Tipo( "boolean" );
+  resultadoOperador["double>float"] = Tipo( "boolean" );
+  resultadoOperador["double>=float"] = Tipo( "boolean" );
+  resultadoOperador["double==float"] = Tipo( "boolean" );
+  resultadoOperador["double!=float"] = Tipo( "boolean" );
   
   //concatenação
-  resultadoOperador["Manifesto+Manifesto"] = Tipo( "Manifesto" );
-  resultadoOperador["Manifesto+Indiviso"] = Tipo("Manifesto");
+  resultadoOperador["string+string"] = Tipo( "string" );
+  resultadoOperador["string+int"] = Tipo("string");
 
   //resto : inteiro e inteiro
-  resultadoOperador["Indiviso%Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["int%int"] = Tipo("int");
   
   //operadores lógicos : bool e bool
-  resultadoOperador["Buliano&&Buliano"] = Tipo("Buliano");
-  resultadoOperador["Buliano||Buliano"] = Tipo("Buliano");
-  resultadoOperador["!Buliano"] = Tipo("Buliano");
+  resultadoOperador["boolean&&boolean"] = Tipo("boolean");
+  resultadoOperador["boolean||boolean"] = Tipo("boolean");
+  resultadoOperador["!boolean"] = Tipo("boolean");
   
   //operadores bit a bit
-  resultadoOperador["Indiviso<<Indiviso"] = Tipo("Indiviso");
-  resultadoOperador["Indiviso>>Indiviso"] = Tipo("Indiviso");
-  resultadoOperador["Indiviso&&Indiviso"] = Tipo("Indiviso");
-  resultadoOperador["Indiviso||Indiviso"] = Tipo("Indiviso");
-  resultadoOperador["Indiviso^Indiviso"] = Tipo("Indiviso");
-  resultadoOperador["~Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["int<<int"] = Tipo("int");
+  resultadoOperador["int>>int"] = Tipo("int");
+  resultadoOperador["int&&int"] = Tipo("int");
+  resultadoOperador["int||int"] = Tipo("int");
+  resultadoOperador["int^int"] = Tipo("int");
+  resultadoOperador["~int"] = Tipo("int");
 }
 
 #include "lex.yy.c"

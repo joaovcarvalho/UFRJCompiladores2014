@@ -49,30 +49,29 @@ COMMENT "//".*
 {RETURN}  {  yylval = Atributo( yytext ); return _TK_RETURN;}
 {NULL}    {  yylval = Atributo( yytext ); return _TK_NULL;}
 
-"Indiviso"	{  yylval = Atributo( "", yytext ); return _TK_INT; }
-"Diade"		{  yylval = Atributo( "", yytext ); return _TK_DOUBLE; }
-"Irresoluto"	{  yylval = Atributo( "", yytext ); return _TK_FLOAT; }
-"Grafema"	{  yylval = Atributo( "", yytext ); return _TK_CHAR; }
-"Booliano"	{  yylval = Atributo( "", yytext ); return _TK_BOOLEAN; }
-"Manifesto"	{  yylval = Atributo( "", yytext ); return _TK_STRING; }
-
+"Indiviso"	{  yylval = Atributo( "", "int" ); return _TK_INT; }
+"Diade"		{  yylval = Atributo( "", "double" ); return _TK_DOUBLE; }
+"Irresoluto"	{  yylval = Atributo( "", "float" ); return _TK_FLOAT; }
+"Grafema"	{  yylval = Atributo( "", "char" ); return _TK_CHAR; }
+"Booliano"	{  yylval = Atributo( "", "boolean" ); return _TK_BOOLEAN; }
+"Manifesto"	{  yylval = Atributo( "", "string" ); return _TK_STRING; }
 
 "Devoluto"      {  yylval = Atributo( yytext ); return _TK_VOID; }
-"Mais"          {  yylval = Atributo( yytext ); return _TK_MAIS; }
-"Menos"         {  yylval = Atributo( yytext ); return _TK_MENOS; }
-"Sobre"         {  yylval = Atributo( yytext ); return _TK_DIVIDIDO; }
-"Vezes"         {  yylval = Atributo( yytext ); return _TK_VEZES; }
-"Remanescente"  {  yylval = Atributo( yytext ); return _TK_RESTO; }
-"Bem como"      {  yylval = Atributo( yytext ); return _TK_AND; }
-"Ora"           {   yylval = Atributo( yytext );return _TK_OR; }
-"Reves"		{  yylval = Atributo( "", yytext ); return _TK_NOT; }
+"Mais"          {  yylval = Atributo( "+" ); return _TK_MAIS; }
+"Menos"         {  yylval = Atributo( "-" ); return _TK_MENOS; }
+"Sobre"         {  yylval = Atributo( "/" ); return _TK_DIVIDIDO; }
+"Vezes"         {  yylval = Atributo( "*" ); return _TK_VEZES; }
+"Remanescente"  {  yylval = Atributo( "%" ); return _TK_RESTO; }
+"Bem como"      {  yylval = Atributo( "&&" ); return _TK_AND; }
+"Ora"           {   yylval = Atributo( "||" );return _TK_OR; }
+"Reves"		{  yylval = Atributo( "", "!" ); return _TK_NOT; }
 
-"Superior a"                {  yylval = Atributo( "", yytext ); return _TK_MAIOR; }
-"Inferior a"                {  yylval = Atributo( "", yytext ); return _TK_MENOR; }
-"Superior ou equivalente a" {  yylval = Atributo( "", yytext ); return _TK_MENORIGUAL; }
-"Inferior ou equivalente a" {  yylval = Atributo( "", yytext ); return _TK_MAIORIGUAL; }
-"Equivalente a"             {  yylval = Atributo( "", yytext ); return _TK_IGUAL; }
-"Divergente a"		    {  yylval = Atributo( "", yytext ); return _TK_DIFERENTE; }
+"Superior a"                {  yylval = Atributo( ">" ); return _TK_MAIOR; }
+"Inferior a"                {  yylval = Atributo( "<" ); return _TK_MENOR; }
+"Superior ou equivalente a" {  yylval = Atributo( ">=" ); return _TK_MENORIGUAL; }
+"Inferior ou equivalente a" {  yylval = Atributo( "<=" ); return _TK_MAIORIGUAL; }
+"Equivalente a"             {  yylval = Atributo( "==" ); return _TK_IGUAL; }
+"Divergente a"		    {  yylval = Atributo( "!=" ); return _TK_DIFERENTE; }
 
 "<<" 		{  yylval = Atributo( yytext ); return _SHIFTL; }
 ">>" 		{  yylval = Atributo( yytext ); return _SHIFTR; }
