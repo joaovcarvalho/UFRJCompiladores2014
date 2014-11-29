@@ -47,7 +47,7 @@ TS ts; // Tabela de simbolos
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
 string geraTemp( Tipo tipo );
-string geraLabel( string cmd);
+string geraLabel( String cmd);
 string geraDeclaracaoTemporarias();
 
 void insereVariavelTS( TS&, string nomeVar, Tipo tipo );
@@ -67,21 +67,7 @@ void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr,
 
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id );
-
-void geraCodigoFor( Atributo* SS, const Atributo& init,
-                                  const Atributo& condicao,
-                                  const Atributo& passo,
-                                  const Atributo& cmds);
-
-
-void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
-                                   const Atributo& cmds);
-
-void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds, 
-                                     const Atributo& condicao);
-
-void geraCodigoSwitch(Atributo* SS, const Atributo& S1, const Atributo& S2 );
-
+                                           
 // Usando const Atributo& não cria cópia desnecessária
 
 #define YYSTYPE Atributo
@@ -277,6 +263,7 @@ E : E _TK_MAIS E
   | E _TK_DIFERENTE E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | _TK_NOT E
+  	{ geraCodigoOperadorUnario( &$$, $1, $2); }
   | E '&' E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E '|' E
@@ -284,6 +271,7 @@ E : E _TK_MAIS E
   | E '^' E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | '~' E
+    { geraCodigoOperadorUnario( &$$, $1, $2); }
   | E _SHIFTL E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _SHIFTR E
@@ -398,21 +386,21 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
 
   *SS = Atributo();
-  string forFim = geraLabel("for_fim");
-  string forCond = geraLabel("for_cond");
-  string valorCond = geraTemp( Tipo("bool"));
+  string  forFim = geraLabel("for_fim"),
+          forCond = geraLabel("for_cond");
+  string valorCond = geraTemp("bool");
 
-  SS->c = init.c 
-          +forCond+": \n" +
+  SS->c = init.c +
+          forCond+": \n" +
           valorCond + " = !" + condicao.v + ";\n"+
           " if( " + valorCond + " ) goto "+forFim+";\n"+
-          cmds.c + "\n" + passo.c+
+          cmds.c + "\n" + passo.c
           " goto "+forCond+";" +
-          " "+forFim+":\n";
+          " "+forFim+":\n"
 }
 
-void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
-                                   const Atributo& cmds){
+void geraCodigoWhile(Atributo* SS, const Atributo& condicao
+                                    const Atributo& cmds){
 
   if(condicao.t.nome != "bool")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
@@ -420,7 +408,7 @@ void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
  *SS = Atributo();
  string inicioWhile = geraLabel("while_inicio"),
        fimWhile = geraLabel("while_fim");
- string valorCond = geraTemp(Tipo("bool"));
+ string valorCond = geraTemp("bool");
 
  SS->c = inicioWhile+": \n" +
         valorCond + " = !" + condicao.v + ";\n"+
@@ -434,18 +422,17 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
                                      const Atributo& condicao){
   if(condicao.t.nome != "bool")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
-
     
   *SS = Atributo();
-  string inicioDoWhile = geraLabel("dowhile_inicio");
-  string valorCond = geraTemp(Tipo("bool"));
+  string inicioDoWhile = geraLabel("dowhile_inicio")
+  string valorCond = geraTemp("bool");
   
   SS->c = inicioDoWhile + ": \n"+
   cmds.c +
-  "if( "+valorCond+" ) goto" +inicioDoWhile+";\n";
+  "if( "+valorCond+" ) goto" inicioDoWhile+";\n";
 }
 
-void geraCodigoSwitch(Atributo* SS, const Atributo& S1, const Atributo& S2 ){
+void geraCodigoSwitch( ){
     
     
 }
@@ -499,21 +486,11 @@ string geraDeclaracaoTemporarias() {
 }
 
 void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 ) {
+  SS->t = tipoResultado( S1.v, S2.t );
+  SS->v = geraTemp( SS->t );
 
-  // SS->t = tipoResultado( S1.t, S2.v, S3.t );
-  // SS->v = geraTemp( SS->t );
-
-  // if( SS->t.nome == "string" ) {
-  //   SS->c = S1.c + S3.c + 
-  //           "\n  strncpy( " + SS->v + ", " + S1.v + ", " + 
-  //                       toStr( MAX_STR - 1 ) + " );\n" +
-  //           "  strncat( " + SS->v + ", " + S3.v + ", " + 
-  //                       toStr( MAX_STR - 1 ) + " );\n" +
-  //           "  " + SS->v + "[" + toStr( MAX_STR - 1 ) + "] = 0;\n\n";    
-  // }
-  // else
-  //   SS->c = S1.c + S3.c + 
-  //           "  " + SS->v + " = " + S1.v + " " + S2.v + " " + S3.v + ";\n";
+  SS->c = S1.c + S2.c + 
+          "  " + SS->v + " = " + S1.v + " " + S2.v + ";\n";
 }
 
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 ) {
@@ -620,10 +597,14 @@ void inicializaResultadoOperador() {
   
   //concatenação
   resultadoOperador["Manifesto+Manifesto"] = Tipo( "Manifesto" );
+  resultadoOperador["Manifesto+Indiviso"] = Tipo("Manifesto");
+
+  //resto : inteiro e inteiro
+  resultadoOperador["Indiviso%Indiviso"] = Tipo("Indiviso");
   
   //operadores lógicos : bool e bool
-  resultadoOperador["Buliano&Buliano"] = Tipo("Buliano");
-  resultadoOperador["Buliano|Buliano"] = Tipo("Buliano");
+  resultadoOperador["Buliano&&Buliano"] = Tipo("Buliano");
+  resultadoOperador["Buliano||Buliano"] = Tipo("Buliano");
   resultadoOperador["!Buliano"] = Tipo("Buliano");
   
   //operadores bit a bit
@@ -631,6 +612,7 @@ void inicializaResultadoOperador() {
   resultadoOperador["Indiviso>>Indiviso"] = Tipo("Indiviso");
   resultadoOperador["Indiviso&&Indiviso"] = Tipo("Indiviso");
   resultadoOperador["Indiviso||Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["Indiviso^Indiviso"] = Tipo("Indiviso");
   resultadoOperador["~Indiviso"] = Tipo("Indiviso");
 }
 
@@ -677,15 +659,21 @@ bool buscaVariavelTS( TS& ts, string nomeVar, Tipo* tipo ) {
     return false;
 }
 
-Tipo tipoResultado() {
+Tipo tipoResultado( string operador, Tipo a ) {
+  if( resultadoOperador.find( operador + a.nome ) == resultadoOperador.end() )
+    erro( "Operacao nao permitida: " + operador + a.nome );
 
+  return resultadoOperador[operador + a.nome];
 }
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b ) {
-  if( resultadoOperador.find( a.nome + operador + b.nome ) == resultadoOperador.end() )
-    erro( "Operacao nao permitida: " + a.nome + operador + b.nome );
+  if( resultadoOperador.find( a.nome + operador + b.nome ) != resultadoOperador.end() )
+    return resultadoOperador[a.nome + operador + b.nome];
 
-  return resultadoOperador[a.nome + operador + b.nome];
+  if( resultadoOperador.find( b.nome + operador + a.nome ) != resultadoOperador.end() )
+    return resultadoOperador[b.nome + operador + a.nome];
+    
+  erro( "Operacao nao permitida: " + a.nome + operador + b.nome );
 }
 
 int main( int argc, char* argv[] )
