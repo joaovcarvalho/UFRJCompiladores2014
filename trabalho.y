@@ -47,7 +47,7 @@ TS ts; // Tabela de simbolos
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
 string geraTemp( Tipo tipo );
-string geraLabel( String cmd);
+string geraLabel( string cmd);
 string geraDeclaracaoTemporarias();
 
 void insereVariavelTS( TS&, string nomeVar, Tipo tipo );
@@ -68,13 +68,15 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
                                   const Atributo& condicao,
                                   const Atributo& passo,
                                   const Atributo& cmds);
-void geraCodigoWhile(Atributo* SS, const Atributo& condicao
-                                    const Atributo& cmds);
+void geraCodigoWhile(Atributo* SS, const Atributo& condicao, const Atributo& cmds);
 void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds, 
                                      const Atributo& condicao);
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id );
-void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 )
+void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 );
+void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
+                                    const Atributo& S2);
+
 Tipo tipoResultado( string operador, Tipo a );
                                            
 // Usando const Atributo& não cria cópia desnecessária
@@ -403,12 +405,12 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
           forCond+": \n" +
           valorCond + " = !" + condicao.v + ";\n"+
           " if( " + valorCond + " ) goto "+forFim+";\n"+
-          cmds.c + "\n" + passo.c
+          cmds.c + "\n" + passo.c +
           " goto "+forCond+";" +
-          " "+forFim+":\n"
+          " "+forFim+":\n";
 }
 
-void geraCodigoWhile(Atributo* SS, const Atributo& condicao
+void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
                                     const Atributo& cmds){
 
   if(condicao.t.nome != "bool")
@@ -433,18 +435,18 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
     
   *SS = Atributo();
-  string inicioDoWhile = geraLabel("dowhile_inicio")
+  string inicioDoWhile = geraLabel("dowhile_inicio");
   string valorCond = geraTemp(Tipo("bool"));
   
   SS->c = inicioDoWhile + ": \n"+
   cmds.c +
-  "if( "+valorCond+" ) goto" inicioDoWhile+";\n";
+  "if( "+valorCond+" ) goto" +inicioDoWhile+";\n";
 }
 
-/*void geraCodigoSwitch( ){
+void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
+                                    const Atributo& S2){    
     
-    
-}*/
+}
 
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id ) {

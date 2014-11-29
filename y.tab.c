@@ -129,24 +129,21 @@ void geraCodigoIfComElse( Atributo* SS, const Atributo& expr,
                                         const Atributo& cmdsElse );
 void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr, 
                                         const Atributo& cmdsThen );
-
-void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
-                                           const Atributo& id );
-
 void geraCodigoFor( Atributo* SS, const Atributo& init,
                                   const Atributo& condicao,
                                   const Atributo& passo,
                                   const Atributo& cmds);
-
-
-void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
-                                   const Atributo& cmds);
-
+void geraCodigoWhile(Atributo* SS, const Atributo& condicao, const Atributo& cmds);
 void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds, 
                                      const Atributo& condicao);
+void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
+                                           const Atributo& id );
+void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 );
+void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
+                                    const Atributo& S2);
 
-void geraCodigoSwitch(Atributo* SS, const Atributo& S1, const Atributo& S2 );
-
+Tipo tipoResultado( string operador, Tipo a );
+                                           
 // Usando const Atributo& não cria cópia desnecessária
 
 #define YYSTYPE Atributo
@@ -155,7 +152,7 @@ int yylex();
 int yyparse();
 void yyerror(const char *);
 
-#line 159 "y.tab.c" /* yacc.c:339  */
+#line 156 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -301,7 +298,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 305 "y.tab.c" /* yacc.c:358  */
+#line 302 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -603,15 +600,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   108,   108,   115,   118,   122,   125,   129,   133,   136,
-     139,   141,   143,   145,   147,   149,   151,   153,   157,   159,
-     163,   167,   174,   177,   179,   183,   186,   187,   189,   190,
-     192,   195,   195,   199,   199,   203,   203,   207,   207,   216,
-     219,   222,   228,   230,   233,   234,   235,   236,   239,   240,
-     241,   242,   243,   244,   247,   253,   255,   257,   259,   261,
-     263,   265,   267,   269,   271,   273,   275,   277,   279,   280,
-     282,   284,   286,   287,   289,   291,   293,   296,   302,   305,
-     308,   311,   314,   317,   320,   321
+       0,   105,   105,   112,   115,   119,   122,   126,   130,   133,
+     136,   138,   140,   142,   144,   146,   148,   150,   154,   156,
+     160,   164,   171,   174,   176,   180,   183,   184,   186,   187,
+     189,   192,   192,   196,   196,   200,   200,   204,   204,   213,
+     216,   219,   225,   227,   230,   231,   232,   233,   236,   237,
+     238,   239,   240,   241,   244,   250,   252,   254,   256,   258,
+     260,   262,   264,   266,   268,   270,   272,   274,   276,   278,
+     280,   282,   284,   286,   288,   290,   292,   295,   301,   304,
+     307,   310,   313,   316,   319,   320
 };
 #endif
 
@@ -1571,404 +1568,416 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 109 "trabalho.y" /* yacc.c:1646  */
+#line 106 "trabalho.y" /* yacc.c:1646  */
     { cout << "#include <stdio.h>\n"
                "#include <stdlib.h>\n"
                "#include <string.h>\n\n"
             << (yyvsp[-1]).c << (yyvsp[0]).c << endl; }
-#line 1580 "y.tab.c" /* yacc.c:1646  */
+#line 1577 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 116 "trabalho.y" /* yacc.c:1646  */
+#line 113 "trabalho.y" /* yacc.c:1646  */
     { (yyval) = Atributo();
           (yyval).c = (yyvsp[-1]).c + (yyvsp[0]).c; }
-#line 1587 "y.tab.c" /* yacc.c:1646  */
+#line 1584 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 119 "trabalho.y" /* yacc.c:1646  */
+#line 116 "trabalho.y" /* yacc.c:1646  */
     { (yyval) = Atributo();
           (yyval).c = (yyvsp[-1]).c + (yyvsp[0]).c; }
-#line 1594 "y.tab.c" /* yacc.c:1646  */
+#line 1591 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 122 "trabalho.y" /* yacc.c:1646  */
+#line 119 "trabalho.y" /* yacc.c:1646  */
     { (yyval) = Atributo(); }
-#line 1600 "y.tab.c" /* yacc.c:1646  */
+#line 1597 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 126 "trabalho.y" /* yacc.c:1646  */
+#line 123 "trabalho.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1606 "y.tab.c" /* yacc.c:1646  */
+#line 1603 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 130 "trabalho.y" /* yacc.c:1646  */
+#line 127 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoFuncaoPrincipal( &(yyval), (yyvsp[-2]) ); }
-#line 1612 "y.tab.c" /* yacc.c:1646  */
+#line 1609 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 134 "trabalho.y" /* yacc.c:1646  */
+#line 131 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c + (yyvsp[0]).c; }
-#line 1618 "y.tab.c" /* yacc.c:1646  */
+#line 1615 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 136 "trabalho.y" /* yacc.c:1646  */
+#line 133 "trabalho.y" /* yacc.c:1646  */
     { (yyval) = Atributo(); }
-#line 1624 "y.tab.c" /* yacc.c:1646  */
+#line 1621 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 140 "trabalho.y" /* yacc.c:1646  */
+#line 137 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c; }
-#line 1630 "y.tab.c" /* yacc.c:1646  */
+#line 1627 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 142 "trabalho.y" /* yacc.c:1646  */
+#line 139 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c; }
-#line 1636 "y.tab.c" /* yacc.c:1646  */
+#line 1633 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 144 "trabalho.y" /* yacc.c:1646  */
+#line 141 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c; }
-#line 1642 "y.tab.c" /* yacc.c:1646  */
+#line 1639 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 146 "trabalho.y" /* yacc.c:1646  */
+#line 143 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c; }
-#line 1648 "y.tab.c" /* yacc.c:1646  */
+#line 1645 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 148 "trabalho.y" /* yacc.c:1646  */
+#line 145 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c; }
-#line 1654 "y.tab.c" /* yacc.c:1646  */
+#line 1651 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 150 "trabalho.y" /* yacc.c:1646  */
+#line 147 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c; }
-#line 1660 "y.tab.c" /* yacc.c:1646  */
+#line 1657 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 152 "trabalho.y" /* yacc.c:1646  */
+#line 149 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c; }
-#line 1666 "y.tab.c" /* yacc.c:1646  */
+#line 1663 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 154 "trabalho.y" /* yacc.c:1646  */
+#line 151 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[-1]).c; }
-#line 1672 "y.tab.c" /* yacc.c:1646  */
+#line 1669 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 158 "trabalho.y" /* yacc.c:1646  */
+#line 155 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoIfSemElse( &(yyval), (yyvsp[-2]), (yyvsp[0]) ); }
-#line 1678 "y.tab.c" /* yacc.c:1646  */
+#line 1675 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 160 "trabalho.y" /* yacc.c:1646  */
+#line 157 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoIfComElse( &(yyval), (yyvsp[-4]), (yyvsp[-2]), (yyvsp[0]) ); }
-#line 1684 "y.tab.c" /* yacc.c:1646  */
+#line 1681 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 164 "trabalho.y" /* yacc.c:1646  */
+#line 161 "trabalho.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1690 "y.tab.c" /* yacc.c:1646  */
+#line 1687 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 168 "trabalho.y" /* yacc.c:1646  */
+#line 165 "trabalho.y" /* yacc.c:1646  */
     { if( (yyvsp[0]).t.nome == "int" )
                 (yyval).c = (yyvsp[-2]).c + (yyvsp[0]).c + 
                        "  printf( \"%d\" , " + (yyvsp[0]).v + " );\n";
               else if( (yyvsp[0]).t.nome == "string" )
                 (yyval).c = (yyvsp[-2]).c + (yyvsp[0]).c + 
                        "  printf( \"%s\" , " + (yyvsp[0]).v + " );\n";}
-#line 1701 "y.tab.c" /* yacc.c:1646  */
+#line 1698 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 174 "trabalho.y" /* yacc.c:1646  */
+#line 171 "trabalho.y" /* yacc.c:1646  */
     { (yyval) = Atributo(); }
-#line 1707 "y.tab.c" /* yacc.c:1646  */
+#line 1704 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 178 "trabalho.y" /* yacc.c:1646  */
+#line 175 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[0]).c; }
-#line 1713 "y.tab.c" /* yacc.c:1646  */
+#line 1710 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 180 "trabalho.y" /* yacc.c:1646  */
+#line 177 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = (yyvsp[0]).c; }
-#line 1719 "y.tab.c" /* yacc.c:1646  */
+#line 1716 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 192 "trabalho.y" /* yacc.c:1646  */
+#line 189 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = ""; }
-#line 1725 "y.tab.c" /* yacc.c:1646  */
+#line 1722 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 196 "trabalho.y" /* yacc.c:1646  */
+#line 193 "trabalho.y" /* yacc.c:1646  */
     {geraCodigoFor(&(yyval), (yyvsp[-7]), (yyvsp[-2]), (yyvsp[-5]), (yyvsp[0]));}
-#line 1731 "y.tab.c" /* yacc.c:1646  */
+#line 1728 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 200 "trabalho.y" /* yacc.c:1646  */
+#line 197 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoWhile( &(yyval), (yyvsp[-2]), (yyvsp[0])); }
-#line 1737 "y.tab.c" /* yacc.c:1646  */
+#line 1734 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 204 "trabalho.y" /* yacc.c:1646  */
+#line 201 "trabalho.y" /* yacc.c:1646  */
     {geraCodigoDoWhile(&(yyval), (yyvsp[-5]), (yyvsp[-2])) ;}
-#line 1743 "y.tab.c" /* yacc.c:1646  */
+#line 1740 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 208 "trabalho.y" /* yacc.c:1646  */
+#line 205 "trabalho.y" /* yacc.c:1646  */
     { if( !buscaVariavelTS( ts, (yyvsp[-4]).v, &(yyvsp[-4]).t ) ) {
                           erro( "Variavel nao declarada: " + (yyvsp[-4]).v );
                        }
                       else
                         geraCodigoSwitch(&(yyval), (yyvsp[-4]), (yyvsp[-1]));  
                     }
-#line 1754 "y.tab.c" /* yacc.c:1646  */
+#line 1751 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 217 "trabalho.y" /* yacc.c:1646  */
+#line 214 "trabalho.y" /* yacc.c:1646  */
     { insereVariavelTS( ts, (yyvsp[0]).v, (yyvsp[-2]).t ); 
             geraDeclaracaoVariavel( &(yyval), (yyvsp[-2]), (yyvsp[0]) ); }
-#line 1761 "y.tab.c" /* yacc.c:1646  */
+#line 1758 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 220 "trabalho.y" /* yacc.c:1646  */
+#line 217 "trabalho.y" /* yacc.c:1646  */
     { insereVariavelTS( ts, (yyvsp[0]).v, (yyvsp[-1]).t ); 
             geraDeclaracaoVariavel( &(yyval), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1768 "y.tab.c" /* yacc.c:1646  */
+#line 1765 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 223 "trabalho.y" /* yacc.c:1646  */
+#line 220 "trabalho.y" /* yacc.c:1646  */
     {
 
       }
-#line 1776 "y.tab.c" /* yacc.c:1646  */
+#line 1773 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 230 "trabalho.y" /* yacc.c:1646  */
+#line 227 "trabalho.y" /* yacc.c:1646  */
     { (yyval).c = ""; }
-#line 1782 "y.tab.c" /* yacc.c:1646  */
+#line 1779 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 248 "trabalho.y" /* yacc.c:1646  */
+#line 245 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoAtribuicao( &(yyval), (yyvsp[-2]), (yyvsp[0]) ); }
-#line 1788 "y.tab.c" /* yacc.c:1646  */
+#line 1785 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 254 "trabalho.y" /* yacc.c:1646  */
+#line 251 "trabalho.y" /* yacc.c:1646  */
     { cout << "Expressao: " << (yyvsp[-2]).v << " - " << (yyvsp[-1]).v << " - " << (yyvsp[0]).v << endl; geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1794 "y.tab.c" /* yacc.c:1646  */
+#line 1791 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 256 "trabalho.y" /* yacc.c:1646  */
+#line 253 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1800 "y.tab.c" /* yacc.c:1646  */
+#line 1797 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 258 "trabalho.y" /* yacc.c:1646  */
+#line 255 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1806 "y.tab.c" /* yacc.c:1646  */
+#line 1803 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 260 "trabalho.y" /* yacc.c:1646  */
+#line 257 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1812 "y.tab.c" /* yacc.c:1646  */
+#line 1809 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 262 "trabalho.y" /* yacc.c:1646  */
+#line 259 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1818 "y.tab.c" /* yacc.c:1646  */
+#line 1815 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 264 "trabalho.y" /* yacc.c:1646  */
+#line 261 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1824 "y.tab.c" /* yacc.c:1646  */
+#line 1821 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 266 "trabalho.y" /* yacc.c:1646  */
+#line 263 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1830 "y.tab.c" /* yacc.c:1646  */
+#line 1827 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 268 "trabalho.y" /* yacc.c:1646  */
+#line 265 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1836 "y.tab.c" /* yacc.c:1646  */
+#line 1833 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 270 "trabalho.y" /* yacc.c:1646  */
+#line 267 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1842 "y.tab.c" /* yacc.c:1646  */
+#line 1839 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 272 "trabalho.y" /* yacc.c:1646  */
+#line 269 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1848 "y.tab.c" /* yacc.c:1646  */
+#line 1845 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 274 "trabalho.y" /* yacc.c:1646  */
+#line 271 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1854 "y.tab.c" /* yacc.c:1646  */
+#line 1851 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 276 "trabalho.y" /* yacc.c:1646  */
+#line 273 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1860 "y.tab.c" /* yacc.c:1646  */
+#line 1857 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 278 "trabalho.y" /* yacc.c:1646  */
+#line 275 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1866 "y.tab.c" /* yacc.c:1646  */
+#line 1863 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 68:
+#line 277 "trabalho.y" /* yacc.c:1646  */
+    { geraCodigoOperadorUnario( &(yyval), (yyvsp[-1]), (yyvsp[0])); }
+#line 1869 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 281 "trabalho.y" /* yacc.c:1646  */
+#line 279 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1872 "y.tab.c" /* yacc.c:1646  */
+#line 1875 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 283 "trabalho.y" /* yacc.c:1646  */
+#line 281 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1878 "y.tab.c" /* yacc.c:1646  */
+#line 1881 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 285 "trabalho.y" /* yacc.c:1646  */
+#line 283 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1884 "y.tab.c" /* yacc.c:1646  */
+#line 1887 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 72:
+#line 285 "trabalho.y" /* yacc.c:1646  */
+    { geraCodigoOperadorUnario( &(yyval), (yyvsp[-1]), (yyvsp[0])); }
+#line 1893 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 288 "trabalho.y" /* yacc.c:1646  */
+#line 287 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1890 "y.tab.c" /* yacc.c:1646  */
+#line 1899 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 290 "trabalho.y" /* yacc.c:1646  */
+#line 289 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1896 "y.tab.c" /* yacc.c:1646  */
+#line 1905 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 292 "trabalho.y" /* yacc.c:1646  */
+#line 291 "trabalho.y" /* yacc.c:1646  */
     { geraCodigoOperadorBinario( &(yyval), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]) ); }
-#line 1902 "y.tab.c" /* yacc.c:1646  */
+#line 1911 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 297 "trabalho.y" /* yacc.c:1646  */
+#line 296 "trabalho.y" /* yacc.c:1646  */
     { if( buscaVariavelTS( ts, (yyvsp[0]).v, &(yyval).t ) ) 
       (yyval).v = (yyvsp[0]).v; 
     else
       erro( "Variavel nao declarada: " + (yyvsp[0]).v );
   }
-#line 1912 "y.tab.c" /* yacc.c:1646  */
+#line 1921 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 303 "trabalho.y" /* yacc.c:1646  */
+#line 302 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
        (yyval).t = Tipo( "int" ); }
-#line 1919 "y.tab.c" /* yacc.c:1646  */
+#line 1928 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 306 "trabalho.y" /* yacc.c:1646  */
+#line 305 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
        (yyval).t = Tipo( "double" ); }
-#line 1926 "y.tab.c" /* yacc.c:1646  */
+#line 1935 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 309 "trabalho.y" /* yacc.c:1646  */
+#line 308 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
        (yyval).t = Tipo( "float" ); }
-#line 1933 "y.tab.c" /* yacc.c:1646  */
+#line 1942 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 312 "trabalho.y" /* yacc.c:1646  */
+#line 311 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
        (yyval).t = Tipo( "char" ); }
-#line 1940 "y.tab.c" /* yacc.c:1646  */
+#line 1949 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 315 "trabalho.y" /* yacc.c:1646  */
+#line 314 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
        (yyval).t = Tipo( "bool" ); }
-#line 1947 "y.tab.c" /* yacc.c:1646  */
+#line 1956 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 318 "trabalho.y" /* yacc.c:1646  */
+#line 317 "trabalho.y" /* yacc.c:1646  */
     {  (yyval).v = (yyvsp[0]).v; 
        (yyval).t = Tipo( "string" ); }
-#line 1954 "y.tab.c" /* yacc.c:1646  */
+#line 1963 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 320 "trabalho.y" /* yacc.c:1646  */
+#line 319 "trabalho.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[-1]); }
-#line 1960 "y.tab.c" /* yacc.c:1646  */
+#line 1969 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 322 "trabalho.y" /* yacc.c:1646  */
+#line 321 "trabalho.y" /* yacc.c:1646  */
     {
 
   }
-#line 1968 "y.tab.c" /* yacc.c:1646  */
+#line 1977 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1972 "y.tab.c" /* yacc.c:1646  */
+#line 1981 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2196,7 +2205,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 328 "trabalho.y" /* yacc.c:1906  */
+#line 327 "trabalho.y" /* yacc.c:1906  */
 
 
 int nlinha = 1;
@@ -2270,21 +2279,21 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
 
   *SS = Atributo();
-  string forFim = geraLabel("for_fim");
-  string forCond = geraLabel("for_cond");
-  string valorCond = geraTemp( Tipo("bool"));
+  string  forFim = geraLabel("for_fim"),
+          forCond = geraLabel("for_cond");
+  string valorCond = geraTemp(Tipo("bool"));
 
-  SS->c = init.c 
-          +forCond+": \n" +
+  SS->c = init.c +
+          forCond+": \n" +
           valorCond + " = !" + condicao.v + ";\n"+
           " if( " + valorCond + " ) goto "+forFim+";\n"+
-          cmds.c + "\n" + passo.c+
+          cmds.c + "\n" + passo.c +
           " goto "+forCond+";" +
           " "+forFim+":\n";
 }
 
 void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
-                                   const Atributo& cmds){
+                                    const Atributo& cmds){
 
   if(condicao.t.nome != "bool")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
@@ -2306,7 +2315,6 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
                                      const Atributo& condicao){
   if(condicao.t.nome != "bool")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
-
     
   *SS = Atributo();
   string inicioDoWhile = geraLabel("dowhile_inicio");
@@ -2317,8 +2325,8 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
   "if( "+valorCond+" ) goto" +inicioDoWhile+";\n";
 }
 
-void geraCodigoSwitch(Atributo* SS, const Atributo& S1, const Atributo& S2 ){
-    
+void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
+                                    const Atributo& S2){    
     
 }
 
@@ -2371,21 +2379,11 @@ string geraDeclaracaoTemporarias() {
 }
 
 void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 ) {
+  SS->t = tipoResultado( S1.v, S2.t );
+  SS->v = geraTemp( SS->t );
 
-  // SS->t = tipoResultado( S1.t, S2.v, S3.t );
-  // SS->v = geraTemp( SS->t );
-
-  // if( SS->t.nome == "string" ) {
-  //   SS->c = S1.c + S3.c + 
-  //           "\n  strncpy( " + SS->v + ", " + S1.v + ", " + 
-  //                       toStr( MAX_STR - 1 ) + " );\n" +
-  //           "  strncat( " + SS->v + ", " + S3.v + ", " + 
-  //                       toStr( MAX_STR - 1 ) + " );\n" +
-  //           "  " + SS->v + "[" + toStr( MAX_STR - 1 ) + "] = 0;\n\n";    
-  // }
-  // else
-  //   SS->c = S1.c + S3.c + 
-  //           "  " + SS->v + " = " + S1.v + " " + S2.v + " " + S3.v + ";\n";
+  SS->c = S1.c + S2.c + 
+          "  " + SS->v + " = " + S1.v + " " + S2.v + ";\n";
 }
 
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 ) {
@@ -2492,10 +2490,14 @@ void inicializaResultadoOperador() {
   
   //concatenação
   resultadoOperador["Manifesto+Manifesto"] = Tipo( "Manifesto" );
+  resultadoOperador["Manifesto+Indiviso"] = Tipo("Manifesto");
+
+  //resto : inteiro e inteiro
+  resultadoOperador["Indiviso%Indiviso"] = Tipo("Indiviso");
   
   //operadores lógicos : bool e bool
-  resultadoOperador["Buliano&Buliano"] = Tipo("Buliano");
-  resultadoOperador["Buliano|Buliano"] = Tipo("Buliano");
+  resultadoOperador["Buliano&&Buliano"] = Tipo("Buliano");
+  resultadoOperador["Buliano||Buliano"] = Tipo("Buliano");
   resultadoOperador["!Buliano"] = Tipo("Buliano");
   
   //operadores bit a bit
@@ -2503,6 +2505,7 @@ void inicializaResultadoOperador() {
   resultadoOperador["Indiviso>>Indiviso"] = Tipo("Indiviso");
   resultadoOperador["Indiviso&&Indiviso"] = Tipo("Indiviso");
   resultadoOperador["Indiviso||Indiviso"] = Tipo("Indiviso");
+  resultadoOperador["Indiviso^Indiviso"] = Tipo("Indiviso");
   resultadoOperador["~Indiviso"] = Tipo("Indiviso");
 }
 
@@ -2549,15 +2552,21 @@ bool buscaVariavelTS( TS& ts, string nomeVar, Tipo* tipo ) {
     return false;
 }
 
-Tipo tipoResultado() {
+Tipo tipoResultado( string operador, Tipo a ) {
+  if( resultadoOperador.find( operador + a.nome ) == resultadoOperador.end() )
+    erro( "Operacao nao permitida: " + operador + a.nome );
 
+  return resultadoOperador[operador + a.nome];
 }
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b ) {
-  if( resultadoOperador.find( a.nome + operador + b.nome ) == resultadoOperador.end() )
-    erro( "Operacao nao permitida: " + a.nome + operador + b.nome );
+  if( resultadoOperador.find( a.nome + operador + b.nome ) != resultadoOperador.end() )
+    return resultadoOperador[a.nome + operador + b.nome];
 
-  return resultadoOperador[a.nome + operador + b.nome];
+  if( resultadoOperador.find( b.nome + operador + a.nome ) != resultadoOperador.end() )
+    return resultadoOperador[b.nome + operador + a.nome];
+    
+  erro( "Operacao nao permitida: " + a.nome + operador + b.nome );
 }
 
 int main( int argc, char* argv[] )
