@@ -55,7 +55,8 @@ bool buscaVariavelTS( TS&, string nomeVar, Tipo* tipo );
 void erro( string msg );
 string toStr( int n );
 
-
+void geraDeclaracaoVariavelComAtribuicao( Atributo* SS, const Atributo& tipo,
+                                           const Atributo& id, const Atributo& rvalue );
 void geraCodigoAtribuicao( Atributo* SS, Atributo& lvalue, const Atributo& rvalue );
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 );
 void geraCodigoFuncaoPrincipal( Atributo* SS, const Atributo& cmds );
@@ -137,22 +138,22 @@ CMD : ATR ';'
        { $$.c = $1.c;  }
      | CMD_OUT ';'
        { $$.c = $1.c; }
-     | CMD_IF ';'  
+     | CMD_IF  
        { $$.c = $1.c; }
-     | CMD_FOR ';'
+     | CMD_FOR
        { $$.c = $1.c; }
-     | CMD_WHILE ';'
+     | CMD_WHILE
        { $$.c = $1.c; }
-     | CMD_DOWHILE ';'
+     | CMD_DOWHILE
        { $$.c = $1.c; }
-     | CMD_SWITCH ';'
+     | CMD_SWITCH
        { $$.c = $1.c; }
      | DECLVAR ';'
        { $$.c = $1.c; }
 
   
 CMD_IF : _TK_IF '('E')' COD
-           { geraCodigoIfSemElse( &$$, $3, $5 ); }
+           { geraCodigoIfSemElse( &$$, $3, $5 );}
         | _TK_IF '('E')' COD _TK_ELSE COD
            { geraCodigoIfComElse( &$$, $3, $5, $7 ); }
         ;
@@ -167,17 +168,21 @@ COUT_EXPR : COUT_EXPR E
                        "  printf( \"%d\" , " + $2.v + " );\n";
               else if( $2.t.nome == "string" )
                 $$.c = $1.c + $2.c + 
-                       "  printf( \"%s\" , " + $2.v + " );\n";}
+                       "  printf( \"%s\" , " + $2.v + " );\n";
+              else if( $2.t.nome == "double")
+                $$.c = $1.c + $2.c +
+                      "  printf( \"%f\" , " + $2.v + " );\n";}
           | { $$ = Atributo(); }
           ;
 
 COD :  BLOCO
-       { $$.c = $1.c; }
+       { $$.c = $1.c;}
        | CMD
        { $$.c = $1.c;}
        ;
 
 BLOCO : _TK_IB CMDS _TK_FB
+        { $$.c = $2.c;}
         ;
 
 BLOCOFUNC : _TK_IB CMDS _TK_RETURN _ID _TK_FB 
@@ -189,7 +194,7 @@ CASOS : _TK_CASE F ':' CMDS _TK_BREAK ';' CASOS
         { $$.c = ""; }
     ;
   
-CMD_FOR: _TK_FOR '('ATR ';' ATR ';' _TK_TQ E ')' COD
+CMD_FOR: _TK_FOR '('DECLVAR ';' ATR ';' _TK_TQ E ')' COD
               {geraCodigoFor(&$$, $3, $8, $5, $10);}
           
           
@@ -200,15 +205,17 @@ CMD_WHILE: _TK_WHILE '(' E ')' COD
 CMD_DOWHILE: _TK_DO COD _TK_WHILE '(' E ')' ';'
                {geraCodigoDoWhile(&$$, $2, $5) ;}
              ;
-             
-CMD_SWITCH: _TK_SWITCH '(' _ID ')' _TK_IB CASOS _TK_FB
-                    { if( !buscaVariavelTS( ts, $3.v, &$3.t ) ) {
-                          erro( "Variavel nao declarada: " + $3.v );
-                       }
-                      else
-                        geraCodigoSwitch(&$$, $3, $6);  
-                    }
-            ;
+
+CMD_SWITCH : _TK_SWITCH SW DEFAULT _TK_FB
+    ;
+
+SW  : '(' E ')' _TK_IB _TK_CASE E ':' CMDS
+    | SW _TK_CASE E ':' CMDS
+    ;
+
+DEFAULT : _TK_DEFAULT ':' CMDS
+        |
+        ;
             
 DECLVAR : DECLVAR ',' _ID
           { insereVariavelTS( ts, $3.v, $1.t ); 
@@ -216,6 +223,10 @@ DECLVAR : DECLVAR ',' _ID
         | TIPO _ID
           { insereVariavelTS( ts, $2.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $2 ); }
+        | TIPO _ID '=' E
+          { insereVariavelTS( ts, $2.v, $1.t ); 
+            geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
+             }
     | TIPO '[' E ']' _ID
       {
 
@@ -382,7 +393,7 @@ void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr,
   SS->c = expr.c + 
           "  if( !" + expr.v + " ) goto " + l_if_fim + ";\n" +
           cmdsThen.c +
-          "  " + l_if_fim + ":\n";
+          "  " + l_if_fim + ":;\n";
 }
 
 void geraCodigoFor( Atributo* SS, const Atributo& init,
@@ -390,40 +401,42 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
                                   const Atributo& passo,
                                   const Atributo& cmds){
 
-  if(condicao.t.nome != "bool")
+  if(condicao.t.nome != "boolean")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
 
   *SS = Atributo();
   string  forFim = geraLabel("for_fim"),
           forCond = geraLabel("for_cond");
-  string valorCond = geraTemp(Tipo("bool"));
+  string valorCond = geraTemp(Tipo("boolean"));
 
   SS->c = init.c +
+          condicao.c +
           forCond+": \n" +
           valorCond + " = !" + condicao.v + ";\n"+
           " if( " + valorCond + " ) goto "+forFim+";\n"+
           cmds.c + "\n" + passo.c +
           " goto "+forCond+";" +
-          " "+forFim+":\n";
+          " "+forFim+":;\n";
 }
 
 void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
                                     const Atributo& cmds){
 
-  if(condicao.t.nome != "bool")
+  if(condicao.t.nome != "boolean")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
     
  *SS = Atributo();
  string inicioWhile = geraLabel("while_inicio"),
        fimWhile = geraLabel("while_fim");
- string valorCond = geraTemp(Tipo("bool"));
+ string valorCond = geraTemp(Tipo("boolean"));
 
- SS->c = inicioWhile+": \n" +
+ SS->c = inicioWhile+": ;\n" +
+        condicao.c + 
         valorCond + " = !" + condicao.v + ";\n"+
         "if( "+ valorCond+" ) goto "+fimWhile+";\n"+
         cmds.c +
-        " goto "+inicioWhile+";"+
-        " "+fimWhile+": \n";
+        " goto "+inicioWhile+"; \n"+
+        " "+fimWhile+": ;\n";
 }
 
 void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds, 
@@ -441,8 +454,7 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
 }
 
 void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
-                                    const Atributo& S2){    
-    
+                                    const Atributo& S2){      
 }
 
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
@@ -463,13 +475,48 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
   }
 }
 
+
+void geraDeclaracaoVariavelComAtribuicao( Atributo* SS, const Atributo& tipo,
+                                           const Atributo& id, const Atributo& rvalue ) {
+  SS->v = "";
+  SS->t = tipo.t;
+  if( tipo.t.nome == "string" ) {
+    SS->c = tipo.c + 
+           "char " + id.v + "["+ toStr( MAX_STR ) +"];\n";   
+  }
+  else {
+    if(tipo.t.nome == "boolean"){
+      SS->c = "int " + id.v + ";\n"; 
+    }
+    else
+      SS->c = tipo.c + 
+            tipo.t.nome + " " + id.v + ";\n";
+  }
+
+  if( tipo.t.nome == rvalue.t.nome ) {
+    if( tipo.t.nome == "string" ) {
+      SS->c += SS->c + rvalue.c + 
+              "  strncpy( " + SS->v + ", " + rvalue.v + ", " + 
+                          toStr( MAX_STR - 1 ) + " );\n" +
+              "  " + SS->v + "[" + toStr( MAX_STR - 1 ) + "] = 0;\n";
+    }
+    else
+      SS->c += rvalue.c + 
+              "  " + id.v + " = " + rvalue.v + ";\n"; 
+  }
+  else
+    erro( "Expressao " + rvalue.t.nome + 
+          " nao pode ser atribuida a variavel " +
+          SS->t.nome );
+}
+
 void geraCodigoFuncaoPrincipal( Atributo* SS, const Atributo& cmds ) {
   *SS = Atributo();
   SS->c = "\nint main() {\n" +
            geraDeclaracaoTemporarias() + 
            "\n" +
            cmds.c + 
-           "  return 0;\n" 
+           "  return 0;\n"    
            "}\n";
 }  
 

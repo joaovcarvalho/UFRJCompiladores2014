@@ -9,12 +9,8 @@ CHAR    \'[^\n]\'
 BOOLEAN (Veridico|Equivoco)
 ID      {LETRA}({LETRA}|{NUMERO})*
 STRING  \"[^"\n]*\"
-IF      Na_hipotese_de
 ELSE    Salvo
-FOR     Seja_qual_for
-TQ	    Tal_que
 DO      Realize
-WHILE   Ao_passo_que
 SWITCH  Assemelhe
 CASE    Sendo
 BREAK   Aborta
@@ -32,13 +28,14 @@ COMMENT "//".*
 {DELIM}    	{}
 {COMMENT}	{}
 
-{MAIN}		{  yylval = Atributo(  yytext ); return _TK_MAIN; }
-{IF}        {  yylval = Atributo(  yytext ); return _TK_IF; }
-{ELSE}      {  yylval = Atributo(  yytext ); return _TK_ELSE; }
-{FOR}       {  yylval = Atributo(  yytext ); return _TK_FOR; }
-{TQ}	    {  yylval = Atributo(  yytext ); return _TK_TQ; }
+{MAIN}				  {  yylval = Atributo(  yytext ); return _TK_MAIN; }
+"Na hipotese de"      {  yylval = Atributo(  yytext ); return _TK_IF; }
+{ELSE}      		  {  yylval = Atributo(  yytext ); return _TK_ELSE; }
+"Seja qual for"       {  yylval = Atributo(  yytext ); return _TK_FOR; }
+"Tal que"	    	  {  yylval = Atributo(  yytext ); return _TK_TQ; }
+"Ao passo que"    	  {  yylval = Atributo(  yytext ); return _TK_WHILE; }
+
 {DO}        {  yylval = Atributo(  yytext ); return _TK_DO; }
-{WHILE}     {  yylval = Atributo(  yytext ); return _TK_WHILE; }
 {SWITCH}    {  yylval = Atributo( yytext ); return _TK_SWITCH; }
 {CASE}      {  yylval = Atributo(  yytext ); return _TK_CASE; }
 {BREAK}     {  yylval = Atributo(  yytext ); return _TK_BREAK; }
