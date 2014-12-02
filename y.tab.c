@@ -2279,8 +2279,8 @@ void geraCodigoFor( Atributo* SS, const Atributo& init,
   string valorCond = geraTemp(Tipo("boolean"));
 
   SS->c = init.c +
-          condicao.c +
           forCond+": \n" +
+          condicao.c +
           valorCond + " = !" + condicao.v + ";\n"+
           " if( " + valorCond + " ) goto "+forFim+";\n"+
           cmds.c + "\n" + passo.c +
@@ -2310,16 +2310,18 @@ void geraCodigoWhile(Atributo* SS, const Atributo& condicao,
 
 void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds, 
                                      const Atributo& condicao){
-  if(condicao.t.nome != "bool")
+  if(condicao.t.nome != "boolean")
     erro( "A condicao de teste deve ser Buliano: " + condicao.t.nome);
     
   *SS = Atributo();
   string inicioDoWhile = geraLabel("dowhile_inicio");
-  string valorCond = geraTemp(Tipo("bool"));
+  string valorCond = geraTemp(Tipo("boolean"));
   
   SS->c = inicioDoWhile + ": \n"+
-  cmds.c +
-  "if( "+valorCond+" ) goto" +inicioDoWhile+";\n";
+  cmds.c + "\n" +
+  condicao.c + "\n" +
+  valorCond + "= "+condicao.v + ";\n"+
+  "if( "+valorCond+" ) goto " +inicioDoWhile+";\n";
 }
 
 void geraCodigoSwitch(Atributo* SS, const Atributo& S1,

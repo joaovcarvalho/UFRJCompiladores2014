@@ -14,11 +14,14 @@ Ponto Flutuante - sinal (irresoluto)
 Dupla Precisão ? - (diade) justeza
 Texto ? - manifesto
 
+DONE
+
 2) Estruturas de controle: if/else, for, while, do-while, switch.
-Se/ Senão - Na hipotese de / salvo*
-Para - seja_qual_for(i; i++; tal que i<10)
-Enquanto - Ao passo que
-Faça-Enquanto - Realize {}.. durante(condicao)
+
+Se/ Senão - Na hipotese de / salvo* DONE
+Para - seja_qual_for(i; i++; tal que i<10) DONE
+Enquanto - Ao passo que DONE
+Faça-Enquanto - Realize {}.. durante(condicao) DONE
 
 3) Array bi-dimensional
 Vetor - []
