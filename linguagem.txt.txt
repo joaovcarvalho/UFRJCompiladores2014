@@ -14,31 +14,31 @@ Ponto Flutuante - sinal (irresoluto)
 Dupla Precisão ? - (diade) justeza
 Texto ? - manifesto
 
-DONE
+XXX
 
 2) Estruturas de controle: if/else, for, while, do-while, switch.
 
-Se/ Senão - Na hipotese de / salvo* DONE
-Para - seja_qual_for(i; i++; tal que i<10) DONE
-Enquanto - Ao passo que DONE
-Faça-Enquanto - Realize {}.. durante(condicao) DONE
+Se/ Senão - Na hipotese de / salvo* XXX
+Para - seja_qual_for(i; i++; tal que i<10) XXX
+Enquanto - Ao passo que XXX
+Faça-Enquanto - Realize {}.. durante(condicao) XXX
 
 3) Array bi-dimensional
 Vetor - []
-4) blocos - { -> preludio
-            } -> epilogo
+4) blocos - { -> preludio XXX
+            } -> epilogo XXX
 5) Variáveis locais e globais, com escopo.
 global
-6) Expressões com precedência e associatividade de operadores DONE
-7) funções com parametros por valor e referência
+6) Expressões com precedência e associatividade de operadores XXX
+7) funções com parametros por valor
     void -> devoluto
-8) concatenação de strings com operador "+" DONE
+8) concatenação de strings com operador "+" XXX
 9) entrada e saida padrao (printf e scanf)
-ler - averigue DONE ( só com uma atribuição)
-escrever - exclame DONE
-9) verificação de tipos DONE
+ler - averigue XXX ( só com uma atribuição)
+escrever - exclame XXX
+9) verificação de tipos XXX
 10) verificação do número e tipo dos parâmetros de funções
-11) Operadores básicos: ( ) + - / * % && || ! > < >= DONE
+11) Operadores básicos: ( ) + - / * % && || ! > < >= XXX
 
 +   -> mais
 -   -> menos
