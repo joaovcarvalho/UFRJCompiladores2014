@@ -29,16 +29,16 @@ Vetor - []
             } -> epilogo
 5) Variáveis locais e globais, com escopo.
 global
-6) Expressões com precedência e associatividade de operadores
+6) Expressões com precedência e associatividade de operadores DONE
 7) funções com parametros por valor e referência
     void -> devoluto
-8) concatenação de strings com operador "+"
+8) concatenação de strings com operador "+" DONE
 9) entrada e saida padrao (printf e scanf)
-ler - averigue
-escrever - exclame
-9) verificação de tipos
+ler - averigue DONE ( só com uma atribuição)
+escrever - exclame DONE
+9) verificação de tipos DONE
 10) verificação do número e tipo dos parâmetros de funções
-11) Operadores básicos: ( ) + - / * % && || ! > < >=
+11) Operadores básicos: ( ) + - / * % && || ! > < >= DONE
 
 +   -> mais
 -   -> menos

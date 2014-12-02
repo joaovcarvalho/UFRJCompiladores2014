@@ -14,7 +14,7 @@ int main() {
   int temp_boolean_2;
   int temp_int_1;
 
-  inteiro = 100;
+  scanf( "%d" , &inteiro );
 l_dowhile_inicio_1: 
   printf( "%d" , inteiro );
   printf( "%s" , "\n" );

@@ -30,7 +30,7 @@ Primacial Preludio
 	// 	Exclame i "\n";
 
 	// Tesytando o Do while
-	inteiro = 100;
+	Averigue >> inteiro;
 	Realize
 	Preludio
 		Exclame inteiro "\n";

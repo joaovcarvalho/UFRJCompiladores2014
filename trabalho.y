@@ -77,6 +77,7 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
 void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 );
 void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
                                     const Atributo& S2);
+void geraCodigoInput( Atributo* SS, const Atributo& id);
 
 Tipo tipoResultado( string operador, Tipo a );
                                            
@@ -138,6 +139,8 @@ CMD : ATR ';'
        { $$.c = $1.c;  }
      | CMD_OUT ';'
        { $$.c = $1.c; }
+     | CMD_IN ';'
+       { $$.c = $1.c; }
      | CMD_IF  
        { $$.c = $1.c; }
      | CMD_FOR
@@ -174,6 +177,10 @@ COUT_EXPR : COUT_EXPR E
                       "  printf( \"%f\" , " + $2.v + " );\n";}
           | { $$ = Atributo(); }
           ;
+
+CMD_IN : _SCANF _SHIFTR _ID
+        { geraCodigoInput(&$$, $3); }
+      ;
 
 COD :  BLOCO
        { $$.c = $1.c;}
@@ -366,7 +373,20 @@ void geraCodigoAtribuicao( Atributo* SS, Atributo& lvalue,
     } 
     else
       erro( "Variavel nao declarada: " + lvalue.v );
-}      
+}  
+
+void geraCodigoInput( Atributo* SS, const Atributo& id){
+  if(buscaVariavelTS(ts, id.v, (Tipo*) &id.t)){
+     if( id.t.nome == "int" )
+        SS->c = id.c + "  scanf( \"%d\" , &" + id.v + " );\n";
+      else if( id.t.nome == "string" )
+        SS->c = id.c + "  scanf( \"%s\" , &" + id.v + " );\n";
+      else if( id.t.nome == "double")
+        SS->c = id.c +"  scanf( \"%f\" , &" + id.v + " );\n";
+  }
+  else
+    erro( "Variável nao declarada: " + id.v);
+}    
        
 void geraCodigoIfComElse( Atributo* SS, const Atributo& expr, 
                                         const Atributo& cmdsThen,
