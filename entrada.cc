@@ -16,7 +16,7 @@ Primacial Preludio
 		Preludio
 			Exclame "Não foi";
 		Epilogo
-
+		
 	inteiro = 100;
 	// Testando o While
 	Ao passo que(inteiro Superior a 0)
