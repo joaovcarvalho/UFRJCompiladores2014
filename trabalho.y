@@ -409,7 +409,7 @@ void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue,
                                                  const Atributo& rvalue ){
 	int indice = toInt(indice1.v) * lvalue.t.d1 + toInt(indice2.v)
 	SS->c = indice1.c + rvalue.c +
-          "  " + lvalue.v + "[" + indice + "] = " + rvalue.v + ";\n";
+          "  " + lvalue.v + "[" + toStr(indice) + "] = " + rvalue.v + ";\n";
 
 }
 void geraCodigoAtribuicao3Indices( Atributo* SS, Atributo& lvalue, 
