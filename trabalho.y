@@ -63,7 +63,11 @@ string toStr( int n );
 
 void geraDeclaracaoVariavelComAtribuicao( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id, const Atributo& rvalue );
-void geraCodigoAtribuicao( Atributo* SS, Atributo& lvalue, const Atributo& rvalue );
+void geraCodigoAtribuicaoSemIndice( Atributo* SS, Atributo& lvalue, const Atributo& rvalue );
+void geraCodigoAtribuicao1Indice( Atributo* SS, Atributo& lvalue, Atributo& indice1, const Atributo& rvalue );
+void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue, Atributo& indice1, Atributo& indice2, const Atributo& rvalue );
+void geraCodigoAtribuicao3Indices( Atributo* SS, Atributo& lvalue, Atributo& indice1, Atributo& indice2, Atributo& indice3, const Atributo& rvalue );
+
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 );
 void geraCodigoFuncaoPrincipal( Atributo* SS, const Atributo& cmds );
 void geraCodigoIfComElse( Atributo* SS, const Atributo& expr, 
@@ -240,10 +244,6 @@ DECLVAR : DECLVAR ',' _ID
           { insereVariavelTS( ts, $2.v, $1.t ); 
             geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
              }
-    | TIPO '[' E ']' _ID
-      {
-
-      }
         ;
     
 PARAM : ',' TIPO _ID PARAM
@@ -277,10 +277,7 @@ TIPO : _TK_INT
      ;
   
 ATR : _ID '=' E 
-      { geraCodigoAtribuicao( &$$, $1, $3 ); }
-    ;
-
-ARRAY : _ID '[' E ']'
+      { geraCodigoAtribuicaoSemIndice( &$$, $1, $3 ); }
     ;
 
 E : E _TK_MAIS E   
@@ -351,7 +348,9 @@ F : _ID
     {  $$.v = $1.v; 
        $$.t = Tipo( "string" ); }
   | '(' E ')'  { $$ = $2; }
-  | _TK_NULL
+  | _ID '[' E ']'
+  | _ID '[' E ']' '[' E ']'
+  | _ID '[' E ']' '[' E ']' '[' E ']' // Esse caso só ocorre em Matriz de string
   {
 
   }
@@ -369,11 +368,16 @@ string geraLabel(string cmd){
   return "l_"+cmd+"_"+toStr( ++label[cmd] );
 }
 
-void geraCodigoAtribuicao( Atributo* SS, Atributo& lvalue, 
+void geraCodigoAtribuicaoSemIndice( Atributo* SS, Atributo& lvalue, 
                                          const Atributo& rvalue ) {
-  if( buscaVariavelTS( ts, lvalue.v, &lvalue.t ) ) {
-    if( lvalue.t.nome == rvalue.t.nome ) {
-      if( lvalue.t.nome == "string" ) {
+  if( !buscaVariavelTS( *ts, lvalue.v, &lvalue.t ) ) 
+    erro( "Variavel nao declarada: " + lvalue.v );
+  else if( lvalue.t.nome != rvalue.t.nome )
+    erro( "Expressao " + rvalue.t.nome + 
+            " nao pode ser atribuida a variavel " + lvalue.t.nome );
+  else if( lvalue.t.nDim != 0 || rvalue.t.nDim != 0 )
+    erro( "Atribuicao de array nao e permitida: " + lvalue.v + " = " + rvalue.v );
+  else if( lvalue.t.nome == "string" ) {
         SS->c = lvalue.c + rvalue.c + 
                 "  strncpy( " + lvalue.v + ", " + rvalue.v + ", " + 
                             toStr( MAX_STR - 1 ) + " );\n" +
@@ -382,15 +386,25 @@ void geraCodigoAtribuicao( Atributo* SS, Atributo& lvalue,
       else
         SS->c = lvalue.c + rvalue.c + 
                 "  " + lvalue.v + " = " + rvalue.v + ";\n"; 
-    }
-    else
-      erro( "Expressao " + rvalue.t.nome + 
-            " nao pode ser atribuida a variavel " +
-            lvalue.t.nome );
-    } 
-    else
-      erro( "Variavel nao declarada: " + lvalue.v );
-}  
+}      
+       
+void geraCodigoAtribuicao1Indice( Atributo* SS, Atributo& lvalue, 
+                                                Atributo& indice1, 
+                                                const Atributo& rvalue ) {
+  SS->c = indice1.c + rvalue.c +
+          "  " + lvalue.v + "[" + indice1.v + "] = " + rvalue.v + ";\n";
+}
+void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue, 
+                                                 Atributo& indice1, 
+                                                 Atributo& indice2, 
+                                                 const Atributo& rvalue ){
+}
+void geraCodigoAtribuicao3Indices( Atributo* SS, Atributo& lvalue, 
+                                                 Atributo& indice1, 
+                                                 Atributo& indice2, 
+                                                 Atributo& indice3, 
+                                                 const Atributo& rvalue ){
+}
 
 void geraCodigoInput( Atributo* SS, const Atributo& id){
   if(buscaVariavelTS(ts, id.v, (Tipo*) &id.t)){
