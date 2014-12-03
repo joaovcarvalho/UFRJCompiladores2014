@@ -278,6 +278,12 @@ TIPO : _TK_INT
   
 ATR : _ID '=' E 
       { geraCodigoAtribuicaoSemIndice( &$$, $1, $3 ); }
+    | _ID '[' E ']' '=' E 
+          { geraCodigoAtribuicao1Indice( &$$, $1, $3, $6 ); }
+    | _ID '[' E ',' E ']'  '=' E 
+          { geraCodigoAtribuicao2Indices( &$$, $1, $3, $5, $8 ); }
+    | _ID '[' E ',' E ',' E ']'  '=' E 
+          { geraCodigoAtribuicao3Indices( &$$, $1, $3, $5, $7, $10 ); }
     ;
 
 E : E _TK_MAIS E   
@@ -398,6 +404,10 @@ void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue,
                                                  Atributo& indice1, 
                                                  Atributo& indice2, 
                                                  const Atributo& rvalue ){
+	indice = indice1.v * lvalue.t.d1 + indice2.v
+	SS->c = indice1.c + rvalue.c +
+          "  " + lvalue.v + "[" + indice + "] = " + rvalue.v + ";\n";
+
 }
 void geraCodigoAtribuicao3Indices( Atributo* SS, Atributo& lvalue, 
                                                  Atributo& indice1, 
