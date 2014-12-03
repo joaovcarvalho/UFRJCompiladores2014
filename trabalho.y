@@ -89,6 +89,9 @@ void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
                                     const Atributo& S2);
 void geraCodigoInput( Atributo* SS, const Atributo& id);
 
+string toStr( int n );
+int toInt( string n );
+
 Tipo tipoResultado( string operador, Tipo a );
                                            
 // Usando const Atributo& não cria cópia desnecessária
@@ -404,7 +407,7 @@ void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue,
                                                  Atributo& indice1, 
                                                  Atributo& indice2, 
                                                  const Atributo& rvalue ){
-	indice = indice1.v * lvalue.t.d1 + indice2.v
+	int indice = indice1.v * lvalue.t.d1 + indice2.v
 	SS->c = indice1.c + rvalue.c +
           "  " + lvalue.v + "[" + indice + "] = " + rvalue.v + ";\n";
 
@@ -537,7 +540,7 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
    case 1:
      SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr( tipo.t.d1 ) + "];\n";
    case 2:
-     tam = tipo.t.d1 * tipo.t.d2
+     int tam = tipo.t.d1 * tipo.t.d2
    	 SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr(tam) + "];\n";
   }   
 }
@@ -790,6 +793,20 @@ Tipo tipoResultado( string operador, Tipo a ) {
     erro( "Operacao nao permitida: " + operador + a.nome );
 
   return resultadoOperador[operador + a.nome];
+}
+
+int toInt( string n ) {
+  int aux = 0;
+  sscanf( n.c_str(), "%d", &aux );
+  
+  return aux;
+}
+
+string toStr( int n ) {  char buf[1024] = "";
+  
+  sprintf( buf, "%d", n );
+  
+  return buf;
 }
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b ) {
