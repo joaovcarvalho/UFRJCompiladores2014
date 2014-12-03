@@ -464,7 +464,7 @@ void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue,
                                                  Atributo& indice1, 
                                                  Atributo& indice2, 
                                                  const Atributo& rvalue ){
-	int indice = indice1.v * lvalue.t.d1 + indice2.v
+	int indice = toInt(indice1.v) * lvalue.t.d1 + indice2.v
 	SS->c = indice1.c + rvalue.c +
           "  " + lvalue.v + "[" + indice + "] = " + rvalue.v + ";\n";
 
@@ -853,6 +853,13 @@ string toStr( int n ) {
   return buf;
 }
 
+int toInt( string n ) {
+  int aux = 0;
+  sscanf( n.c_str(), "%d", &aux );
+  
+  return aux;
+}
+
 void yyerror( const char* st )
 {
   puts( st );
@@ -889,20 +896,6 @@ Tipo tipoResultado( string operador, Tipo a ) {
     erro( "Operacao nao permitida: " + operador + a.nome );
 
   return resultadoOperador[operador + a.nome];
-}
-
-int toInt( string n ) {
-  int aux = 0;
-  sscanf( n.c_str(), "%d", &aux );
-  
-  return aux;
-}
-
-string toStr( int n ) {  char buf[1024] = "";
-  
-  sprintf( buf, "%d", n );
-  
-  return buf;
 }
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b ) {
