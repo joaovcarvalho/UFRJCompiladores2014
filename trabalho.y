@@ -284,14 +284,21 @@ CMD_DOWHILE: _TK_DO COD _TK_WHILE '(' E ')' ';'
              ;
 
 CMD_SWITCH : _TK_SWITCH SW DEFAULT _TK_FB
-    ;
+              { geraCodigoSwitch(&$$, $2, $3); }
+            ;
 
 SW  : '(' E ')' _TK_IB _TK_CASE E ':' CMDS
+      { $$.c = $2.c;
+        $$.v = $2.v;
+        geraCodigoCase(&$$, $6, $8); }
     | SW _TK_CASE E ':' CMDS
+      { geraCodigoCase(&$$, $3, $5); }
     ;
 
 DEFAULT : _TK_DEFAULT ':' CMDS
+          { $$.c = $3.c; }
         |
+          { $$.c = ""; }
         ;
             
 DECLVAR : DECLVAR ',' _ID
@@ -442,6 +449,7 @@ int nlinha = 1;
 map<string,int> n_var_temp;
 map<string,Tipo> resultadoOperador;
 map<string, int> label;
+int nSwitch = 0;
 
 string geraLabel(string cmd){
   return "l_"+cmd+"_"+toStr( ++label[cmd] );
@@ -628,8 +636,26 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
   "if( "+valorCond+" ) goto " +inicioDoWhile+";\n";
 }
 
-void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
-                                    const Atributo& S2){      
+void geraCodigoCase(Atributo* SS, const Atributo& case, const Atributo& cmdsCase){
+
+  string l_if_fim = geraLabel("if_fim");
+  string l_switch_fim = "l_switch_fim_" + nSwitch;
+
+  SS->c = case.c +
+          "  if( " + SS->v + " != " + case.v + " ) goto " + l_if_fim + ";\n" +
+          cmdsCase.c +
+          "goto " + l_switch_fim + ";\n" +
+          "  " + l_if_fim + ":;\n";
+}
+
+void geraCodigoSwitch(Atributo* SS, const Atributo& cases, const Atributo& default){
+  *SS = Atributo();
+  nSwitch++;
+  string l_switch_fim = "l_switch_fim_" + nSwitch;
+
+  SS->c = cases.c + 
+          default.c +
+          "  " + l_switch_fim + ":;\n";      
 }
 
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
