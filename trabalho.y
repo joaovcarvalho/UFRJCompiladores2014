@@ -294,7 +294,7 @@ DECLVAR : DECLVAR ',' _ID
         | TIPO _ID '=' E
           { insereVariavelTS( *ts, $2.v, $1.t ); 
             geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
-             }
+          }
         ;
     
     
@@ -309,13 +309,13 @@ TIPO : TIPOSIMPLES
          $$.t.d1 = toInt( $3.v ); 
          $$.t.d2 = toInt( $5.v ); }
 
-TIPO : _TK_INT
-     | _TK_CHAR
-     | _TK_BOOLEAN
-     | _TK_DOUBLE
-     | _TK_FLOAT
-     | _TK_STRING
-     ;
+TIPOSIMPLES : _TK_INT
+    	    | _TK_CHAR
+            | _TK_BOOLEAN
+            | _TK_DOUBLE
+            | _TK_FLOAT
+            | _TK_STRING
+            ;
   
 ATR : _ID '=' E 
       { geraCodigoAtribuicaoSemIndice( &$$, $1, $3 ); }
@@ -620,18 +620,22 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id ) {
   SS->v = "";
   SS->t = tipo.t;
-  if( tipo.t.nome == "string" ) {
-    SS->c = tipo.c + 
-           "char " + id.v + "["+ toStr( MAX_STR ) +"];\n";   
-  }
-  else {
-    if(tipo.t.nome == "boolean"){
-      SS->c = "int " + id.v + ";\n"; 
-    }
-    else
-      SS->c = tipo.c + 
-            tipo.t.nome + " " + id.v + ";\n";
-  }
+ 
+  switch( tipo.t.nDim ) {
+    case 0: 
+      if(tipo.t.nome == "boolean")
+      	SS->c = "int " + id.v + ";\n"; 
+      else if( tipo.t.nome == "string" )
+        SS->c = tipo.c + "char " + id.v + "["+ toStr( MAX_STR ) +"];\n";  
+      else 
+      	SS->c = tipo.c + tipo.t.nome + " " + id.v + ";\n"; 
+      break;
+   case 1:
+     SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr( tipo.t.d1 ) + "];\n";
+   case 2:
+     tam = tipo.t.d1 * tipo.t.d2
+   	 SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr(tam) + "];\n";
+  }   
 }
 
 
