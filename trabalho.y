@@ -158,7 +158,7 @@ FUNCTION : DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCOFUNC PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
          ;
 
-DECLS_FUNCAO : TIPO _ID
+DECLS_FUNCAO : TIPOSIMPLES _ID
           { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
           | _TK_VOID _ID
           { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
