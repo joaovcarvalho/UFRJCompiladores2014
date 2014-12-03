@@ -49,7 +49,10 @@ struct Atributo {
 };
 
 typedef map< string, Tipo > TS;
-TS ts; // Tabela de simbolos
+TS ts_local, ts_global;
+TS* ts = &ts_global; // Tabela de simbolos da vez
+
+TS ts_funcoes;
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
 string geraTemp( Tipo tipo );
@@ -88,6 +91,15 @@ void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo&
 void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
                                     const Atributo& S2);
 void geraCodigoInput( Atributo* SS, const Atributo& id);
+void geraCodigoFuncao(Atributo* SS, const Atributo& cabecalho,
+                                    const Atributo& params,
+                                    const Atributo& cmds);
+void geraCodigoParam(Atributo* SS, const Atributo& tipo,
+                                   const Atributo& id);
+void geraCodigoReturn(Atributo* SS, const Atributo expr);
+
+string toStr( int n );
+int toInt( string n );
 
 Tipo tipoResultado( string operador, Tipo a );
                                            
@@ -132,8 +144,46 @@ DECLS : VARGLOBAL DECLS
       ;
       
 VARGLOBAL : DECLVAR ';'
-            { $$ = $1; }
+            { $$ = $1;}
           ;
+
+PREPARA_GLOBAL : { ts = &ts_global;}
+          ;
+
+// Aqui é referente a funções
+FUNCTION : DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCOFUNC PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, $4, $6);  }
+         | DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, $4, $6);}
+         | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCOFUNC PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
+         | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
+         ;
+
+DECLS_FUNCAO : TIPO _ID
+          { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
+          | _TK_VOID _ID
+          { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
+
+PREPARA_FUNCAO : { ts = &ts_local;} // Passa a usar a tabela de var local.
+
+PARAMS : PARAMS ',' DECL_PARAM
+       { $$.c = $1.c + ',' + ' ' + $3.c; }
+       | DECL_PARAM
+       { $$ = $1; }
+       ;
+
+DECL_PARAM: TIPO _ID
+      {
+        insereVariavelTS( *ts, $2.v, $1.t );
+        geraCodigoParam(&$$, $1, $2);
+      }
+      | TIPO_ARRAY _ID
+      {
+        insereVariavelTS( *ts, $2.v, $1.t );
+        geraCodigoParam(&$$, $1, $2);
+      }
 
 MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
        { geraCodigoFuncaoPrincipal( &$$, $3 ); }
@@ -162,6 +212,8 @@ CMD : ATR ';'
      | CMD_SWITCH
        { $$.c = $1.c; }
      | DECLVAR ';'
+       { $$.c = $1.c; }
+     | CMD_RETURN
        { $$.c = $1.c; }
 
   
@@ -202,8 +254,14 @@ BLOCO : _TK_IB CMDS _TK_FB
         { $$.c = $2.c;}
         ;
 
-BLOCOFUNC : _TK_IB CMDS _TK_RETURN _ID _TK_FB 
-          | _TK_RETURN;
+BLOCOFUNC : _TK_IB CMDS _TK_FB 
+          { $$.c = $2.c;}
+          | CMD_RETURN
+          { $$.c = $1.c;}
+          ;
+
+CMD_RETURN : _TK_RETURN E ';'
+          { geraCodigoReturn(&$$, $2); }
     
 CASOS : _TK_CASE F ':' CMDS _TK_BREAK ';' CASOS
       | _TK_DEFAULT ':' CMDS
@@ -242,48 +300,52 @@ DEFAULT : _TK_DEFAULT ':' CMDS
         ;
             
 DECLVAR : DECLVAR ',' _ID
-          { insereVariavelTS( ts, $3.v, $1.t ); 
+          { insereVariavelTS( *ts, $3.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $3 ); }
+        | TIPO_ARRAY _ID
+          { insereVariavelTS( *ts, $2.v, $1.t ); 
+            geraDeclaracaoVariavel( &$$, $1, $2 ); }
+        | TIPO_ARRAY _ID '=' E
+          { insereVariavelTS( *ts, $2.v, $1.t ); 
+            geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
+          }
         | TIPO _ID
-          { insereVariavelTS( ts, $2.v, $1.t ); 
+          { insereVariavelTS( *ts, $2.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $2 ); }
         | TIPO _ID '=' E
-          { insereVariavelTS( ts, $2.v, $1.t ); 
-            geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 ); }
+          { insereVariavelTS( *ts, $2.v, $1.t ); 
+            geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
+          }
         ;
     
-PARAM : ',' TIPO _ID PARAM
-      |
-        { $$.c = ""; }
-      ;
-      
-FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCOFUNC
-         | _TK_VOID _ID '(' TIPO _ID PARAM ')' BLOCO
-         | TIPO _ID '(' ')' BLOCOFUNC
-         | _TK_VOID _ID '(' ')' BLOCO
-         ;
     
-TIPO : TIPOSIMPLES 
-     | TIPOSIMPLES '[' _INT ']'
+TIPO_ARRAY : TIPO '[' _INT ']'
        { $$ = $1;
          $$.t.nDim = 1;
          $$.t.d1 = toInt( $3.v ); }
-     | TIPOSIMPLES '[' _INT ']' '['_INT']'
+     | TIPO '[' _INT ']' '['_INT']'
        { $$ = $1;
          $$.t.nDim = 2;
          $$.t.d1 = toInt( $3.v ); 
          $$.t.d2 = toInt( $5.v ); }
+        ;
 
 TIPO : _TK_INT
-     | _TK_CHAR
-     | _TK_BOOLEAN
-     | _TK_DOUBLE
-     | _TK_FLOAT
-     | _TK_STRING
-     ;
+    	    | _TK_CHAR
+            | _TK_BOOLEAN
+            | _TK_DOUBLE
+            | _TK_FLOAT
+            | _TK_STRING
+            ;
   
 ATR : _ID '=' E 
       { geraCodigoAtribuicaoSemIndice( &$$, $1, $3 ); }
+    | _ID '[' E ']' '=' E 
+          { geraCodigoAtribuicao1Indice( &$$, $1, $3, $6 ); }
+    | _ID '[' E ',' E ']'  '=' E 
+          { geraCodigoAtribuicao2Indices( &$$, $1, $3, $5, $8 ); }
+    | _ID '[' E ',' E ',' E ']'  '=' E 
+          { geraCodigoAtribuicao3Indices( &$$, $1, $3, $5, $7, $10 ); }
     ;
 
 E : E _TK_MAIS E   
@@ -329,12 +391,28 @@ E : E _TK_MAIS E
   | F
   ;
 
+PARAM : PARAM ',' E
+        { $$.c = $1.c + $3.c;
+          $$.v = $1.v + ',' + $3.v; }
+      | E
+        { $$ = $1; }
+      ;
+
 F : _ID   
-  { if( buscaVariavelTS( ts, $1.v, &$$.t ) ) 
+  { if( buscaVariavelTS( *ts, $1.v, &$$.t ) ) 
       $$.v = $1.v; 
     else
       erro( "Variavel nao declarada: " + $1.v );
   } 
+  | _ID '(' PARAM ')'
+  {
+    if( buscaVariavelTS( ts_funcoes, $1.v, &$$.t ) ){
+      $$.c = $3.c;
+      $$.v = $1.v + '(' + $3.v + ')';
+    }else{ 
+      erro( "Funcao nao declarada: "+ $1.v);
+    }
+  }
   | _INT 
     {  $$.v = $1.v; 
        $$.t = Tipo( "int" ); }
@@ -405,6 +483,10 @@ void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue,
                                                  Atributo& indice1, 
                                                  Atributo& indice2, 
                                                  const Atributo& rvalue ){
+	int indice = toInt(indice1.v) * lvalue.t.d1 + toInt(indice2.v);
+	SS->c = indice1.c + rvalue.c +
+          "  " + lvalue.v + "[" + toStr(indice) + "] = " + rvalue.v + ";\n";
+
 }
 void geraCodigoAtribuicao3Indices( Atributo* SS, Atributo& lvalue, 
                                                  Atributo& indice1, 
@@ -414,7 +496,7 @@ void geraCodigoAtribuicao3Indices( Atributo* SS, Atributo& lvalue,
 }
 
 void geraCodigoInput( Atributo* SS, const Atributo& id){
-  if(buscaVariavelTS(ts, id.v, (Tipo*) &id.t)){
+  if(buscaVariavelTS(*ts, id.v, (Tipo*) &id.t)){
      if( id.t.nome == "int" )
         SS->c = id.c + "  scanf( \"%d\" , &" + id.v + " );\n";
       else if( id.t.nome == "string" )
@@ -425,6 +507,45 @@ void geraCodigoInput( Atributo* SS, const Atributo& id){
   else
     erro( "Variável nao declarada: " + id.v);
 }    
+
+void geraCodigoReturn(Atributo* SS, const Atributo expr){
+  *SS = Atributo();
+
+  SS->c = expr.c + "\n" +
+          "return " + expr.v + ";\n" ;
+}
+
+void geraCodigoParam(Atributo* SS, const Atributo& tipo,
+                                   const Atributo& id){
+  *SS = Atributo();
+
+  SS->v = "";
+  SS->t = tipo.t;
+  if( tipo.t.nome == "string" ) {
+    SS->c = tipo.c + 
+           "char " + id.v + "["+ toStr( MAX_STR ) +"]";   
+  }
+  else {
+    if(tipo.t.nome == "boolean"){
+      SS->c = "int " + id.v; 
+    }
+    else
+      SS->c = tipo.c + 
+            tipo.t.nome + " " + id.v;
+  }
+}
+
+void geraCodigoFuncao(Atributo* SS, const Atributo& cabecalho,
+                                    const Atributo& params,
+                                    const Atributo& cmds){
+  *SS = Atributo();
+
+  SS->c = cabecalho.v + "( "+params.c+ " ) {\n" +
+           geraDeclaracaoTemporarias() + 
+           "\n" +
+           cmds.c +  
+           "}\n";
+}
        
 void geraCodigoIfComElse( Atributo* SS, const Atributo& expr, 
                                         const Atributo& cmdsThen,
@@ -539,18 +660,22 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id ) {
   SS->v = "";
   SS->t = tipo.t;
-  if( tipo.t.nome == "string" ) {
-    SS->c = tipo.c + 
-           "char " + id.v + "["+ toStr( MAX_STR ) +"];\n";   
-  }
-  else {
-    if(tipo.t.nome == "boolean"){
-      SS->c = "int " + id.v + ";\n"; 
-    }
-    else
-      SS->c = tipo.c + 
-            tipo.t.nome + " " + id.v + ";\n";
-  }
+ 
+  switch( tipo.t.nDim ) {
+    case 0: 
+      if(tipo.t.nome == "boolean")
+      	SS->c = "int " + id.v + ";\n"; 
+      else if( tipo.t.nome == "string" )
+        SS->c = tipo.c + "char " + id.v + "["+ toStr( MAX_STR ) +"];\n";  
+      else 
+      	SS->c = tipo.c + tipo.t.nome + " " + id.v + ";\n"; 
+      break;
+   case 1:
+     SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr( tipo.t.d1 ) + "];\n";
+   case 2:
+     int tam = tipo.t.d1 * tipo.t.d2;
+   	 SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr(tam) + "];\n";
+  }   
 }
 
 
@@ -763,6 +888,13 @@ string toStr( int n ) {
   sprintf( buf, "%d", n );
   
   return buf;
+}
+
+int toInt( string n ) {
+  int aux = 0;
+  sscanf( n.c_str(), "%d", &aux );
+  
+  return aux;
 }
 
 void yyerror( const char* st )
