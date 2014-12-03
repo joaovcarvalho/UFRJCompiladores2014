@@ -161,7 +161,7 @@ FUNCTION : DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCOFUNC PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
          ;
 
-DECLS_FUNCAO : TIPOSIMPLES _ID
+DECLS_FUNCAO : TIPO _ID
           { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
           | _TK_VOID _ID
           { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
@@ -179,7 +179,11 @@ DECL_PARAM: TIPO _ID
         insereVariavelTS( *ts, $2.v, $1.t );
         geraCodigoParam(&$$, $1, $2);
       }
-
+      | TIPO_ARRAY _ID
+      {
+        insereVariavelTS( *ts, $2.v, $1.t );
+        geraCodigoParam(&$$, $1, $2);
+      }
 
 MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
        { geraCodigoFuncaoPrincipal( &$$, $3 ); }
@@ -291,6 +295,13 @@ DEFAULT : _TK_DEFAULT ':' CMDS
 DECLVAR : DECLVAR ',' _ID
           { insereVariavelTS( *ts, $3.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $3 ); }
+        | TIPO_ARRAY _ID
+          { insereVariavelTS( *ts, $2.v, $1.t ); 
+            geraDeclaracaoVariavel( &$$, $1, $2 ); }
+        | TIPO_ARRAY _ID '=' E
+          { insereVariavelTS( *ts, $2.v, $1.t ); 
+            geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
+          }
         | TIPO _ID
           { insereVariavelTS( *ts, $2.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $2 ); }
@@ -301,18 +312,18 @@ DECLVAR : DECLVAR ',' _ID
         ;
     
     
-TIPO : TIPOSIMPLES 
-     | TIPOSIMPLES '[' _INT ']'
+TIPO_ARRAY : TIPO '[' _INT ']'
        { $$ = $1;
          $$.t.nDim = 1;
          $$.t.d1 = toInt( $3.v ); }
-     | TIPOSIMPLES '[' _INT ']' '['_INT']'
+     | TIPO '[' _INT ']' '['_INT']'
        { $$ = $1;
          $$.t.nDim = 2;
          $$.t.d1 = toInt( $3.v ); 
          $$.t.d2 = toInt( $5.v ); }
+        ;
 
-TIPOSIMPLES : _TK_INT
+TIPO : _TK_INT
     	    | _TK_CHAR
             | _TK_BOOLEAN
             | _TK_DOUBLE

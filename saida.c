@@ -8,6 +8,7 @@ double coracao;
 float Universo;
 char letra;
 char poema[256];
+int array[0];
 int MDC( int a, int b ) {
   int temp_boolean_1;
   int temp_int_1;

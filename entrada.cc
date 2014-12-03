@@ -5,6 +5,8 @@ Irresoluto Universo;
 Grafema letra;
 Manifesto poema;
 
+Indiviso[10] array;
+
 Indiviso MDC(Indiviso a, Indiviso b ) Preludio
 	Na hipotese de(b Equivalente a 0)
 		Restitua a;
