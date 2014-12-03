@@ -88,8 +88,8 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id );
 void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 );
-void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
-                                    const Atributo& S2);
+void geraCodigoCase(Atributo* SS, const Atributo& tcase, const Atributo& cmdsCase);
+void geraCodigoSwitch(Atributo* SS, const Atributo& cases, const Atributo& tdefault);
 void geraCodigoInput( Atributo* SS, const Atributo& id);
 void geraCodigoFuncao(Atributo* SS, const Atributo& cabecalho,
                                     const Atributo& params,
@@ -634,25 +634,25 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
   "if( "+valorCond+" ) goto " +inicioDoWhile+";\n";
 }
 
-void geraCodigoCase(Atributo* SS, const Atributo& case, const Atributo& cmdsCase){
+void geraCodigoCase(Atributo* SS, const Atributo& tcase, const Atributo& cmdsCase){
 
   string l_if_fim = geraLabel("if_fim");
   string l_switch_fim = "l_switch_fim_" + nSwitch;
 
-  SS->c = case.c +
-          "  if( " + SS->v + " != " + case.v + " ) goto " + l_if_fim + ";\n" +
+  SS->c = tcase.c +
+          "  if( " + SS->v + " != " + tcase.v + " ) goto " + l_if_fim + ";\n" +
           cmdsCase.c +
           "goto " + l_switch_fim + ";\n" +
           "  " + l_if_fim + ":;\n";
 }
 
-void geraCodigoSwitch(Atributo* SS, const Atributo& cases, const Atributo& default){
+void geraCodigoSwitch(Atributo* SS, const Atributo& cases, const Atributo& tdefault){
   *SS = Atributo();
   nSwitch++;
   string l_switch_fim = "l_switch_fim_" + nSwitch;
 
   SS->c = cases.c + 
-          default.c +
+          tdefault.c +
           "  " + l_switch_fim + ":;\n";      
 }
 
