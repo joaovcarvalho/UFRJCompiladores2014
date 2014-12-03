@@ -636,7 +636,7 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
    case 1:
      SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr( tipo.t.d1 ) + "];\n";
    case 2:
-     int tam = tipo.t.d1 * tipo.t.d2
+     int tam = tipo.t.d1 * tipo.t.d2;
    	 SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr(tam) + "];\n";
   }   
 }
