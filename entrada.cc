@@ -9,9 +9,7 @@ Indiviso MDC(Indiviso a, Indiviso b ) Preludio
 	Na hipotese de(b Equivalente a 0)
 		Restitua a;
 
-
-	// Restitua MDC(a % b, b);
-	Restitua a;
+	Restitua MDC(b, a Remanescente b);
 Epilogo
 
 Primacial Preludio
@@ -46,5 +44,5 @@ Primacial Preludio
 	// 	inteiro = inteiro Menos 1;
 	// Epilogo
 	// Ao passo que(inteiro Superior a 0);
-	Exclame MDC(16,4);
+	Exclame MDC(15,225) "\n";
 Epilogo

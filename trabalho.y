@@ -81,8 +81,7 @@ void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo&
 void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
                                     const Atributo& S2);
 void geraCodigoInput( Atributo* SS, const Atributo& id);
-void geraCodigoFuncao(Atributo* SS, const Atributo& tipo,
-                                    const Atributo& id,
+void geraCodigoFuncao(Atributo* SS, const Atributo& cabecalho,
                                     const Atributo& params,
                                     const Atributo& cmds);
 void geraCodigoParam(Atributo* SS, const Atributo& tipo,
@@ -139,15 +138,20 @@ PREPARA_GLOBAL : { ts = &ts_global;}
           ;
 
 // Aqui é referente a funções
-FUNCTION : TIPO _ID PREPARA_FUNCAO '(' PARAMS ')' BLOCOFUNC PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, $2, $5, $7); insereVariavelTS(ts_funcoes, $2.v, $1.t); }
-         | _TK_VOID _ID PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, $2, $5, $7); insereVariavelTS(ts_funcoes, $2.v, $1.t); }
-         | TIPO _ID PREPARA_FUNCAO '(' ')'   BLOCOFUNC PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, $2, Atributo(), $6); insereVariavelTS(ts_funcoes, $2.v, $1.t); }
-         | _TK_VOID _ID PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, $2, Atributo(), $6); insereVariavelTS(ts_funcoes, $2.v, $1.t);}
+FUNCTION : DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCOFUNC PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, $4, $6);  }
+         | DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, $4, $6);}
+         | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCOFUNC PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
+         | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
          ;
+
+DECLS_FUNCAO : TIPO _ID
+          { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
+          | _TK_VOID _ID
+          { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
 
 PREPARA_FUNCAO : { ts = &ts_local;} // Passa a usar a tabela de var local.
 
@@ -192,6 +196,8 @@ CMD : ATR ';'
        { $$.c = $1.c; }
      | DECLVAR ';'
        { $$.c = $1.c; }
+     | CMD_RETURN
+       { $$.c = $1.c; }
 
   
 CMD_IF : _TK_IF '('E')' COD
@@ -231,8 +237,8 @@ BLOCO : _TK_IB CMDS _TK_FB
         { $$.c = $2.c;}
         ;
 
-BLOCOFUNC : _TK_IB CMDS CMD_RETURN CMDS _TK_FB 
-          { $$.c = $2.c + $3.c + $4.c;}
+BLOCOFUNC : _TK_IB CMDS _TK_FB 
+          { $$.c = $2.c;}
           | CMD_RETURN
           { $$.c = $1.c;}
           ;
@@ -466,17 +472,12 @@ void geraCodigoParam(Atributo* SS, const Atributo& tipo,
   }
 }
 
-void geraCodigoFuncao(Atributo* SS, const Atributo& tipo,
-                                    const Atributo& id,
+void geraCodigoFuncao(Atributo* SS, const Atributo& cabecalho,
                                     const Atributo& params,
                                     const Atributo& cmds){
   *SS = Atributo();
 
-  string valor_tipo = "void"; 
-  if(tipo.t.nome != "")
-    valor_tipo = tipo.t.nome;
-
-  SS->c = valor_tipo + " "+id.v+"( "+params.c+ " ) {\n" +
+  SS->c = cabecalho.v + "( "+params.c+ " ) {\n" +
            geraDeclaracaoTemporarias() + 
            "\n" +
            cmds.c +  
