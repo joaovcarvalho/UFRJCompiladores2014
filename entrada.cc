@@ -5,6 +5,15 @@ Irresoluto Universo;
 Grafema letra;
 Manifesto poema;
 
+Indiviso MDC(Indiviso a, Indiviso b ) Preludio
+	Na hipotese de(b Equivalente a 0)
+		Restitua a;
+
+
+	// Restitua MDC(a % b, b);
+	Restitua a;
+Epilogo
+
 Primacial Preludio
 	// Testando o if
 	// coracao = 100.20;
@@ -30,12 +39,12 @@ Primacial Preludio
 	// 	Exclame i "\n";
 
 	// Tesytando o Do while
-	Averigue >> inteiro;
-	Realize
-	Preludio
-		Exclame inteiro "\n";
-		inteiro = inteiro Menos 1;
-	Epilogo
-	Ao passo que(inteiro Superior a 0);
-
+	// Averigue >> inteiro;
+	// Realize
+	// Preludio
+	// 	Exclame inteiro "\n";
+	// 	inteiro = inteiro Menos 1;
+	// Epilogo
+	// Ao passo que(inteiro Superior a 0);
+	Exclame MDC(16,4);
 Epilogo

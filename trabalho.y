@@ -43,7 +43,10 @@ struct Atributo {
 };
 
 typedef map< string, Tipo > TS;
-TS ts; // Tabela de simbolos
+TS ts_local, ts_global;
+TS* ts = &ts_global; // Tabela de simbolos da vez
+
+TS ts_funcoes;
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
 string geraTemp( Tipo tipo );
@@ -78,6 +81,13 @@ void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo&
 void geraCodigoSwitch(Atributo* SS, const Atributo& S1,
                                     const Atributo& S2);
 void geraCodigoInput( Atributo* SS, const Atributo& id);
+void geraCodigoFuncao(Atributo* SS, const Atributo& tipo,
+                                    const Atributo& id,
+                                    const Atributo& params,
+                                    const Atributo& cmds);
+void geraCodigoParam(Atributo* SS, const Atributo& tipo,
+                                   const Atributo& id);
+void geraCodigoReturn(Atributo* SS, const Atributo expr);
 
 Tipo tipoResultado( string operador, Tipo a );
                                            
@@ -122,8 +132,37 @@ DECLS : VARGLOBAL DECLS
       ;
       
 VARGLOBAL : DECLVAR ';'
-            { $$ = $1; }
+            { $$ = $1;}
           ;
+
+PREPARA_GLOBAL : { ts = &ts_global;}
+          ;
+
+// Aqui é referente a funções
+FUNCTION : TIPO _ID PREPARA_FUNCAO '(' PARAMS ')' BLOCOFUNC PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, $2, $5, $7); insereVariavelTS(ts_funcoes, $2.v, $1.t); }
+         | _TK_VOID _ID PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, $2, $5, $7); insereVariavelTS(ts_funcoes, $2.v, $1.t); }
+         | TIPO _ID PREPARA_FUNCAO '(' ')'   BLOCOFUNC PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, $2, Atributo(), $6); insereVariavelTS(ts_funcoes, $2.v, $1.t); }
+         | _TK_VOID _ID PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
+          { geraCodigoFuncao(&$$, $1, $2, Atributo(), $6); insereVariavelTS(ts_funcoes, $2.v, $1.t);}
+         ;
+
+PREPARA_FUNCAO : { ts = &ts_local;} // Passa a usar a tabela de var local.
+
+PARAMS : PARAMS ',' DECL_PARAM
+       { $$.c = $1.c + ',' + ' ' + $3.c; }
+       | DECL_PARAM
+       { $$ = $1; }
+       ;
+
+DECL_PARAM: TIPO _ID
+      {
+        insereVariavelTS( *ts, $2.v, $1.t );
+        geraCodigoParam(&$$, $1, $2);
+      }
+
 
 MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
        { geraCodigoFuncaoPrincipal( &$$, $3 ); }
@@ -192,8 +231,14 @@ BLOCO : _TK_IB CMDS _TK_FB
         { $$.c = $2.c;}
         ;
 
-BLOCOFUNC : _TK_IB CMDS _TK_RETURN _ID _TK_FB 
-          | _TK_RETURN;
+BLOCOFUNC : _TK_IB CMDS CMD_RETURN CMDS _TK_FB 
+          { $$.c = $2.c + $3.c + $4.c;}
+          | CMD_RETURN
+          { $$.c = $1.c;}
+          ;
+
+CMD_RETURN : _TK_RETURN E ';'
+          { geraCodigoReturn(&$$, $2); }
     
 CASOS : _TK_CASE F ':' CMDS _TK_BREAK ';' CASOS
       | _TK_DEFAULT ':' CMDS
@@ -225,13 +270,13 @@ DEFAULT : _TK_DEFAULT ':' CMDS
         ;
             
 DECLVAR : DECLVAR ',' _ID
-          { insereVariavelTS( ts, $3.v, $1.t ); 
+          { insereVariavelTS( *ts, $3.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $3 ); }
         | TIPO _ID
-          { insereVariavelTS( ts, $2.v, $1.t ); 
+          { insereVariavelTS( *ts, $2.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $2 ); }
         | TIPO _ID '=' E
-          { insereVariavelTS( ts, $2.v, $1.t ); 
+          { insereVariavelTS( *ts, $2.v, $1.t ); 
             geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
              }
     | TIPO '[' E ']' _ID
@@ -240,16 +285,6 @@ DECLVAR : DECLVAR ',' _ID
       }
         ;
     
-PARAM : ',' TIPO _ID PARAM
-      |
-        { $$.c = ""; }
-      ;
-      
-FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCOFUNC
-         | _TK_VOID _ID '(' TIPO _ID PARAM ')' BLOCO
-         | TIPO _ID '(' ')' BLOCOFUNC
-         | _TK_VOID _ID '(' ')' BLOCO
-         ;
     
 TIPO : _TK_INT
      | _TK_CHAR
@@ -309,12 +344,28 @@ E : E _TK_MAIS E
   | F
   ;
 
+PARAM : PARAM ',' E
+        { $$.c = $1.c + $3.c;
+          $$.v = $1.v + ',' + $3.v; }
+      | E
+        { $$ = $1; }
+      ;
+
 F : _ID   
-  { if( buscaVariavelTS( ts, $1.v, &$$.t ) ) 
+  { if( buscaVariavelTS( *ts, $1.v, &$$.t ) ) 
       $$.v = $1.v; 
     else
       erro( "Variavel nao declarada: " + $1.v );
   } 
+  | _ID '(' PARAM ')'
+  {
+    if( buscaVariavelTS( ts_funcoes, $1.v, &$$.t ) ){
+      $$.c = $3.c;
+      $$.v = $1.v + '(' + $3.v + ')';
+    }else{ 
+      erro( "Funcao nao declarada: "+ $1.v);
+    }
+  }
   | _INT 
     {  $$.v = $1.v; 
        $$.t = Tipo( "int" ); }
@@ -354,7 +405,7 @@ string geraLabel(string cmd){
 
 void geraCodigoAtribuicao( Atributo* SS, Atributo& lvalue, 
                                          const Atributo& rvalue ) {
-  if( buscaVariavelTS( ts, lvalue.v, &lvalue.t ) ) {
+  if( buscaVariavelTS( *ts, lvalue.v, &lvalue.t ) ) {
     if( lvalue.t.nome == rvalue.t.nome ) {
       if( lvalue.t.nome == "string" ) {
         SS->c = lvalue.c + rvalue.c + 
@@ -376,7 +427,7 @@ void geraCodigoAtribuicao( Atributo* SS, Atributo& lvalue,
 }  
 
 void geraCodigoInput( Atributo* SS, const Atributo& id){
-  if(buscaVariavelTS(ts, id.v, (Tipo*) &id.t)){
+  if(buscaVariavelTS(*ts, id.v, (Tipo*) &id.t)){
      if( id.t.nome == "int" )
         SS->c = id.c + "  scanf( \"%d\" , &" + id.v + " );\n";
       else if( id.t.nome == "string" )
@@ -387,6 +438,50 @@ void geraCodigoInput( Atributo* SS, const Atributo& id){
   else
     erro( "Variável nao declarada: " + id.v);
 }    
+
+void geraCodigoReturn(Atributo* SS, const Atributo expr){
+  *SS = Atributo();
+
+  SS->c = expr.c + "\n" +
+          "return " + expr.v + ";\n" ;
+}
+
+void geraCodigoParam(Atributo* SS, const Atributo& tipo,
+                                   const Atributo& id){
+  *SS = Atributo();
+
+  SS->v = "";
+  SS->t = tipo.t;
+  if( tipo.t.nome == "string" ) {
+    SS->c = tipo.c + 
+           "char " + id.v + "["+ toStr( MAX_STR ) +"]";   
+  }
+  else {
+    if(tipo.t.nome == "boolean"){
+      SS->c = "int " + id.v; 
+    }
+    else
+      SS->c = tipo.c + 
+            tipo.t.nome + " " + id.v;
+  }
+}
+
+void geraCodigoFuncao(Atributo* SS, const Atributo& tipo,
+                                    const Atributo& id,
+                                    const Atributo& params,
+                                    const Atributo& cmds){
+  *SS = Atributo();
+
+  string valor_tipo = "void"; 
+  if(tipo.t.nome != "")
+    valor_tipo = tipo.t.nome;
+
+  SS->c = valor_tipo + " "+id.v+"( "+params.c+ " ) {\n" +
+           geraDeclaracaoTemporarias() + 
+           "\n" +
+           cmds.c +  
+           "}\n";
+}
        
 void geraCodigoIfComElse( Atributo* SS, const Atributo& expr, 
                                         const Atributo& cmdsThen,
