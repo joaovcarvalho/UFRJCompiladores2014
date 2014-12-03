@@ -325,15 +325,15 @@ TIPO_ARRAY : TIPO '[' _INT ']'
        { $$ = $1;
          $$.t.nDim = 1;
          $$.t.d1 = toInt( $3.v ); 
-         printf("array unidimensional %s:",$3.v); //DEPURANDO O TO INT
-         printf("array unidimensional toint %d:",toInt($3.v));} //DEPURANDO O TO INT
+         cout<<"array unidimensional"<<$3.v<<endl); //DEPURANDO O TO INT
+         cout<<"array unidimensional toint"<<toInt($3.v)<<endl;} //DEPURANDO O TO INT
      | TIPO '[' _INT ']' '['_INT']'
        { $$ = $1;
          $$.t.nDim = 2;
          $$.t.d1 = toInt( $3.v ); 
          $$.t.d2 = toInt( $5.v ); 
-     	 printf("array bidimensional %s - %s", $3.v,$5.v); // DEPURANDO O TOINT
-      	 printf("array bidimensional toint %d - %d", toInt($3.v),toInt($5.v));} // DEPURANDO O TOINT
+     	 cout<<"array bidimensional"<<$3.v<<" - "<<$5.v<<endl; // DEPURANDO O TOINT
+      	 cout<<"array bidimensional toint "<<toInt($3.v)<<" - "<<toInt($5.v)<<endl;} // DEPURANDO O TOINT
         ;
 
 TIPO : _TK_INT
