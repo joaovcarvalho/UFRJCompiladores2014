@@ -22,10 +22,16 @@ const int MAX_STR = 256;
 
 struct Tipo {
   string nome;
+  int nDim;
+  int d1;
+  int d2;
   
-  Tipo() {}
+  Tipo() { nome = ""; nDim = 0; d1 = 0; d2 = 0; }
   Tipo( string nome ) {
     this->nome = nome;
+    nDim = 0; 
+    d1 = 0; 
+    d2 = 0;
   }
 };
 
@@ -251,6 +257,17 @@ FUNCTION : TIPO _ID '(' TIPO _ID PARAM ')' BLOCOFUNC
          | _TK_VOID _ID '(' ')' BLOCO
          ;
     
+TIPO : TIPOSIMPLES 
+     | TIPOSIMPLES '[' _INT ']'
+       { $$ = $1;
+         $$.t.nDim = 1;
+         $$.t.d1 = toInt( $3.v ); }
+     | TIPOSIMPLES '[' _INT ']' '['_INT']'
+       { $$ = $1;
+         $$.t.nDim = 2;
+         $$.t.d1 = toInt( $3.v ); 
+         $$.t.d2 = toInt( $5.v ); }
+
 TIPO : _TK_INT
      | _TK_CHAR
      | _TK_BOOLEAN
