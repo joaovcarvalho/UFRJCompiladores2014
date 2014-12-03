@@ -271,6 +271,8 @@ CASOS : _TK_CASE F ':' CMDS _TK_BREAK ';' CASOS
   
 CMD_FOR: _TK_FOR '('DECLVAR ';' ATR ';' _TK_TQ E ')' COD
               {geraCodigoFor(&$$, $3, $8, $5, $10);}
+      | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E ')' COD
+              {geraCodigoFor(&$$, $3, $8, $5, $10);}
           
           
 CMD_WHILE: _TK_WHILE '(' E ')' COD
@@ -335,10 +337,10 @@ ATR : _ID '=' E
       { geraCodigoAtribuicaoSemIndice( &$$, $1, $3 ); }
     | _ID '[' E ']' '=' E 
           { geraCodigoAtribuicao1Indice( &$$, $1, $3, $6 ); }
-    | _ID '[' E ',' E ']'  '=' E 
-          { geraCodigoAtribuicao2Indices( &$$, $1, $3, $5, $8 ); }
-    | _ID '[' E ',' E ',' E ']'  '=' E 
-          { geraCodigoAtribuicao3Indices( &$$, $1, $3, $5, $7, $10 ); }
+    | _ID '[' E ']''[' E ']' '=' E 
+          { geraCodigoAtribuicao2Indices( &$$, $1, $3, $6, $9 ); }
+    | _ID '[' E ']''[' E ']''[' E ']'  '=' E 
+          { geraCodigoAtribuicao3Indices( &$$, $1, $3, $6, $9, $12 ); }
     ;
 
 E : E _TK_MAIS E   
