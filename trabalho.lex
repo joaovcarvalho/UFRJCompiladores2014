@@ -41,7 +41,7 @@ COMMENT "//".*
 "Intervalo"	{ yylval = Atributo( yytext ); return _INTERVALO; }
 "Segregue"	{ yylval = Atributo( yytext ); return _FILTER; }
 "EmCompletude"	{ yylval = Atributo( yytext ); return _FOREACH; }
-"x"		{ yylval = Atributo( yytext ); return _X; }
+"X"		{ yylval = Atributo( yytext ); return _X; }
 
 {DO}        {  yylval = Atributo(  yytext ); return _TK_DO; }
 {SWITCH}    {  yylval = Atributo( yytext ); return _TK_SWITCH; }

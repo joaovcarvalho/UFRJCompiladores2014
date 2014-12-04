@@ -204,6 +204,7 @@ MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
 
 CMDS  : CMD CMDS
        { $$.c = $1.c + $2.c; }
+     | CMD_PIPE ';' CMDS    { $$.c = $1.c + $3.c; }
      |
        { $$ = Atributo(); }
      ;
@@ -309,8 +310,8 @@ CMD_PIPE : _INTERVALO '[' E _2PTS INI_PIPE ']' PROCS CONSOME
             
             inicio.c = $3.c + $5.c +
                        "  x_" + pipeAtivo + " = " + $3.v + ";\n";
-            condicao.t.nome = "bool";
-            condicao.v = geraTemp( Tipo( "bool" ) ); 
+            condicao.t.nome = "boolean";
+            condicao.v = geraTemp( Tipo( "boolean" ) ); 
             condicao.c = "  " + condicao.v + " = " + "x_" + pipeAtivo + 
                          " <= " + $5.v + ";\n";
             passo.c = passoPipeAtivo + ":\n" + 
@@ -484,6 +485,12 @@ F : _ID
     {  $$.v = $1.v; 
        $$.t = Tipo( "string" ); }
   | '(' E ')'  { $$ = $2; }
+  | _X
+    { if( pipeAtivo != "" )
+        $$ = Atributo( "x_" + pipeAtivo, pipeAtivo ); 
+      else
+        erro( "Variavel 'x' so pode ser usada dentro de pipe" );
+    }
   | _ID '[' E ']'
   {
     geraCodigoAcessoArray(&$$, $1, $3, Atributo(), Atributo(), 1);
@@ -1042,7 +1049,7 @@ bool buscaVariavelTS( TS& ts, string nomeVar, Tipo* tipo ) {
 
 void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) {
   *SS = Atributo();
-  SS->v = geraTemp( Tipo( "bool" ) );
+  SS->v = geraTemp( Tipo( "boolean" ) );
   SS->c = condicao.c + 
           "  " + SS->v + " = !" + condicao.v + ";\n" +
           "  if( " + SS->v + " ) goto " + passoPipeAtivo + ";\n";

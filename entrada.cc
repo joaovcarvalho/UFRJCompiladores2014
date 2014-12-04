@@ -9,9 +9,8 @@ Epilogo
 
 
 Primacial Preludio
-    Exclame MDC(15,3) "\n";
 
-    Intervalo[1 .. 10] => Segregue[ x Superior a 0] => EmCompletude[ Exclame x ] ;
+    Intervalo[1 .. 10] => Segregue[ X Superior a 5] => EmCompletude[ Exclame X "\n"; ] ;
     // Indiviso x_1;
     // Indiviso inteiro;
     // Indiviso magernitude= 3;
