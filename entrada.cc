@@ -48,15 +48,14 @@ Primacial Preludio
 	// Ao passo que(inteiro Superior a 0);
 	Indiviso [3][4] colecao;
 	inteiro=0;
-	Seja qual for( Indiviso i = 0 ; i = i Mais 1; Tal que i Inferior a 3)
+
+	Seja qual for( Indiviso i = 0 ; i = i Mais 1; Tal que i Inferior a 3) 
+	Preludio
 		Seja qual for( Indiviso j = 0 ; j = j Mais 1; Tal que j Inferior a 4)
 		Preludio
 			colecao[i][j] = inteiro;
 			inteiro = inteiro Mais 1;
+			Exclame colecao[i][j] "\n";
 		Epilogo
-	Seja qual for( i = 0 ; i = i Mais 1; Tal que i Inferior a 3)
-		Seja qual for( j = 0 ; j = j Mais 1; Tal que j Inferior a 4)
-		Preludio
-			Exclame(colecao[i][j]);
-		Epilogo
+	Epilogo
 Epilogo

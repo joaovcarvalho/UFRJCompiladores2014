@@ -98,6 +98,12 @@ void geraCodigoParam(Atributo* SS, const Atributo& tipo,
                                    const Atributo& id);
 void geraCodigoReturn(Atributo* SS, const Atributo expr);
 
+void geraCodigoAcessoArray(Atributo* SS, const Atributo& id, 
+                                    const Atributo& expr1,
+                                    const Atributo& expr2,
+                                    const Atributo& expr3,
+                                    int dim);
+
 string toStr( int n );
 int toInt( string n );
 
@@ -325,15 +331,18 @@ TIPO_ARRAY : TIPO '[' _INT ']'
        { $$ = $1;
          $$.t.nDim = 1;
          $$.t.d1 = toInt( $3.v ); 
-         cout<<"array unidimensional"<<$3.v<<endl); //DEPURANDO O TO INT
-         cout<<"array unidimensional toint"<<toInt($3.v)<<endl;} //DEPURANDO O TO INT
+         // cout<< $$.t.d1 << endl;
+         // cout<<"array unidimensional"<<$3.v<<endl; //DEPURANDO O TO INT
+         // cout<<"array unidimensional toint"<<toInt($3.v)<<endl; //DEPURANDO O TO INT
+         }
      | TIPO '[' _INT ']' '['_INT']'
        { $$ = $1;
          $$.t.nDim = 2;
          $$.t.d1 = toInt( $3.v ); 
-         $$.t.d2 = toInt( $5.v ); 
-     	 cout<<"array bidimensional"<<$3.v<<" - "<<$5.v<<endl; // DEPURANDO O TOINT
-      	 cout<<"array bidimensional toint "<<toInt($3.v)<<" - "<<toInt($5.v)<<endl;} // DEPURANDO O TOINT
+         $$.t.d2 = toInt( $6.v ); 
+     	 // cout << "array bidimensional" << $3.v << " - " << $6.v <<endl; // DEPURANDO O TOINT
+      	 // cout << "array bidimensional toint "<< toInt($3.v) << " - "<<toInt($6.v)<<endl; // DEPURANDO O TOINT
+         }
         ;
 
 TIPO : _TK_INT
@@ -349,7 +358,7 @@ ATR : _ID '=' E
     | _ID '[' E ']' '=' E 
           { geraCodigoAtribuicao1Indice( &$$, $1, $3, $6 ); }
     | _ID '[' E ']''[' E ']' '=' E 
-          { geraCodigoAtribuicao2Indices( &$$, $1, $3, $6, $9 ); }
+          { geraCodigoAtribuicao2Indices( &$$, $1, $3, $6, $9 );}
     | _ID '[' E ']''[' E ']''[' E ']'  '=' E 
           { geraCodigoAtribuicao3Indices( &$$, $1, $3, $6, $9, $12 ); }
     ;
@@ -439,10 +448,16 @@ F : _ID
        $$.t = Tipo( "string" ); }
   | '(' E ')'  { $$ = $2; }
   | _ID '[' E ']'
+  {
+    geraCodigoAcessoArray(&$$, $1, $3, Atributo(), Atributo(), 1);
+  }
   | _ID '[' E ']' '[' E ']'
+  {
+    geraCodigoAcessoArray(&$$, $1, $3, $6, Atributo(), 2);
+  }
   | _ID '[' E ']' '[' E ']' '[' E ']' // Esse caso só ocorre em Matriz de string
   {
-
+    geraCodigoAcessoArray(&$$, $1, $3, $6, $9, 3);
   }
   ;
   
@@ -457,6 +472,40 @@ int nSwitch = 0;
 
 string geraLabel(string cmd){
   return "l_"+cmd+"_"+toStr( ++label[cmd] );
+}
+
+void geraCodigoAcessoArray(Atributo* SS, const Atributo& id, 
+                                    const Atributo& expr1,
+                                    const Atributo& expr2,
+                                    const Atributo& expr3,
+                                    int dim){
+  Tipo t;
+  if(buscaVariavelTS(*ts, id.v, &t)){
+
+  switch(dim){
+    case 1:
+        SS->c = expr1.c;
+        SS->v = "  " + id.v + "[" + expr1.v + "]";
+    break;
+
+    case 2: 
+        string temp1 = geraTemp(Tipo("int"));
+        string temp2 = geraTemp(Tipo("int"));
+
+        SS->c = expr1.c + expr2.c +
+                temp1 + " = " + expr1.v + "*" + toStr(t.d1) +";\n" +
+                temp2 + " = " + temp1 + " + "+expr2.v+";\n";
+                
+        SS->v = id.v + "[" + temp2 + "]";
+        SS->t = t;
+
+    break;
+  }
+
+  }else{
+    erro("Array nao declarado");
+  }
+
 }
 
 void geraCodigoAtribuicaoSemIndice( Atributo* SS, Atributo& lvalue, 
@@ -489,9 +538,18 @@ void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue,
                                                  Atributo& indice1, 
                                                  Atributo& indice2, 
                                                  const Atributo& rvalue ){
-	int indice = toInt(indice1.v) * lvalue.t.d1 + toInt(indice2.v);
-	SS->c = indice1.c + rvalue.c +
-          "  " + lvalue.v + "[" + toStr(indice) + "] = " + rvalue.v + ";\n";
+  if(buscaVariavelTS(*ts, lvalue.v, &lvalue.t)){
+
+  string temp1 = geraTemp(Tipo("int"));
+  string temp2 = geraTemp(Tipo("int"));
+
+  SS->c = indice1.c + rvalue.c +
+          temp1 + " = " + indice1.v + "*" + toStr(lvalue.t.d1) +";\n" +
+          temp2 + " = " + temp1 + " + "+indice2.v+";\n"+
+          "  " + lvalue.v + "[" + temp2 + "] = " + rvalue.v + ";\n";
+        }else{
+          erro("Array nao declarado");
+        }
 
 }
 void geraCodigoAtribuicao3Indices( Atributo* SS, Atributo& lvalue, 
