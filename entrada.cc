@@ -46,17 +46,37 @@ Primacial Preludio
 	// 	inteiro = inteiro Menos 1;
 	// Epilogo
 	// Ao passo que(inteiro Superior a 0);
-	Indiviso [3][4] colecao;
-	inteiro=0;
-	Seja qual for( Indiviso i = 0 ; i = i Mais 1; Tal que i Inferior a 3)
-		Seja qual for( Indiviso j = 0 ; j = j Mais 1; Tal que j Inferior a 4)
-		Preludio
-			colecao[i][j] = inteiro;
-			inteiro = inteiro Mais 1;
-		Epilogo
-	Seja qual for( i = 0 ; i = i Mais 1; Tal que i Inferior a 3)
-		Seja qual for( j = 0 ; j = j Mais 1; Tal que j Inferior a 4)
-		Preludio
-			Exclame(colecao[i][j]);
-		Epilogo
+	//Indiviso [3][4] colecao;
+	//inteiro=0;
+	//Seja qual for( Indiviso i = 0 ; i = i Mais 1; Tal que i Inferior a 3)
+	//	Seja qual for( Indiviso j = 0 ; j = j Mais 1; Tal que j Inferior a 4)
+	//	Preludio
+	//		colecao[i][j] = inteiro;
+	//		inteiro = inteiro Mais 1;
+	//	Epilogo
+	//Seja qual for( i = 0 ; i = i Mais 1; Tal que i Inferior a 3)
+	//	Seja qual for( j = 0 ; j = j Mais 1; Tal que j Inferior a 4)
+	//	Preludio
+	//		Exclame(colecao[i][j]);
+	//	Epilogo
+
+	//Teste do Switch
+	indiviso x = 2;
+	Assemelhe x
+	Preludio
+		Sendo 0:
+			Exclame ("Zero");
+			Aborta;
+		Sendo 1:
+			Exclame ("Um");
+			Aborta;
+		Sendo 2:
+			Exclame ("Dois!");
+			Aborta;
+		Sendo 3:
+			Exclame ("Tres");
+			Aborta;
+		Padrao
+			Exclame ("???");
+	Epilogo
 Epilogo
