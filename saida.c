@@ -69,6 +69,26 @@ temp_int_8 = temp_int_7 + j;
   temp_int_2 = i + 1;
   i = temp_int_2;
  goto l_for_cond_2; l_for_fim_2:;
+int x;
+  x = 0;
+  if( x != 0 ) goto l_if_fim_2;
+  printf( "%s" , "Zero" );
+goto _switch_fim_;
+  l_if_fim_2:;
+  if( x != 1 ) goto l_if_fim_3;
+  printf( "%s" , "Um" );
+goto _switch_fim_;
+  l_if_fim_3:;
+  if( x != 2 ) goto l_if_fim_4;
+  printf( "%s" , "Dois!" );
+goto _switch_fim_;
+  l_if_fim_4:;
+  if( x != 3 ) goto l_if_fim_5;
+  printf( "%s" , "Tres" );
+goto _switch_fim_;
+  l_if_fim_5:;
+  printf( "%s" , "???" );
+  _switch_fim_:;
   return 0;
 }
 

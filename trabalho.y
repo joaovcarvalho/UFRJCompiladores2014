@@ -88,7 +88,7 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
                                            const Atributo& id );
 void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo& S2 );
-void geraCodigoCase(Atributo* SS, const Atributo& tcase, const Atributo& cmdsCase);
+void geraCodigoCase(Atributo* SS, const Atributo& cases, const Atributo& tcase, const Atributo& cmdsCase);
 void geraCodigoSwitch(Atributo* SS, const Atributo& cases, const Atributo& tdefault);
 void geraCodigoInput( Atributo* SS, const Atributo& id);
 void geraCodigoFuncao(Atributo* SS, const Atributo& cabecalho,
@@ -108,6 +108,7 @@ string toStr( int n );
 int toInt( string n );
 
 Tipo tipoResultado( string operador, Tipo a );
+int nSwitch = 0;
                                            
 // Usando const Atributo& não cria cópia desnecessária
 
@@ -296,9 +297,10 @@ CMD_SWITCH : _TK_SWITCH SW DEFAULT _TK_FB
 SW  : '(' E ')' _TK_IB _TK_CASE E ':' CMDS
       { $$.c = $2.c;
         $$.v = $2.v;
-        geraCodigoCase(&$$, $6, $8); }
+        nSwitch++;
+        geraCodigoCase(&$$, Atributo(), $6, $8); }
     | SW _TK_CASE E ':' CMDS
-      { geraCodigoCase(&$$, $3, $5); }
+      { geraCodigoCase(&$$, $1, $3, $5); }
     ;
 
 DEFAULT : _TK_DEFAULT ':' CMDS
@@ -468,7 +470,6 @@ int nlinha = 1;
 map<string,int> n_var_temp;
 map<string,Tipo> resultadoOperador;
 map<string, int> label;
-int nSwitch = 0;
 
 string geraLabel(string cmd){
   return "l_"+cmd+"_"+toStr( ++label[cmd] );
@@ -698,12 +699,12 @@ void geraCodigoDoWhile(Atributo* SS, const Atributo& cmds,
   "if( "+valorCond+" ) goto " +inicioDoWhile+";\n";
 }
 
-void geraCodigoCase(Atributo* SS, const Atributo& tcase, const Atributo& cmdsCase){
+void geraCodigoCase(Atributo* SS, const Atributo& cases, const Atributo& tcase, const Atributo& cmdsCase){
 
   string l_if_fim = geraLabel("if_fim");
   string l_switch_fim = "l_switch_fim_" + nSwitch;
 
-  SS->c = tcase.c +
+  SS->c = cases.c + tcase.c +
           "  if( " + SS->v + " != " + tcase.v + " ) goto " + l_if_fim + ";\n" +
           cmdsCase.c +
           "goto " + l_switch_fim + ";\n" +
@@ -712,12 +713,13 @@ void geraCodigoCase(Atributo* SS, const Atributo& tcase, const Atributo& cmdsCas
 
 void geraCodigoSwitch(Atributo* SS, const Atributo& cases, const Atributo& tdefault){
   *SS = Atributo();
-  nSwitch++;
   string l_switch_fim = "l_switch_fim_" + nSwitch;
 
   SS->c = cases.c + 
           tdefault.c +
-          "  " + l_switch_fim + ":;\n";      
+          "  " + l_switch_fim + ":;\n";
+
+  nSwitch--;      
 }
 
 void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,

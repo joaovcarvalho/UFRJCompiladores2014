@@ -57,6 +57,7 @@ Primacial Preludio
 			inteiro = inteiro Mais 1;
 			Exclame colecao[i][j] "\n";
 		Epilogo
+	Epilogo
 	//Indiviso [3][4] colecao;
 	//inteiro=0;
 	//Seja qual for( Indiviso i = 0 ; i = i Mais 1; Tal que i Inferior a 3)
@@ -72,22 +73,18 @@ Primacial Preludio
 	//	Epilogo
 
 	//Teste do Switch
-	indiviso x = 2;
-	Assemelhe x
+	Indiviso x = 0;
+	Assemelhe (x)
 	Preludio
 		Sendo 0:
-			Exclame ("Zero");
-			Aborta;
+			Exclame "Zero";
 		Sendo 1:
-			Exclame ("Um");
-			Aborta;
+			Exclame "Um";
 		Sendo 2:
-			Exclame ("Dois!");
-			Aborta;
+			Exclame "Dois!";
 		Sendo 3:
-			Exclame ("Tres");
-			Aborta;
-		Padrao
-			Exclame ("???");
+			Exclame "Tres";
+		Padrao:
+			Exclame "???";
 	Epilogo
 Epilogo
