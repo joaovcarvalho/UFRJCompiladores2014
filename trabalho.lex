@@ -35,6 +35,14 @@ COMMENT "//".*
 "Tal que"	    	  {  yylval = Atributo(  yytext ); return _TK_TQ; }
 "Ao passo que"    	  {  yylval = Atributo(  yytext ); return _TK_WHILE; }
 
+"=>"		{  yylval = Atributo( yytext ); return _PIPE; }
+".."		{  yylval = Atributo( yytext ); return _2PTS; }
+
+"Intervalo"	{ yylval = Atributo( yytext ); return _INTERVALO; }
+"Segregue"	{ yylval = Atributo( yytext ); return _FILTER; }
+"EmCompletude"	{ yylval = Atributo( yytext ); return _FOREACH; }
+"x"		{ yylval = Atributo( yytext ); return _X; }
+
 {DO}        {  yylval = Atributo(  yytext ); return _TK_DO; }
 {SWITCH}    {  yylval = Atributo( yytext ); return _TK_SWITCH; }
 {CASE}      {  yylval = Atributo(  yytext ); return _TK_CASE; }

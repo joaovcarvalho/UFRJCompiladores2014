@@ -131,6 +131,7 @@ void yyerror(const char *);
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
 %token _COUT _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
 %token _TK_RETURN _TK_NULL
+%token _PIPE _INTERVALO _FILTER _FOREACH _2PTS _X
 
 %nonassoc '<' '>'
 %left _TK_MAIS _TK_MENOS
@@ -300,6 +301,45 @@ DEFAULT : _TK_DEFAULT ':' CMDS
           { $$.c = $3.c; }
         |
           { $$.c = ""; }
+        ;
+
+CMD_PIPE : _INTERVALO '[' E _2PTS INI_PIPE ']' PROCS CONSOME 
+          { 
+            Atributo inicio, condicao, passo, cmd;
+            
+            inicio.c = $3.c + $5.c +
+                       "  x_" + pipeAtivo + " = " + $3.v + ";\n";
+            condicao.t.nome = "bool";
+            condicao.v = geraTemp( Tipo( "bool" ) ); 
+            condicao.c = "  " + condicao.v + " = " + "x_" + pipeAtivo + 
+                         " <= " + $5.v + ";\n";
+            passo.c = passoPipeAtivo + ":\n" + 
+                      "  x_" + pipeAtivo + " = x_" + pipeAtivo + " + 1;\n";
+            cmd.c = $7.c + $8.c;
+            
+            geraCodigoFor( &$$, inicio, condicao, passo, cmd );
+            
+            pipeAtivo = ""; }
+        ;
+
+INI_PIPE : E
+           { $$ = $1;
+             pipeAtivo =  $1.t.nome;
+       passoPipeAtivo = geraLabel( "passo_pipe" ); }
+   ;    
+
+PROCS : _PIPE PROC PROCS 
+        { $$.c = $2.c + $3.c; }
+      | _PIPE
+        { $$ = Atributo(); }
+      ;
+      
+PROC : _FILTER '[' E ']'
+       { geraCodigoFilter( &$$, $3 ); }
+     ;
+      
+CONSOME : _FOREACH '[' CMD ']'
+          { $$.c = $3.c; }
         ;
             
 DECLVAR : DECLVAR ',' _ID
@@ -784,6 +824,7 @@ void geraDeclaracaoVariavelComAtribuicao( Atributo* SS, const Atributo& tipo,
 void geraCodigoFuncaoPrincipal( Atributo* SS, const Atributo& cmds ) {
   *SS = Atributo();
   SS->c = "\nint main() {\n" +
+           geraDeclaracaoVarPipe() + 
            geraDeclaracaoTemporarias() + 
            "\n" +
            cmds.c + 
