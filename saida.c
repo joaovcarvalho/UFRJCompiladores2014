@@ -47,10 +47,10 @@ temp_boolean_3 = !temp_boolean_2;
  goto l_for_cond_1; l_for_fim_1:;
 temp_int_3 = 0;
 x_int = array[temp_int_3];l_for_cond_2: 
-  temp_boolean_4 = temp_int_3 <= 10;
+  temp_boolean_4 = temp_int_3 < 10;
 temp_boolean_5 = !temp_boolean_4;
  if( temp_boolean_5 ) goto l_for_fim_2;
- if( x_int > 7) goto l_passo_pipe_1;
+ if( temp_int_3 < 10 - 7) goto l_passo_pipe_1;
   printf( "%d" , x_int );
   printf( "%s" , "\n" );
 

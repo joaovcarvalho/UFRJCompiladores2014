@@ -56,6 +56,7 @@ string pipeAtivo; // Tipo do pipe ativo
 string passoPipeAtivo; // Label 'fim' do pipe ativo
 string geraDeclaracaoVarPipe();
 string tamanhoPipe;
+string indicePipe;
 
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
@@ -311,6 +312,7 @@ CMD_PIPE : _INTERVALO '[' E _2PTS INI_PIPE ']' PROCS CONSOME
           { 
             Atributo inicio, condicao, passo, cmd;
             
+            
             inicio.c = $3.c + $5.c +
                        "  x_" + pipeAtivo + " = " + $3.v + ";\n";
             condicao.t.nome = "boolean";
@@ -327,18 +329,16 @@ CMD_PIPE : _INTERVALO '[' E _2PTS INI_PIPE ']' PROCS CONSOME
 
           | INI_PIPE_ARRAY PROCS CONSOME{
               Atributo inicio, condicao, passo, cmd;
-              
-              string counter = geraTemp(Tipo("int"));
-
-              inicio.c = counter + " = 0;\n" +
-                          "x_"+pipeAtivo+" = "+$1.v+"["+counter+"];"; 
+            
+              inicio.c = indicePipe + " = 0;\n" +
+                          "x_"+pipeAtivo+" = "+$1.v+"["+indicePipe+"];"; 
               condicao.t.nome = "boolean";
               condicao.v = geraTemp( Tipo( "boolean" ) ); 
-              condicao.c = "  " + condicao.v + " = " + counter + 
-                           " <= " + tamanhoPipe + ";\n";
+              condicao.c = "  " + condicao.v + " = " + indicePipe + 
+                           " < " + tamanhoPipe + ";\n";
               passo.c = passoPipeAtivo + ":\n" + 
-                        counter+ " = " + counter + " + 1;\n"+
-                        "x_"+pipeAtivo+" = "+$1.v+"["+counter+"];"; 
+                        indicePipe+ " = " + indicePipe + " + 1;\n"+
+                        "x_"+pipeAtivo+" = "+$1.v+"["+indicePipe+"];"; 
               cmd.c = $2.c + $3.c;
               
               geraCodigoFor( &$$, inicio, condicao, passo, cmd );
@@ -349,6 +349,7 @@ CMD_PIPE : _INTERVALO '[' E _2PTS INI_PIPE ']' PROCS CONSOME
 
 INI_PIPE : E
            { $$ = $1;
+            indicePipe = "x_"+pipeAtivo;
              tamanhoPipe = $1.v;
              pipeAtivo =  $1.t.nome;
        passoPipeAtivo = geraLabel( "passo_pipe" ); }
@@ -360,6 +361,8 @@ INI_PIPE_ARRAY : _ID
             if( buscaVariavelTS( *ts, $1.v, &$$.t ) ){
               pipeAtivo = $$.t.nome;
               tamanhoPipe = toStr($$.t.d1);
+              string counter = geraTemp(Tipo("int"));
+              indicePipe = counter;
               passoPipeAtivo = geraLabel( "passo_pipe" );
             }
             else
@@ -1099,13 +1102,13 @@ void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) {
 void geraCodigoFirstN( Atributo* SS, const Atributo& n ) {
   *SS = Atributo();
   SS->c = n.c + 
-          " if( x_"+ pipeAtivo +" > " + n.v + ") goto "  + passoPipeAtivo + ";\n";
+          " if( "+ indicePipe +" > " + n.v + ") goto "  + passoPipeAtivo + ";\n";
 }
 
 void geraCodigoLastN( Atributo* SS, const Atributo& n ) {
   *SS = Atributo();
   SS->c = n.c + 
-          " if( x_"+ pipeAtivo +" < " +tamanhoPipe+ " - "+ n.v + ") goto "  + passoPipeAtivo + ";\n";
+          " if( "+ indicePipe +" < " +tamanhoPipe+ " - "+ n.v + ") goto "  + passoPipeAtivo + ";\n";
 }
 
 Tipo tipoResultado( string operador, Tipo a ) {
