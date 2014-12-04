@@ -329,16 +329,23 @@ DECLVAR : DECLVAR ',' _ID
         ;
     
     
-TIPO_ARRAY : TIPO '[' _INT ']'
-       { $$ = $1;
+TIPO_ARRAY : TIPO '[' E ']'
+       { 
+         if($3.t.nome != "int")
+          erro("O tamanho do array deve ser inteiro");
+
+         $$ = $1;
          $$.t.nDim = 1;
          $$.t.d1 = toInt( $3.v ); 
          // cout<< $$.t.d1 << endl;
          // cout<<"array unidimensional"<<$3.v<<endl; //DEPURANDO O TO INT
          // cout<<"array unidimensional toint"<<toInt($3.v)<<endl; //DEPURANDO O TO INT
          }
-     | TIPO '[' _INT ']' '['_INT']'
-       { $$ = $1;
+     | TIPO '[' E ']' '['E']'
+       { 
+         if($3.t.nome != "int" || $6.t.nome != "int")
+          erro("O tamanho do array deve ser inteiro");
+         $$ = $1;
          $$.t.nDim = 2;
          $$.t.d1 = toInt( $3.v ); 
          $$.t.d2 = toInt( $6.v ); 
