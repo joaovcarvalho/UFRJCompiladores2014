@@ -362,11 +362,8 @@ DECLVAR : DECLVAR ',' _ID
         ;
     
     
-TIPO_ARRAY : TIPO '[' E ']'
+TIPO_ARRAY : TIPO '[' _INT ']'
        { 
-         if($3.t.nome != "int")
-          erro("O tamanho do array deve ser inteiro");
-
          $$ = $1;
          $$.t.nDim = 1;
          $$.t.d1 = toInt( $3.v ); 
@@ -374,10 +371,8 @@ TIPO_ARRAY : TIPO '[' E ']'
          // cout<<"array unidimensional"<<$3.v<<endl; //DEPURANDO O TO INT
          // cout<<"array unidimensional toint"<<toInt($3.v)<<endl; //DEPURANDO O TO INT
          }
-     | TIPO '[' E ']' '['E']'
+     | TIPO '[' _INT ']' '['_INT']'
        { 
-         if($3.t.nome != "int" || $6.t.nome != "int")
-          erro("O tamanho do array deve ser inteiro");
          $$ = $1;
          $$.t.nDim = 2;
          $$.t.d1 = toInt( $3.v ); 
@@ -536,7 +531,8 @@ void geraCodigoAcessoArray(Atributo* SS, const Atributo& id,
         SS->c = expr1.c + expr2.c +
                 temp1 + " = " + expr1.v + "*" + toStr(t.d1) +";\n" +
                 temp2 + " = " + temp1 + " + "+expr2.v+";\n";
-                
+                // "printf(\"%d \\n \", "+temp2+ ");\n";
+
         SS->v = id.v + "[" + temp2 + "]";
         SS->t = t;
 
@@ -584,9 +580,10 @@ void geraCodigoAtribuicao2Indices( Atributo* SS, Atributo& lvalue,
   string temp1 = geraTemp(Tipo("int"));
   string temp2 = geraTemp(Tipo("int"));
 
-  SS->c = indice1.c + rvalue.c +
-          temp1 + " = " + indice1.v + "*" + toStr(lvalue.t.d1) +";\n" +
+  SS->c = indice1.c + indice2.c + rvalue.c +
+          temp1 + " = " + indice1.v + "*" + toStr(lvalue.t.d2) +";\n" +
           temp2 + " = " + temp1 + " + "+indice2.v+";\n"+
+          // "printf(\" Indice: %d \\n \", "+temp2+ ");\n"+
           "  " + lvalue.v + "[" + temp2 + "] = " + rvalue.v + ";\n";
         }else{
           erro("Array nao declarado");
@@ -666,7 +663,7 @@ void geraCodigoIfComElse( Atributo* SS, const Atributo& expr,
           "  "+l_if_true+":\n" + cmdsThen.c +
           "  goto "+l_if_fim+";\n" +
           "  "+ l_if_false +":\n" + cmdsElse.c +
-          "  "+l_if_fim+":\n";
+          "  "+l_if_fim+":;\n";
 }
 
 void geraCodigoIfSemElse( Atributo* SS, const Atributo& expr, 
