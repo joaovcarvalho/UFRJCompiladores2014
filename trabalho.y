@@ -49,10 +49,13 @@ struct Atributo {
 };
 
 typedef map< string, Tipo > TS;
-TS ts_local, ts_global;
+TS ts_local, ts_global,ts_funcoes;
 TS* ts = &ts_global; // Tabela de simbolos da vez
 
-TS ts_funcoes;
+string pipeAtivo; // Tipo do pipe ativo
+string passoPipeAtivo; // Label 'fim' do pipe ativo
+string geraDeclaracaoVarPipe();
+
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
 string geraTemp( Tipo tipo );
@@ -103,6 +106,8 @@ void geraCodigoAcessoArray(Atributo* SS, const Atributo& id,
                                     const Atributo& expr2,
                                     const Atributo& expr3,
                                     int dim);
+
+void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) ;
 
 string toStr( int n );
 int toInt( string n );
@@ -158,11 +163,11 @@ PREPARA_GLOBAL : { ts = &ts_global;}
           ;
 
 // Aqui é referente a funções
-FUNCTION : DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCOFUNC PREPARA_GLOBAL
+FUNCTION : DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, $4, $6);  }
          | DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, $4, $6);}
-         | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCOFUNC PREPARA_GLOBAL
+         | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
          | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
@@ -261,21 +266,9 @@ BLOCO : _TK_IB CMDS _TK_FB
         { $$.c = $2.c;}
         ;
 
-BLOCOFUNC : _TK_IB CMDS _TK_FB 
-          { $$.c = $2.c;}
-          | CMD_RETURN
-          { $$.c = $1.c;}
-          ;
-
 CMD_RETURN : _TK_RETURN E ';'
           { geraCodigoReturn(&$$, $2); }
-    
-CASOS : _TK_CASE F ':' CMDS _TK_BREAK ';' CASOS
-      | _TK_DEFAULT ':' CMDS
-      |
-        { $$.c = ""; }
-    ;
-  
+
 CMD_FOR: _TK_FOR '('DECLVAR ';' ATR ';' _TK_TQ E ')' COD
               {geraCodigoFor(&$$, $3, $8, $5, $10);}
       | _TK_FOR '('ATR ';' ATR ';' _TK_TQ E ')' COD
@@ -987,6 +980,12 @@ string geraTemp( Tipo tipo ) {
   return "temp_" + tipo.nome + "_" + toStr( ++n_var_temp[tipo.nome] );
 }
 
+string geraDeclaracaoVarPipe() {
+  return "  int x_int;\n"
+         "  double x_double;\n"
+         "  float x_float;\n";
+}
+
 void insereVariavelTS( TS& ts, string nomeVar, Tipo tipo ) {
   if( !buscaVariavelTS( ts, nomeVar, &tipo ) )
     ts[nomeVar] = tipo;
@@ -1001,6 +1000,14 @@ bool buscaVariavelTS( TS& ts, string nomeVar, Tipo* tipo ) {
   }
   else
     return false;
+}
+
+void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) {
+  *SS = Atributo();
+  SS->v = geraTemp( Tipo( "bool" ) );
+  SS->c = condicao.c + 
+          "  " + SS->v + " = !" + condicao.v + ";\n" +
+          "  if( " + SS->v + " ) goto " + passoPipeAtivo + ";\n";
 }
 
 Tipo tipoResultado( string operador, Tipo a ) {
