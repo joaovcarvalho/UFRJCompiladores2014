@@ -10,7 +10,13 @@ Epilogo
 
 Primacial Preludio
 
-    Intervalo[1 .. 10] => Segregue[ X Superior a 5] => EmCompletude[ Exclame X "\n"; ] ;
+    Indiviso[10] array;
+    Seja qual for( Indiviso i=0 ; i = i Mais 1; Tal que i Inferior a 10)            // Inicialização da primeira matriz
+        Preludio
+            array[i] = i;
+        Epilogo
+
+    array => Primordiais[ 7 ] => EmCompletude[ Exclame X "\n"; ] ;
     // Indiviso x_1;
     // Indiviso inteiro;
     // Indiviso magernitude= 3;

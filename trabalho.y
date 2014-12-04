@@ -55,6 +55,7 @@ TS* ts = &ts_global; // Tabela de simbolos da vez
 string pipeAtivo; // Tipo do pipe ativo
 string passoPipeAtivo; // Label 'fim' do pipe ativo
 string geraDeclaracaoVarPipe();
+string tamanhoPipe;
 
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
@@ -108,6 +109,8 @@ void geraCodigoAcessoArray(Atributo* SS, const Atributo& id,
                                     int dim);
 
 void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) ;
+void geraCodigoFirstN( Atributo* SS, const Atributo& n );
+void geraCodigoLastN( Atributo* SS, const Atributo& n );
 
 string toStr( int n );
 int toInt( string n );
@@ -131,7 +134,7 @@ void yyerror(const char *);
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
 %token _COUT _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
 %token _TK_RETURN _TK_NULL
-%token _PIPE _INTERVALO _FILTER _FOREACH _2PTS _X
+%token _PIPE _INTERVALO _FILTER _FOREACH _2PTS _X _FIRSTN _LASTN
 
 %nonassoc '<' '>'
 %left _TK_MAIS _TK_MENOS
@@ -321,13 +324,47 @@ CMD_PIPE : _INTERVALO '[' E _2PTS INI_PIPE ']' PROCS CONSOME
             geraCodigoFor( &$$, inicio, condicao, passo, cmd );
             
             pipeAtivo = ""; }
+
+          | INI_PIPE_ARRAY PROCS CONSOME{
+              Atributo inicio, condicao, passo, cmd;
+              
+              string counter = geraTemp(Tipo("int"));
+
+              inicio.c = counter + " = 0;\n" +
+                          "x_"+pipeAtivo+" = "+$1.v+"["+counter+"];"; 
+              condicao.t.nome = "boolean";
+              condicao.v = geraTemp( Tipo( "boolean" ) ); 
+              condicao.c = "  " + condicao.v + " = " + counter + 
+                           " <= " + tamanhoPipe + ";\n";
+              passo.c = passoPipeAtivo + ":\n" + 
+                        counter+ " = " + counter + " + 1;\n"+
+                        "x_"+pipeAtivo+" = "+$1.v+"["+counter+"];"; 
+              cmd.c = $2.c + $3.c;
+              
+              geraCodigoFor( &$$, inicio, condicao, passo, cmd );
+              
+              pipeAtivo = "";
+          }
         ;
 
 INI_PIPE : E
            { $$ = $1;
+             tamanhoPipe = $1.v;
              pipeAtivo =  $1.t.nome;
        passoPipeAtivo = geraLabel( "passo_pipe" ); }
-   ;    
+   ;
+
+INI_PIPE_ARRAY : _ID
+        {
+            $$ = $1;
+            if( buscaVariavelTS( *ts, $1.v, &$$.t ) ){
+              pipeAtivo = $$.t.nome;
+              tamanhoPipe = toStr($$.t.d1);
+              passoPipeAtivo = geraLabel( "passo_pipe" );
+            }
+            else
+              erro("Array nao declarado."); 
+        }    
 
 PROCS : _PIPE PROC PROCS 
         { $$.c = $2.c + $3.c; }
@@ -337,6 +374,10 @@ PROCS : _PIPE PROC PROCS
       
 PROC : _FILTER '[' E ']'
        { geraCodigoFilter( &$$, $3 ); }
+      | _FIRSTN '[' E ']'
+       { geraCodigoFirstN( &$$, $3 ); }
+      | _LASTN '[' E ']'
+       { geraCodigoLastN( &$$, $3 ); }
      ;
       
 CONSOME : _FOREACH '[' CMD ']'
@@ -1053,6 +1094,18 @@ void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) {
   SS->c = condicao.c + 
           "  " + SS->v + " = !" + condicao.v + ";\n" +
           "  if( " + SS->v + " ) goto " + passoPipeAtivo + ";\n";
+}
+
+void geraCodigoFirstN( Atributo* SS, const Atributo& n ) {
+  *SS = Atributo();
+  SS->c = n.c + 
+          " if( x_"+ pipeAtivo +" > " + n.v + ") goto "  + passoPipeAtivo + ";\n";
+}
+
+void geraCodigoLastN( Atributo* SS, const Atributo& n ) {
+  *SS = Atributo();
+  SS->c = n.c + 
+          " if( x_"+ pipeAtivo +" < " +tamanhoPipe+ " - "+ n.v + ") goto "  + passoPipeAtivo + ";\n";
 }
 
 Tipo tipoResultado( string operador, Tipo a ) {

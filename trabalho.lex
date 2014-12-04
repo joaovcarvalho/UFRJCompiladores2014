@@ -40,6 +40,8 @@ COMMENT "//".*
 
 "Intervalo"	{ yylval = Atributo( yytext ); return _INTERVALO; }
 "Segregue"	{ yylval = Atributo( yytext ); return _FILTER; }
+"Primordiais"	{ yylval = Atributo( yytext ); return _FIRSTN; }
+"Terminantes"	{ yylval = Atributo( yytext ); return _LASTN; }
 "EmCompletude"	{ yylval = Atributo( yytext ); return _FOREACH; }
 "X"		{ yylval = Atributo( yytext ); return _X; }
 
