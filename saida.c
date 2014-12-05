@@ -66,7 +66,7 @@ x_int = array[temp_int_4];l_for_cond_5:
   temp_boolean_10 = temp_int_4 < 10;
 temp_boolean_11 = !temp_boolean_10;
  if( temp_boolean_11 ) goto l_for_fim_5;
-temp_int_5 = 10- 1;
+temp_int_5 = 10 - 1;
 l_for_cond_4: 
  temp_boolean_5 = temp_int_5 >= 0;
 temp_boolean_9 = !temp_boolean_5;

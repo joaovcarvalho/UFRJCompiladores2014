@@ -408,7 +408,7 @@ PROC : _FILTER '[' E ']'
               string j = geraTemp(Tipo("int"));
               string auxiliar = geraTemp(Tipo(pipeAtivo));
 
-              inicio1.c = i + " = " + tamanhoPipe+ "- 1;\n";
+              inicio1.c = i + " = " + tamanhoPipe+ " - 1;\n";
               condicao1.t.nome = "boolean";
               condicao1.v = geraTemp(Tipo("boolean"));
               condicao1.c = " "+ condicao1.v + " = " + i + " >= 0;\n";
@@ -432,9 +432,8 @@ PROC : _FILTER '[' E ']'
                       expr.v + " = "+temp2+">"+temp1+";\n";
               cmds.c = auxiliar + " = "+sortArrayAtivo+"[" + j + "];\n"+
                        ""+sortArrayAtivo+"["+j+"] = "+sortArrayAtivo+"["+indiceTemp+"];\n"+
-                       ""+sortArrayAtivo+"["+indiceTemp+"] = "+auxiliar+";\n ";;
+                       ""+sortArrayAtivo+"["+indiceTemp+"] = "+auxiliar+";\n ";
               geraCodigoIfSemElse(&comparacao, expr, cmds);
-              // cout << comparacao.c << endl;
               cmd2 = comparacao;
               geraCodigoFor(&for2, inicio2, condicao2, passo2, cmd2);
               cmd1 = for2;
