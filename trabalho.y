@@ -411,7 +411,7 @@ PROC : _FILTER '[' E ']'
               inicio1.c = i + " = " + tamanhoPipe+ " - 1;\n";
               condicao1.t.nome = "boolean";
               condicao1.v = geraTemp(Tipo("boolean"));
-              condicao1.c = " "+ condicao1.v + " = " + i + " >= 0;\n";
+              condicao1.c = " "+ condicao1.v + " = " + i + " >= 1;\n";
               passo1.c = " "+ i + " = " + i + " - 1;\n";
 
               inicio2.c = j + " = 0;\n";
