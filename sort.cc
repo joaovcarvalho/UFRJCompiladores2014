@@ -7,8 +7,9 @@ Primacial Preludio
         Epilogo
 	
     Exclame "=======================\n"; 
-    Exclame "Test Pipes array => Disponha[ X Superior a 0 ] => EmCompletude[ Exclame X; ]: \n";
+    Exclame "Test Pipes array => Disponha[ X ] => EmCompletude[ Exclame X; ]: \n";
     Exclame "=======================\n";
+    array => EmCompletude[ Exclame X "\n"; ] ;
     array => Disponha[ X ] => EmCompletude[ Exclame X "\n"; ] ;
 
 Epilogo

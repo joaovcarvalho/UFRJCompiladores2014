@@ -417,32 +417,29 @@ PROC : _FILTER '[' E ']'
               inicio2.c = j + " = 0;\n";
               condicao2.t.nome = "boolean";
               condicao2.v = geraTemp(Tipo("boolean"));
-              condicao2.c = " "+ condicao1.v + " = " + j + " < "+i+";\n";
+              condicao2.c = " "+ condicao2.v + " = " + j + " < "+i+";\n";
               passo2.c = " "+ j + " = " + j + " + 1;\n";
 
               Atributo expr, cmds;
               string indiceTemp = geraTemp(Tipo("int"));
               string temp1 = geraTemp(Tipo(pipeAtivo));
               string temp2 = geraTemp(Tipo(pipeAtivo));
-              string condicao = geraTemp(Tipo("boolean"));
 
               expr.v = geraTemp(Tipo("boolean"));
               expr.c = indiceTemp + "= " + j + "+ 1;\n" +
                       temp1 + " = "+sortArrayAtivo+"[" + indiceTemp +"];\n"+
                       temp2 + " = "+sortArrayAtivo+"[" + j + "];\n"+
                       expr.v + " = "+temp2+">"+temp1+";\n";
-              cmds.c = auxiliar + " = "+ ""+sortArrayAtivo+"[" + j + "];\n"+
+              cmds.c = auxiliar + " = "+sortArrayAtivo+"[" + j + "];\n"+
                        ""+sortArrayAtivo+"["+j+"] = "+sortArrayAtivo+"["+indiceTemp+"];\n"+
-                       ""+sortArrayAtivo+"["+indiceTemp+"] = "+auxiliar+";\n";
+                       ""+sortArrayAtivo+"["+indiceTemp+"] = "+auxiliar+";\n ";;
               geraCodigoIfSemElse(&comparacao, expr, cmds);
               // cout << comparacao.c << endl;
-              cmd2.c = comparacao.c;
+              cmd2 = comparacao;
               geraCodigoFor(&for2, inicio2, condicao2, passo2, cmd2);
-              cmd1.c = for2.c;
+              cmd1 = for2;
 
-              geraCodigoFor( &for1, inicio1, condicao1, passo1, cmd1 );
-              $$ = for1;
-              // cout << for1.c << endl;
+              geraCodigoFor( &$$ , inicio1, condicao1, passo1, cmd1 );
         }
      ;
       
