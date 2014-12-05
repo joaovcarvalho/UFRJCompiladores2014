@@ -6,17 +6,11 @@
 //         Restitua MDC(b, a Remanescente b);
 // Epilogo
 
-Indiviso FUNC(Indiviso a, Manifesto b) Preludio
-    Restitua a;
-Epilogo
-
-
 Primacial Preludio
     // Exclame MDC("10", 5) "\n";
-    Exclame FUNC(10, "10");
 
     Indiviso[10] array;
-    Seja qual for( Indiviso i=0 ; i = i Mais 1; Tal que i Inferior a 10)            // Inicialização da primeira matriz
+    Seja qual for( Indiviso i = 0 ; i = i Mais 1; Tal que i Inferior a 10)            // Inicialização da primeira matriz
         Preludio
             array[i] = i;
         Epilogo

@@ -213,12 +213,6 @@ DECL_PARAM: TIPO _ID
         geraCodigoParam(&$$, $1, $2);
         listaTemp.push_back($1.t);
       }
-      | TIPO_ARRAY _ID
-      {
-        insereVariavelTS( *ts, $2.v, $1.t );
-        geraCodigoParam(&$$, $1, $2);
-        listaTemp.push_back($1.t);
-      }
 
 MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
        { geraCodigoFuncaoPrincipal( &$$, $3 ); }
@@ -408,13 +402,6 @@ CONSOME : _FOREACH '[' CMD ']'
 DECLVAR : DECLVAR ',' _ID
           { insereVariavelTS( *ts, $3.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $3 ); }
-        | TIPO_ARRAY _ID
-          { insereVariavelTS( *ts, $2.v, $1.t ); 
-            geraDeclaracaoVariavel( &$$, $1, $2 ); }
-        | TIPO_ARRAY _ID '=' E
-          { insereVariavelTS( *ts, $2.v, $1.t ); 
-            geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
-          }
         | TIPO _ID
           { insereVariavelTS( *ts, $2.v, $1.t ); 
             geraDeclaracaoVariavel( &$$, $1, $2 ); }
@@ -423,30 +410,25 @@ DECLVAR : DECLVAR ',' _ID
             geraDeclaracaoVariavelComAtribuicao( &$$, $1, $2, $4 );
           }
         ;
-    
-    
-TIPO_ARRAY : TIPO '[' _INT ']'
+
+TIPO : TIPOSIMPLES
+      | TIPOSIMPLES '[' _INT ']'
        { 
          $$ = $1;
          $$.t.nDim = 1;
          $$.t.d1 = toInt( $3.v ); 
-         // cout<< $$.t.d1 << endl;
-         // cout<<"array unidimensional"<<$3.v<<endl; //DEPURANDO O TO INT
-         // cout<<"array unidimensional toint"<<toInt($3.v)<<endl; //DEPURANDO O TO INT
          }
-     | TIPO '[' _INT ']' '['_INT']'
+     | TIPOSIMPLES '[' _INT ']' '['_INT']'
        { 
          $$ = $1;
          $$.t.nDim = 2;
          $$.t.d1 = toInt( $3.v ); 
          $$.t.d2 = toInt( $6.v ); 
-     	 // cout << "array bidimensional" << $3.v << " - " << $6.v <<endl; // DEPURANDO O TOINT
-      	 // cout << "array bidimensional toint "<< toInt($3.v) << " - "<<toInt($6.v)<<endl; // DEPURANDO O TOINT
          }
-        ;
+        ;    
 
-TIPO : _TK_INT
-    	    | _TK_CHAR
+TIPOSIMPLES : _TK_INT
+         | _TK_CHAR
             | _TK_BOOLEAN
             | _TK_DOUBLE
             | _TK_FLOAT

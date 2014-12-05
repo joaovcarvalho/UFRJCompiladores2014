@@ -2,11 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int FUNC( int a, char b[256] ) {
-
-
-return a;
-}
 
 int main() {
   int x_int;
@@ -19,7 +14,6 @@ int main() {
   int temp_int_1;
   int temp_int_2;
 
-  printf( "%d" , FUNC(10,"10") );
 int array[10];
 int i;
   i = 0;
