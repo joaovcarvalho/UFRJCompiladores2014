@@ -6,28 +6,49 @@ Indiviso MDC(Indiviso a, Indiviso b) Preludio
         Restitua MDC(b, a Remanescente b);
 Epilogo
 
+Diade discriminante(Diade a, Diade b, Diade c) Preludio
+    Restitua b Vezes b Menos 4 Vezes a Vezes b;
+Epilogo
+
 Primacial Preludio
-    Indiviso a;
-    Indiviso b;
-    Exclame "=======================\n"; 
+    // Indiviso a;
+    // Indiviso b;
+    // Indiviso c;
+    // Exclame " MDC =======================\n"; 
+    // Exclame "Qual o valor de a ? ";
+    // Averigue >> a;
+
+    // Exclame "Qual o valor de b ? ";
+    // Averigue >> b;
+
+    // Exclame "MDC de " a " e " b  ": " MDC(a, b) "\n";
+
+    Diade a,b,c;
+    Exclame " Raizes =======================\n"; 
     Exclame "Qual o valor de a ? ";
     Averigue >> a;
 
     Exclame "Qual o valor de b ? ";
     Averigue >> b;
 
-    Exclame "MDC de " a " e " b  ": " MDC(a, b) "\n";
+    Exclame "Qual o valor de c ? ";
+    Averigue >> b;
+
+    Exclame a b c;
+    Exclame discriminante(a,b,c);
+
+    Restitua 0;
 
     Indiviso[10] array;
     Seja qual for( Indiviso i = 0 ; i = i Mais 1; Tal que i Inferior a 10)            // Inicialização da primeira matriz
         Preludio
-            array[i] = i;
+            array[i] = 10 Menos (i Mais 1) ;
         Epilogo
 
     Exclame "=======================\n"; 
     Exclame "Test Pipes array => Disponha[ X Superior a 0 ] => EmCompletude[ Exclame X; ]: \n";
     Exclame "=======================\n";
-    array => Disponha[ X ] => EmCompletude[ Exclame X "\n"; ] ;
+    array => Segregue[ X Superior a 0 ] => EmCompletude[ Exclame X "\n"; ] ;
 
     Exclame "=======================\n"; 
     Exclame "Test Pipes array => Primordiais[ 5 ] => EmCompletude[ Exclame X; ]: \n";

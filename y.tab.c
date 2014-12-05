@@ -1846,7 +1846,7 @@ yyreduce:
 
   case 12:
 #line 204 "trabalho.y" /* yacc.c:1646  */
-    { ts = &ts_local;}
+    { ts_local = TS(); ts = &ts_local;}
 #line 1851 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -2200,7 +2200,7 @@ yyreduce:
               inicio1.c = i + " = " + tamanhoPipe+ " - 1;\n";
               condicao1.t.nome = "boolean";
               condicao1.v = geraTemp(Tipo("boolean"));
-              condicao1.c = " "+ condicao1.v + " = " + i + " >= 0;\n";
+              condicao1.c = " "+ condicao1.v + " = " + i + " >= 1;\n";
               passo1.c = " "+ i + " = " + i + " - 1;\n";
 
               inicio2.c = j + " = 0;\n";
@@ -2900,7 +2900,7 @@ void geraCodigoInput( Atributo* SS, const Atributo& id){
       else if( id.t.nome == "string" )
         SS->c = id.c + "  scanf( \"%s\" , &" + id.v + " );\n";
       else if( id.t.nome == "double")
-        SS->c = id.c +"  scanf( \"%f\" , &" + id.v + " );\n";
+        SS->c = id.c +"  scanf( \"%lf\" , &" + id.v + " );\n";
   }
   else
     erro( "Variável nao declarada: " + id.v);

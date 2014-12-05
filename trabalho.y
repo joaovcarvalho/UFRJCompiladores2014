@@ -201,7 +201,7 @@ DECLS_FUNCAO : TIPO _ID
           | _TK_VOID _ID
           { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $2.v; $$.t = $1.t; listaTemp = list<Tipo>(); }
 
-PREPARA_FUNCAO : { ts = &ts_local;} // Passa a usar a tabela de var local.
+PREPARA_FUNCAO : { ts_local = TS(); ts = &ts_local;} // Passa a usar a tabela de var local.
 
 PARAMS : PARAMS ',' DECL_PARAM
        { $$.c = $1.c + ',' + ' ' + $3.c; }
@@ -720,7 +720,7 @@ void geraCodigoInput( Atributo* SS, const Atributo& id){
       else if( id.t.nome == "string" )
         SS->c = id.c + "  scanf( \"%s\" , &" + id.v + " );\n";
       else if( id.t.nome == "double")
-        SS->c = id.c +"  scanf( \"%f\" , &" + id.v + " );\n";
+        SS->c = id.c +"  scanf( \"%lf\" , &" + id.v + " );\n";
   }
   else
     erro( "Variável nao declarada: " + id.v);
