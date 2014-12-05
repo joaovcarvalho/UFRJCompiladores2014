@@ -25,9 +25,9 @@ Primacial Preludio
         Epilogo
 
     Exclame "=======================\n"; 
-    Exclame "Test Pipes array => Segregue[ X Superior a 0 ] => EmCompletude[ Exclame X; ]: \n";
+    Exclame "Test Pipes array => Disponha[ X Superior a 0 ] => EmCompletude[ Exclame X; ]: \n";
     Exclame "=======================\n";
-    array => Segregue[ X Superior a 0 ] => EmCompletude[ Exclame X "\n"; ] ;
+    array => Disponha[ X ] => EmCompletude[ Exclame X "\n"; ] ;
 
     Exclame "=======================\n"; 
     Exclame "Test Pipes array => Primordiais[ 5 ] => EmCompletude[ Exclame X; ]: \n";

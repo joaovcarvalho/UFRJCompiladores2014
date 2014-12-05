@@ -43,6 +43,7 @@ COMMENT "//".*
 "Primordiais"	{ yylval = Atributo( yytext ); return _FIRSTN; }
 "Terminantes"	{ yylval = Atributo( yytext ); return _LASTN; }
 "EmCompletude"	{ yylval = Atributo( yytext ); return _FOREACH; }
+"Disponha"	{ yylval = Atributo( yytext ); return _SORT; }
 "X"		{ yylval = Atributo( yytext ); return _X; }
 
 {DO}        {  yylval = Atributo(  yytext ); return _TK_DO; }

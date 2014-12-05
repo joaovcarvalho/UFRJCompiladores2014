@@ -61,6 +61,7 @@ string passoPipeAtivo; // Label 'fim' do pipe ativo
 string geraDeclaracaoVarPipe();
 string tamanhoPipe;
 string indicePipe;
+string arraySortPipe;
 
 
 Tipo tipoResultado( Tipo a, string operador, Tipo b );
@@ -145,7 +146,7 @@ void yyerror(const char *);
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
 %token _COUT _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
 %token _TK_RETURN _TK_NULL
-%token _PIPE _INTERVALO _FILTER _FOREACH _2PTS _X _FIRSTN _LASTN
+%token _PIPE _INTERVALO _FILTER _FOREACH _2PTS _X _FIRSTN _LASTN _SORT
 
 // Usando associatividade e precedencia igual a C
 %right '='
@@ -342,8 +343,9 @@ CMD_PIPE : _INTERVALO '[' E _2PTS INI_PIPE ']' PROCS CONSOME
 
           | INI_PIPE_ARRAY PROCS CONSOME{
               Atributo inicio, condicao, passo, cmd;
-            
+
               inicio.c = indicePipe + " = 0;\n" +
+                          "sortArray_"+$1.t.nome+" = " + $1.v + ";\n" +
                           "x_"+pipeAtivo+" = "+$1.v+"["+indicePipe+"];"; 
               condicao.t.nome = "boolean";
               condicao.v = geraTemp( Tipo( "boolean" ) ); 
@@ -373,6 +375,7 @@ INI_PIPE_ARRAY : _ID
             $$ = $1;
             if( buscaVariavelTS( *ts, $1.v, &$$.t ) ){
               pipeAtivo = $$.t.nome;
+              arraySortPipe = "x_array_"+pipeAtivo;
               tamanhoPipe = toStr($$.t.d1);
               string counter = geraTemp(Tipo("int"));
               indicePipe = counter;
@@ -394,6 +397,53 @@ PROC : _FILTER '[' E ']'
        { geraCodigoFirstN( &$$, $3 ); }
       | _LASTN '[' E ']'
        { geraCodigoLastN( &$$, $3 ); }
+      | _SORT '[' _X ']'
+       { 
+              Atributo for1, for2, comparacao;
+              Atributo inicio1, condicao1, passo1, cmd1;
+              Atributo inicio2, condicao2, passo2, cmd2;
+
+              string sortArrayAtivo = "sortArray_"+pipeAtivo;
+              string i = geraTemp(Tipo("int"));
+              string j = geraTemp(Tipo("int"));
+              string auxiliar = geraTemp(Tipo(pipeAtivo));
+
+              inicio1.c = i + " = " + tamanhoPipe+ "- 1;\n";
+              condicao1.t.nome = "boolean";
+              condicao1.v = geraTemp(Tipo("boolean"));
+              condicao1.c = " "+ condicao1.v + " = " + i + " >= 0;\n";
+              passo1.c = " "+ i + " = " + i + " - 1;\n";
+
+              inicio2.c = j + " = 0;\n";
+              condicao2.t.nome = "boolean";
+              condicao2.v = geraTemp(Tipo("boolean"));
+              condicao2.c = " "+ condicao1.v + " = " + j + " < "+i+";\n";
+              passo2.c = " "+ j + " = " + j + " + 1;\n";
+
+              Atributo expr, cmds;
+              string indiceTemp = geraTemp(Tipo("int"));
+              string temp1 = geraTemp(Tipo(pipeAtivo));
+              string temp2 = geraTemp(Tipo(pipeAtivo));
+              string condicao = geraTemp(Tipo("boolean"));
+
+              expr.v = geraTemp(Tipo("boolean"));
+              expr.c = indiceTemp + "= " + j + "+ 1;\n" +
+                      temp1 + " = "+sortArrayAtivo+"[" + indiceTemp +"];\n"+
+                      temp2 + " = "+sortArrayAtivo+"[" + j + "];\n"+
+                      expr.v + " = "+temp2+">"+temp1+";\n";
+              cmds.c = auxiliar + " = "+ ""+sortArrayAtivo+"[" + j + "];\n"+
+                       ""+sortArrayAtivo+"["+j+"] = "+sortArrayAtivo+"["+indiceTemp+"];\n"+
+                       ""+sortArrayAtivo+"["+indiceTemp+"] = "+auxiliar+";\n";
+              geraCodigoIfSemElse(&comparacao, expr, cmds);
+              // cout << comparacao.c << endl;
+              cmd2.c = comparacao.c;
+              geraCodigoFor(&for2, inicio2, condicao2, passo2, cmd2);
+              cmd1.c = for2.c;
+
+              geraCodigoFor( &for1, inicio1, condicao1, passo1, cmd1 );
+              $$ = for1;
+              // cout << for1.c << endl;
+        }
      ;
       
 CONSOME : _FOREACH '[' CMD ']'
@@ -587,6 +637,7 @@ void geraCodigoAcessoArray(Atributo* SS, const Atributo& id,
   Tipo t;
   if(buscaVariavelTS(*ts, id.v, &t)){
 
+  SS->t = t;
   switch(dim){
     case 1:
         SS->c = expr1.c;
@@ -621,8 +672,8 @@ void geraCodigoAtribuicaoSemIndice( Atributo* SS, Atributo& lvalue,
   else if( lvalue.t.nome != rvalue.t.nome )
     erro( "Expressao " + rvalue.t.nome + 
             " nao pode ser atribuida a variavel " + lvalue.t.nome );
-  else if( lvalue.t.nDim != 0 || rvalue.t.nDim != 0 )
-    erro( "Atribuicao de array nao e permitida: " + lvalue.v + " = " + rvalue.v );
+  // else if( lvalue.t.nDim != 0 || rvalue.t.nDim != 0 )
+  //   erro( "Atribuicao de array nao e permitida: " + lvalue.v + " = " + rvalue.v );
   else if( lvalue.t.nome == "string" ) {
         SS->c = lvalue.c + rvalue.c + 
                 "  strncpy( " + lvalue.v + ", " + rvalue.v + ", " + 
@@ -1090,7 +1141,10 @@ string geraTemp( Tipo tipo ) {
 string geraDeclaracaoVarPipe() {
   return "  int x_int;\n"
          "  double x_double;\n"
-         "  float x_float;\n";
+         "  float x_float;\n"
+         "  int* sortArray_int;\n"
+         "  int* sortArray_double;\n"
+         "  int* sortArray_float;\n";
 }
 
 void insereVariavelTS( TS& ts, string nomeVar, Tipo tipo ) {
