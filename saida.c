@@ -14,7 +14,6 @@ int main() {
   int temp_boolean_5;
   int temp_int_1;
   int temp_int_2;
-  int temp_int_3;
 
 int array[10];
 int i;
@@ -33,9 +32,8 @@ x_int = array[temp_int_2];l_for_cond_2:
   temp_boolean_4 = temp_int_2 < 10;
 temp_boolean_5 = !temp_boolean_4;
  if( temp_boolean_5 ) goto l_for_fim_2;
-temp_int_3 = 10 - 7;
-temp_boolean_3= temp_int_2 < temp_int_3;
- if( temp_boolean_3 ) goto l_passo_pipe_1;
+temp_boolean_3=temp_int_2 >= 8;
+ if( temp_boolean_3) goto l_passo_pipe_1;
   printf( "%d" , x_int );
   printf( "%s" , "\n" );
 

@@ -1135,8 +1135,11 @@ void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) {
 
 void geraCodigoFirstN( Atributo* SS, const Atributo& n ) {
   *SS = Atributo();
+  string temp = geraTemp(Tipo("boolean"));
+
   SS->c = n.c + 
-          " if( "+ indicePipe +" > " + n.v + ") goto "  + passoPipeAtivo + ";\n";
+          temp + "=" + indicePipe +" >= " + n.v + ";\n"+
+          " if( "+temp+") goto "  + passoPipeAtivo + ";\n";
 }
 
 void geraCodigoLastN( Atributo* SS, const Atributo& n ) {

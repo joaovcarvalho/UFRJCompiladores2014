@@ -15,7 +15,7 @@ Primacial Preludio
             array[i] = i;
         Epilogo
 
-    array => Terminantes[ 7 ] => EmCompletude[ Exclame X "\n"; ] ;
+    array => Primordiais[ 8 ] => EmCompletude[ Exclame X "\n"; ] ;
     // Indiviso x_1;
     // Indiviso inteiro;
     // Indiviso magernitude= 3;
