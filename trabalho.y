@@ -5,7 +5,6 @@
 #include <iostream>
 #include <map>
 #include <list>
-
 /*
  * Programa exemplo de um compilador para o curso de Compiladores-2014-2 - Zimbrão
  * TODO:
@@ -142,7 +141,7 @@ void yyerror(const char *);
 %token _TK_IB _TK_FB _TK_MAIN _TK_VOID
 %token _INT _CHAR _DOUBLE _BOOLEAN _FLOAT _STRING _ID 
 %token _TK_INT _TK_CHAR _TK_BOOLEAN _TK_DOUBLE _TK_FLOAT _TK_STRING
-%token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT _SHIFTL _SHIFTR
+%token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT _SHIFTL _SHIFTR _TK_SQRT
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
 %token _COUT _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
 %token _TK_RETURN _TK_NULL
@@ -168,7 +167,8 @@ void yyerror(const char *);
 S1 : DECLS MAIN
      { cout << "#include <stdio.h>\n"
                "#include <stdlib.h>\n"
-               "#include <string.h>\n\n"
+               "#include <string.h>\n"
+               "#include <math.h>\n\n"
             << $1.c << $2.c << endl; }
    ;
      
@@ -536,6 +536,9 @@ E : E _TK_MAIS E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _SHIFTR E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | _TK_MENOS E
+  	{ geraCodigoOperadorUnario (&$$, $1, $2); }
+
   | F
   ;
 
@@ -1005,6 +1008,7 @@ void inicializaResultadoOperador() {
   resultadoOperador["int-int"] = Tipo( "int" );
   resultadoOperador["int*int"] = Tipo( "int" );
   resultadoOperador["int/int"] = Tipo( "int" );
+  resultadoOperador["-int"] = Tipo("int");
   
   //op basicas: double e double
   resultadoOperador["double+double"] = Tipo("double");
