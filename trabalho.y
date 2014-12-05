@@ -268,6 +268,9 @@ COUT_EXPR : COUT_EXPR E
                        "  printf( \"%s\" , " + $2.v + " );\n";
               else if( $2.t.nome == "double")
                 $$.c = $1.c + $2.c +
+                      "  printf( \"%lf\" , " + $2.v + " );\n";
+              else if( $2.t.nome == "float")
+                $$.c = $1.c + $2.c +
                       "  printf( \"%f\" , " + $2.v + " );\n";}
           | { $$ = Atributo(); }
           ;
@@ -721,6 +724,8 @@ void geraCodigoInput( Atributo* SS, const Atributo& id){
         SS->c = id.c + "  scanf( \"%s\" , &" + id.v + " );\n";
       else if( id.t.nome == "double")
         SS->c = id.c +"  scanf( \"%lf\" , &" + id.v + " );\n";
+      else if( id.t.nome == "float")
+        SS->c = id.c +"  scanf( \"%f\" , &" + id.v + " );\n";
   }
   else
     erro( "Variável nao declarada: " + id.v);
