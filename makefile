@@ -1,5 +1,5 @@
-all: trabalho entrada.cc
-	./trabalho < entrada.cc > saida.c
+all: trabalho matrizes.cc
+	./trabalho < matrizes.cc > saida.c
 	./gabarito/trabalho < saida.c
 	g++ -o saida saida.c
 	./saida	
