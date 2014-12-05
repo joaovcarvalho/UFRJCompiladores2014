@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <map>
+#include <list>
 
 /*
  * Programa exemplo de um compilador para o curso de Compiladores-2014-2 - Zimbrão
@@ -47,6 +48,10 @@ struct Atributo {
     this->c = c;
   }
 };
+
+// Tabela para saber quantos parametros uma função possui
+typedef map< string, list< Tipo > > TSP;
+TSP ts_params;
 
 typedef map< string, Tipo > TS;
 TS ts_local, ts_global,ts_funcoes;
@@ -113,11 +118,17 @@ void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) ;
 void geraCodigoFirstN( Atributo* SS, const Atributo& n );
 void geraCodigoLastN( Atributo* SS, const Atributo& n );
 
+void insereParamTS(TSP& ts, string nomeFunc, list<Tipo> params);
+bool buscaParamTS( TSP& ts, string nomeFunc, list<Tipo>* tipo );
+
 string toStr( int n );
 int toInt( string n );
 
 Tipo tipoResultado( string operador, Tipo a );
 int nSwitch = 0;
+list<Tipo> listaTemp;
+int num_params_chamada = 0;
+list<Tipo> listaTempChamada;
                                            
 // Usando const Atributo& não cria cópia desnecessária
 
@@ -169,19 +180,19 @@ PREPARA_GLOBAL : { ts = &ts_global;}
 
 // Aqui é referente a funções
 FUNCTION : DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, $4, $6);  }
+          { geraCodigoFuncao(&$$, $1, $4, $6); insereParamTS(ts_params, $1.v, listaTemp); }
          | DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, $4, $6);}
+          { geraCodigoFuncao(&$$, $1, $4, $6); insereParamTS(ts_params, $1.v, listaTemp); }
          | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
+          { geraCodigoFuncao(&$$, $1, Atributo(), $5); }
          | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
          ;
 
 DECLS_FUNCAO : TIPO _ID
-          { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
+          { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $2.v; $$.t = $1.t; listaTemp = list<Tipo>();}
           | _TK_VOID _ID
-          { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $1.t.nome + " " + $2.v; }
+          { insereVariavelTS(ts_funcoes, $2.v, $1.t); $$.v = $2.v; $$.t = $1.t; listaTemp = list<Tipo>(); }
 
 PREPARA_FUNCAO : { ts = &ts_local;} // Passa a usar a tabela de var local.
 
@@ -195,11 +206,13 @@ DECL_PARAM: TIPO _ID
       {
         insereVariavelTS( *ts, $2.v, $1.t );
         geraCodigoParam(&$$, $1, $2);
+        listaTemp.push_back($1.t);
       }
       | TIPO_ARRAY _ID
       {
         insereVariavelTS( *ts, $2.v, $1.t );
         geraCodigoParam(&$$, $1, $2);
+        listaTemp.push_back($1.t);
       }
 
 MAIN : _TK_MAIN _TK_IB CMDS _TK_FB
@@ -490,9 +503,11 @@ E : E _TK_MAIS E
 
 PARAM : PARAM ',' E
         { $$.c = $1.c + $3.c;
-          $$.v = $1.v + ',' + $3.v; }
+          $$.v = $1.v + ',' + $3.v; num_params_chamada++; listaTempChamada.push_back($3.t); }
       | E
-        { $$ = $1; }
+        { $$ = $1; num_params_chamada = 1; listaTempChamada = list<Tipo>(); listaTempChamada.push_back($1.t); }
+      |
+        {}
       ;
 
 F : _ID   
@@ -504,8 +519,22 @@ F : _ID
   | _ID '(' PARAM ')'
   {
     if( buscaVariavelTS( ts_funcoes, $1.v, &$$.t ) ){
-      $$.c = $3.c;
-      $$.v = $1.v + '(' + $3.v + ')';
+      list<Tipo> meus_params;
+      if(buscaParamTS(ts_params, $1.v, &meus_params)){ 
+        if(meus_params.size() != num_params_chamada)
+          erro("Numero de parmetros incorreto.");
+
+        list<Tipo>::iterator it1 = meus_params.begin();
+        list<Tipo>::iterator it2 = listaTempChamada.begin();
+
+        for(; it1 != meus_params.end() && it2 != listaTempChamada.end(); ++it1, ++it2)
+        {
+            if((*it1).nome != (*it2).nome)
+              erro("Tipo incorreto de parametros para a funcao.");
+        }
+      }
+        $$.c = $3.c;
+        $$.v = $1.v + '(' + $3.v + ')';
     }else{ 
       erro( "Funcao nao declarada: "+ $1.v);
     }
@@ -693,7 +722,7 @@ void geraCodigoFuncao(Atributo* SS, const Atributo& cabecalho,
                                     const Atributo& cmds){
   *SS = Atributo();
 
-  SS->c = cabecalho.v + "( "+params.c+ " ) {\n" +
+  SS->c = cabecalho.t.nome + " " + cabecalho.v + "( "+params.c+ " ) {\n" +
            geraDeclaracaoTemporarias() + 
            "\n" +
            cmds.c +  
@@ -1089,6 +1118,22 @@ bool buscaVariavelTS( TS& ts, string nomeVar, Tipo* tipo ) {
   }
   else
     return false;
+}
+
+bool buscaParamTS( TSP& ts, string nomeFunc, list<Tipo>* tipo ) {
+  if( ts.find( nomeFunc ) != ts.end() ) {
+    *tipo = ts[ nomeFunc ];
+    return true;
+  }
+  else
+    return false;
+}
+
+void insereParamTS(TSP& ts, string nomeFunc, list<Tipo> params){
+  if( !buscaParamTS( ts, nomeFunc, &params ) )
+    ts[nomeFunc] = params;
+  else  
+    erro( "Função já definida: " + nomeFunc );
 }
 
 void geraCodigoFilter( Atributo* SS, const Atributo& condicao ) {
