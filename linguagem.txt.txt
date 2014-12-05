@@ -24,14 +24,14 @@ Enquanto - Ao passo que XXX
 Faça-Enquanto - Realize {}.. durante(condicao) XXX
 
 3) Array bi-dimensional
-Vetor - []
+Vetor - [] XXX ( Ainda com um problema )
 4) blocos - { -> preludio XXX
             } -> epilogo XXX
 5) Variáveis locais e globais, com escopo.
-global
+global XXX
 6) Expressões com precedência e associatividade de operadores XXX
 7) funções com parametros por valor
-    void -> devoluto
+    void -> devoluto XX
 8) concatenação de strings com operador "+" XXX
 9) entrada e saida padrao (printf e scanf)
 ler - averigue XXX ( só com uma atribuição)
@@ -70,15 +70,15 @@ escrever - exclame XXX
 Acima de 5 pontos:
 Pipes:
 Até 9 pontos:
-12) intervalo: [ 0 .. 10 ]
+12) intervalo: [ 0 .. 10 ] XXX
  - isso continua o mesmo
-13) filter[ x % 2 == 0 ]
+13) filter[ x % 2 == 0 ] XXX
 Filtro - segregue[]
-14) forEach[ print( x ) ]
-Para cada - EmCompletude[]
-15) firstN[ 10 ]
+14) forEach[ print( x ) ] XXX
+Para cada - EmCompletude[] 
+15) firstN[ 10 ] XXX
 Primeiros - Primordiais[]
-16) lastN[ 10 ]
+16) lastN[ 10 ] XXX
 Últimos - Terminantes[]
 17) sort[ x ]
 Ordene - Disponha[]
