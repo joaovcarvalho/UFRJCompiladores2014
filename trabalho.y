@@ -167,8 +167,7 @@ void yyerror(const char *);
 S1 : DECLS MAIN
      { cout << "#include <stdio.h>\n"
                "#include <stdlib.h>\n"
-               "#include <string.h>\n"
-               "#include <math.h>\n\n"
+               "#include <string.h>\n\n"
             << $1.c << $2.c << endl; }
    ;
      
@@ -523,7 +522,7 @@ E : E _TK_MAIS E
   | E _TK_DIFERENTE E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | _TK_NOT E
-  	{ geraCodigoOperadorUnario( &$$, $1, $2); }
+    { geraCodigoOperadorUnario( &$$, $1, $2); }
   | E '&' E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E '|' E
@@ -537,8 +536,9 @@ E : E _TK_MAIS E
   | E _SHIFTR E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | _TK_MENOS E
-  	{ geraCodigoOperadorUnario (&$$, $1, $2); }
-
+    { geraCodigoOperadorUnario (&$$, $1, $2); }
+  | _TK_SQRT '('E')'
+    { geraCodigoOperadorUnario (&$$, $1, $3);}
   | F
   ;
 
@@ -891,11 +891,11 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
   switch( tipo.t.nDim ) {
     case 0: 
       if(tipo.t.nome == "boolean")
-      	SS->c = "int " + id.v + ";\n"; 
+        SS->c = "int " + id.v + ";\n"; 
       else if( tipo.t.nome == "string" )
         SS->c = tipo.c + "char " + id.v + "["+ toStr( MAX_STR ) +"];\n";  
       else 
-      	SS->c = tipo.c + tipo.t.nome + " " + id.v + ";\n"; 
+        SS->c = tipo.c + tipo.t.nome + " " + id.v + ";\n"; 
       break;
    case 1:
      SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr( tipo.t.d1 ) + "];\n";
@@ -988,7 +988,12 @@ void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo&
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 ) {
   SS->t = tipoResultado( S1.t, S2.v, S3.t );
   SS->v = geraTemp( SS->t );
-
+  
+  if ((S1.t.nome == "string") && (S3.t.nome == "string") && (S2.v == "==")){
+      SS->c = S1.c + S3.c +
+      "  " + SS->v + " = " + "strcmp("+ S1.t.v + ","+ S3.t.v +") == 0; \n";
+  }
+  
   if( SS->t.nome == "string" ) {
     SS->c = S1.c + S3.c + 
             "\n  strncpy( " + SS->v + ", " + S1.v + ", " + 
@@ -1088,10 +1093,11 @@ void inicializaResultadoOperador() {
   resultadoOperador["double==float"] = Tipo( "boolean" );
   resultadoOperador["double!=float"] = Tipo( "boolean" );
   
-  //concatenação
+  //string
   resultadoOperador["string+string"] = Tipo( "string" );
   resultadoOperador["string+int"] = Tipo("string");
-
+  resultadoOperador["string==string"] = Tipo("boolean");
+  
   //resto : inteiro e inteiro
   resultadoOperador["int%int"] = Tipo("int");
   
