@@ -192,12 +192,8 @@ PREPARA_GLOBAL : { ts = &ts_global;}
 // Aqui é referente a funções
 FUNCTION : DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, $4, $6); insereParamTS(ts_params, $1.v, listaTemp); }
-         | DECLS_FUNCAO PREPARA_FUNCAO '(' PARAMS ')' BLOCO PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, $4, $6); insereParamTS(ts_params, $1.v, listaTemp); }
          | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
           { geraCodigoFuncao(&$$, $1, Atributo(), $5); }
-         | DECLS_FUNCAO PREPARA_FUNCAO '(' ')' BLOCO PREPARA_GLOBAL
-          { geraCodigoFuncao(&$$, $1, Atributo(), $5);}
          ;
 
 DECLS_FUNCAO : TIPO _ID
