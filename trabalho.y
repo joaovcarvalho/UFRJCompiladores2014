@@ -826,7 +826,7 @@ void inicializaResultadoOperador() {
   resultadoOperador["int!=int"] = Tipo( "boolean" );
   
   //comparações: double e double
-  resultadoOperador["double<double"] = Tipo( "Buluano" );
+  resultadoOperador["double<double"] = Tipo( "boolean" );
   resultadoOperador["double<=double"] = Tipo( "boolean" );
   resultadoOperador["double>double"] = Tipo( "boolean" );
   resultadoOperador["double>=double"] = Tipo( "boolean" );
