@@ -14,7 +14,6 @@
  * - Variaveis locais
  * - Array
  * - pipes
- *
  */
 
 using namespace std;
@@ -1142,8 +1141,13 @@ void geraCodigoFirstN( Atributo* SS, const Atributo& n ) {
 
 void geraCodigoLastN( Atributo* SS, const Atributo& n ) {
   *SS = Atributo();
+  string temp = geraTemp(Tipo("int"));
+  string condicao = geraTemp(Tipo("boolean"));
+
   SS->c = n.c + 
-          " if( "+ indicePipe +" < " +tamanhoPipe+ " - "+ n.v + ") goto "  + passoPipeAtivo + ";\n";
+          temp + " = "+tamanhoPipe+ " - "+ n.v + ";\n"+
+          condicao + "= "+ indicePipe +" < "+temp+";\n"
+          " if( "+condicao+" ) goto "  + passoPipeAtivo + ";\n";
 }
 
 Tipo tipoResultado( string operador, Tipo a ) {
