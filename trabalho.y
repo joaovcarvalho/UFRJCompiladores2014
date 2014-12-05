@@ -148,13 +148,19 @@ void yyerror(const char *);
 %token _TK_RETURN _TK_NULL
 %token _PIPE _INTERVALO _FILTER _FOREACH _2PTS _X _FIRSTN _LASTN
 
-%nonassoc _TK_MENOR _TK_MAIOR _TK_MAIORIGUAL 
-%nonassoc _TK_MENORIGUAL _TK_IGUAL _TK_DIFERENTE
+// Usando associatividade e precedencia igual a C
 %right '='
-%left _TK_OR _TK_AND _TK_NOT '&' '|' '^' '~'
+%left _TK_OR
+%left _TK_AND
+%left '|'
+%left '^'
+%left '&'
+%left  _TK_IGUAL _TK_DIFERENTE
+%left _TK_MENOR _TK_MENORIGUAL _TK_MAIOR _TK_MAIORIGUAL 
 %left _SHIFTR _SHIFTL
 %left _TK_MAIS _TK_MENOS  
 %left _TK_VEZES _TK_DIVIDIDO _TK_RESTO
+%right _TK_NOT '~'
 
 
 %% 
