@@ -598,7 +598,7 @@ void geraCodigoAcessoArray(Atributo* SS, const Atributo& id,
         string temp2 = geraTemp(Tipo("int"));
 
         SS->c = expr1.c + expr2.c +
-                temp1 + " = " + expr1.v + "*" + toStr(t.d1) +";\n" +
+                temp1 + " = " + expr1.v + "*" + toStr(t.d2) +";\n" +
                 temp2 + " = " + temp1 + " + "+expr2.v+";\n";
                 // "printf(\"%d \\n \", "+temp2+ ");\n";
 
