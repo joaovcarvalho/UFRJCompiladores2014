@@ -5,7 +5,6 @@
 #include <iostream>
 #include <map>
 #include <list>
-
 /*
  * Programa exemplo de um compilador para o curso de Compiladores-2014-2 - Zimbrão
  * TODO:
@@ -142,7 +141,7 @@ void yyerror(const char *);
 %token _TK_IB _TK_FB _TK_MAIN _TK_VOID
 %token _INT _CHAR _DOUBLE _BOOLEAN _FLOAT _STRING _ID 
 %token _TK_INT _TK_CHAR _TK_BOOLEAN _TK_DOUBLE _TK_FLOAT _TK_STRING
-%token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT _SHIFTL _SHIFTR
+%token _TK_MAIS _TK_MENOS _TK_DIVIDIDO _TK_VEZES _TK_RESTO _TK_AND _TK_OR _TK_NOT _SHIFTL _SHIFTR _TK_SQRT
 %token _TK_MAIOR _TK_MENOR _TK_MENORIGUAL _TK_MAIORIGUAL _TK_IGUAL _TK_DIFERENTE
 %token _COUT _SCANF _TK_IF _TK_ELSE _TK_FOR _TK_TQ _TK_DO _TK_WHILE _TK_SWITCH _TK_CASE _TK_BREAK _TK_DEFAULT
 %token _TK_RETURN _TK_NULL
@@ -520,7 +519,7 @@ E : E _TK_MAIS E
   | E _TK_DIFERENTE E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | _TK_NOT E
-  	{ geraCodigoOperadorUnario( &$$, $1, $2); }
+    { geraCodigoOperadorUnario( &$$, $1, $2); }
   | E '&' E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E '|' E
@@ -533,6 +532,10 @@ E : E _TK_MAIS E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
   | E _SHIFTR E
     { geraCodigoOperadorBinario( &$$, $1, $2, $3 ); }
+  | _TK_MENOS E
+    { geraCodigoOperadorUnario (&$$, $1, $2); }
+  | _TK_SQRT '('E')'
+    { geraCodigoOperadorUnario (&$$, $1, $3);}
   | F
   ;
 
@@ -883,11 +886,11 @@ void geraDeclaracaoVariavel( Atributo* SS, const Atributo& tipo,
   switch( tipo.t.nDim ) {
     case 0: 
       if(tipo.t.nome == "boolean")
-      	SS->c = "int " + id.v + ";\n"; 
+        SS->c = "int " + id.v + ";\n"; 
       else if( tipo.t.nome == "string" )
         SS->c = tipo.c + "char " + id.v + "["+ toStr( MAX_STR ) +"];\n";  
       else 
-      	SS->c = tipo.c + tipo.t.nome + " " + id.v + ";\n"; 
+        SS->c = tipo.c + tipo.t.nome + " " + id.v + ";\n"; 
       break;
    case 1:
      SS->c = tipo.c + tipo.t.nome + " " + id.v + "[" + toStr( tipo.t.d1 ) + "];\n";
@@ -980,7 +983,12 @@ void geraCodigoOperadorUnario( Atributo* SS, const Atributo& S1, const Atributo&
 void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo& S2, const Atributo& S3 ) {
   SS->t = tipoResultado( S1.t, S2.v, S3.t );
   SS->v = geraTemp( SS->t );
-
+  
+  if ((S1.t.nome == "string") && (S3.t.nome == "string") && (S2.v == "==")){
+      SS->c = S1.c + S3.c +
+      "  " + SS->v + " = " + "strcmp("+ S1.t.v + ","+ S3.t.v +") == 0; \n";
+  }
+  
   if( SS->t.nome == "string" ) {
     SS->c = S1.c + S3.c + 
             "\n  strncpy( " + SS->v + ", " + S1.v + ", " + 
@@ -1000,6 +1008,7 @@ void inicializaResultadoOperador() {
   resultadoOperador["int-int"] = Tipo( "int" );
   resultadoOperador["int*int"] = Tipo( "int" );
   resultadoOperador["int/int"] = Tipo( "int" );
+  resultadoOperador["-int"] = Tipo("int");
   
   //op basicas: double e double
   resultadoOperador["double+double"] = Tipo("double");
@@ -1040,7 +1049,7 @@ void inicializaResultadoOperador() {
   resultadoOperador["int!=int"] = Tipo( "boolean" );
   
   //comparações: double e double
-  resultadoOperador["double<double"] = Tipo( "Buluano" );
+  resultadoOperador["double<double"] = Tipo( "boolean" );
   resultadoOperador["double<=double"] = Tipo( "boolean" );
   resultadoOperador["double>double"] = Tipo( "boolean" );
   resultadoOperador["double>=double"] = Tipo( "boolean" );
@@ -1079,10 +1088,11 @@ void inicializaResultadoOperador() {
   resultadoOperador["double==float"] = Tipo( "boolean" );
   resultadoOperador["double!=float"] = Tipo( "boolean" );
   
-  //concatenação
+  //string
   resultadoOperador["string+string"] = Tipo( "string" );
   resultadoOperador["string+int"] = Tipo("string");
-
+  resultadoOperador["string==string"] = Tipo("boolean");
+  
   //resto : inteiro e inteiro
   resultadoOperador["int%int"] = Tipo("int");
   

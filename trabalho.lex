@@ -34,6 +34,7 @@ COMMENT "//".*
 "Seja qual for"       {  yylval = Atributo(  yytext ); return _TK_FOR; }
 "Tal que"	    	  {  yylval = Atributo(  yytext ); return _TK_TQ; }
 "Ao passo que"    	  {  yylval = Atributo(  yytext ); return _TK_WHILE; }
+"sqrt"				  {  yylval = Atributo(  yytext ); return _TK_SQRT; }
 
 "=>"		{  yylval = Atributo( yytext ); return _PIPE; }
 ".."		{  yylval = Atributo( yytext ); return _2PTS; }
