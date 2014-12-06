@@ -987,6 +987,7 @@ void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo
   if ((S1.t.nome == "string") && (S3.t.nome == "string") && (S2.v == "==")){
       SS->c = S1.c + S3.c +
       "  " + SS->v + " = " + "strcmp("+ S1.v + ","+ S3.v +") == 0; \n";
+      return;
   }
   
   if( SS->t.nome == "string" ) {

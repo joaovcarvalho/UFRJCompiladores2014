@@ -1,6 +1,6 @@
 Diade discriminante(Diade a, Diade b, Diade c) 
 Preludio
-	Restitua b Vezes b Menos 4 Vezes a Vezes b;
+	Restitua b Vezes b Menos 4.0 Vezes a Vezes c;
 Epilogo
 
 Diade modulo(Diade n)
@@ -51,29 +51,29 @@ Preludio
 		Exclame "Qual o valor de c ? ";
 		Averigue >> c;
 
-		Exclame a b c;
-
 		Diade delta = discriminante(a,b,c);
 		
 		Na hipotese de (delta Superior a 0)
 		Preludio
-			r1 = (((Menos b) Mais raiz(discriminante(a,b,c))) Sobre (2 Vezes a));
-			r2 = (((Menos b) Menos raiz(discriminante(a,b,c))) Sobre (2 Vezes a));
-			Exclame "Discriminante>0  ---> Raizes reais :"r1" e "r2;
+			r1 = (((Menos b) Mais raiz(discriminante(a,b,c), 2.0)) Sobre (2 Vezes a));
+			r2 = (((Menos b) Menos raiz(discriminante(a,b,c),2.0)) Sobre (2 Vezes a));
+			Exclame "Discriminante > 0  ---> Raizes reais :" r1 " e " r2 "\n";
 		Epilogo
 		Salvo Na hipotese de (delta Equivalente a 0)
 		Preludio
 			r1 = ((Menos b) Sobre (2 Vezes a));
-			Exclame "Discriminante=0  ---> Raizes reais:"r1" e "r1;
+			Exclame "Discriminante = 0  ---> Raizes reais:"r1" e "r1"\n";
 		Epilogo
 		Salvo Na hipotese de (delta Inferior a 0)
 		Preludio
-			r1 = (((Menos b) Mais raiz(Menos discriminante(a,b,c))) Sobre (2 Vezes a));
-			r2 = (((Menos b) Menos raiz(Menos discriminante(a,b,c))) Sobre (2 Vezes a));
-			Exclame "Discriminante<0  ---> Raizes imaginarias :"r1"i e "r2"i";
+			r1 = (((Menos b) Mais raiz(Menos discriminante(a,b,c),2.0)) Sobre (2 Vezes a));
+			r2 = (((Menos b) Menos raiz(Menos discriminante(a,b,c),2.0)) Sobre (2 Vezes a));
+			Exclame "Discriminante < 0  ---> Raizes imaginarias :"r1"i e "r2"i \n";
 		Epilogo
 		Exclame "Deseja entrar com outra equacao? (sim/nao)";
 		Averigue >> resposta;
+
+		Exclame "Resposta: " resposta "\n";
 	Epilogo
 	Ao passo que (resposta Equivalente a "sim");
 Epilogo

@@ -3187,6 +3187,7 @@ void geraCodigoOperadorBinario( Atributo* SS, const Atributo& S1, const Atributo
   if ((S1.t.nome == "string") && (S3.t.nome == "string") && (S2.v == "==")){
       SS->c = S1.c + S3.c +
       "  " + SS->v + " = " + "strcmp("+ S1.v + ","+ S3.v +") == 0; \n";
+      return;
   }
   
   if( SS->t.nome == "string" ) {
@@ -3215,12 +3216,14 @@ void inicializaResultadoOperador() {
   resultadoOperador["double-double"] = Tipo("double");
   resultadoOperador["double*double"] = Tipo("double");
   resultadoOperador["double/double"] = Tipo("double");
+  resultadoOperador["-double"] = Tipo("double");
   
   //op basicas: float e float
   resultadoOperador["float+float"] = Tipo("float");
   resultadoOperador["float-float"] = Tipo("float");
   resultadoOperador["float*float"] = Tipo("float");
   resultadoOperador["float/float"] = Tipo("float");
+  resultadoOperador["-float"] = Tipo("float");
   
   //op basicas: inteiro e double
   resultadoOperador["int+double"] = Tipo("double");
