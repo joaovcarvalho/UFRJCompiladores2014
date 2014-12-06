@@ -1015,12 +1015,14 @@ void inicializaResultadoOperador() {
   resultadoOperador["double-double"] = Tipo("double");
   resultadoOperador["double*double"] = Tipo("double");
   resultadoOperador["double/double"] = Tipo("double");
+  resultadoOperador["-double"] = Tipo("double");
   
   //op basicas: float e float
   resultadoOperador["float+float"] = Tipo("float");
   resultadoOperador["float-float"] = Tipo("float");
   resultadoOperador["float*float"] = Tipo("float");
   resultadoOperador["float/float"] = Tipo("float");
+  resultadoOperador["-float"] = Tipo("float");
   
   //op basicas: inteiro e double
   resultadoOperador["int+double"] = Tipo("double");
